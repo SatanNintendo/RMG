@@ -511,12 +511,64 @@ bool MainWindow::loadTranslator(void)
         appLoaded = true;
     }
 
-    // 2) Load Qt's standard translation (for native dialogs/buttons).
-    //    On most Linux distros this is installed under
-    //    <prefix>/share/qt6/translations, which QLibraryInfo resolves
-    //    for us. On Windows it ships inside the Qt binaries.
-    const QString qtTranslationsDir = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
-    if (this->ui_QtTranslator.load(locale, QStringLiteral("qt"), QStringLiteral("_"), qtTranslationsDir))
+    // 2) Load Qt's standard translations (for native dialogs/buttons).
+    //
+    //    Qt6 splits its translations across multiple .qm files:
+    //      - qtbase_<lang>.qm  → QDialogButtonBox (OK/Cancel/Apply/Save/etc.),
+    //                            QFileDialog (Open/Cancel/sidebar items),
+    //                            QInputDialog, QErrorMessage, etc.
+    //      - qt_<lang>.qm      → catch-all for other Qt modules
+    //                            (QtWidgets shortcuts, QtNetwork, etc.)
+    //
+    //    We need BOTH installed to fully localize the standard UI chrome.
+    //    Each QTranslator object holds exactly one loaded .qm file, so
+    //    we use two separate members (ui_QtTranslator + ui_QtBaseTranslator).
+    //
+    //    We search in multiple directories, because the location varies:
+    //      a) QLibraryInfo::TranslationsPath  → system Qt install
+    //         (Linux: /usr/share/qt6/translations/)
+    //      b) <app dir>/translations/          → portable Windows build
+    //         (where the build script copies qtbase_<lang>.qm next to RMG.exe)
+    //      c) <app dir>/share/qt6/translations/→ AppImage bundled Qt
+    //
+    //    If neither file is present in any location, Qt falls back to
+    //    English for the standard buttons — this is NOT a crash, just
+    //    a cosmetic gap. To fix it, install qt6-l10n-tools (Linux apt)
+    //    or mingw-w64-ucrt-x86_64-qt6-translations (MSYS2), or copy the
+    //    .qm files manually into one of the search paths above.
+    const QStringList qtSearchDirs = []() -> QStringList {
+        QStringList dirs;
+        // a) System Qt install
+        dirs << QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+        // b) Portable: <app dir>/translations/
+        QDir appDir(QCoreApplication::applicationDirPath());
+        dirs << appDir.absoluteFilePath(QStringLiteral("translations"));
+        // c) AppImage: <app dir>/share/qt6/translations/
+        dirs << appDir.absoluteFilePath(QStringLiteral("share/qt6/translations"));
+        return dirs;
+    }();
+
+    // Helper lambda: try loading "qtbase" or "qt" from any search dir.
+    auto tryLoadQt = [&locale, &qtSearchDirs](QTranslator& translator, const QString& name) -> bool {
+        for (const QString& dir : qtSearchDirs)
+        {
+            if (translator.load(locale, name, QStringLiteral("_"), dir))
+            {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // qtbase first — contains QDialogButtonBox / QFileDialog strings.
+    if (tryLoadQt(this->ui_QtBaseTranslator, QStringLiteral("qtbase")))
+    {
+        QCoreApplication::installTranslator(&this->ui_QtBaseTranslator);
+        qtLoaded = true;
+    }
+
+    // qt second — supplemental, covers other Qt modules.
+    if (tryLoadQt(this->ui_QtTranslator, QStringLiteral("qt")))
     {
         QCoreApplication::installTranslator(&this->ui_QtTranslator);
         qtLoaded = true;
@@ -1683,7 +1735,7 @@ void MainWindow::on_Action_System_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QString romFile = QFileDialog::getOpenFileName(this, tr("Open N64 ROM or 64DD Disk"), "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
+    QString romFile = QFileDialog::getOpenFileName(this, tr("Open N64 ROM or 64DD Disk"), "", tr("N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)"));
     if (romFile.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1711,7 +1763,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
         this->on_Action_System_Pause();
     }
 
-    QString cartRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+    QString cartRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", tr("N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)"));
     if (cartRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1722,7 +1774,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
     }
 
 
-    QString diskRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
+    QString diskRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", tr("N64DD Disk Image (*.ndd *.d64 *.zip *.7z)"));
     if (diskRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -2271,11 +2323,11 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     if (type == CoreRomType::Cartridge)
     { // cartridge
         mainRom = file;
-        otherRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
+        otherRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", tr("N64DD Disk Image (*.ndd *.d64 *.zip *.7z)"));
     }
     else
     { // disk
-        mainRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+        mainRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", tr("N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)"));
         otherRom = file;
     }
 

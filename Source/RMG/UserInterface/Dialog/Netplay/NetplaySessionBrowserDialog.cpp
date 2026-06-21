@@ -127,8 +127,10 @@ QString NetplaySessionBrowserDialog::GetSessionFile(void)
 
 QString NetplaySessionBrowserDialog::showROMDialog(QString name, QString md5)
 {
-    QString title = "Open " + name;
-    QString file = QFileDialog::getOpenFileName(this, title, "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+    // tr("Open %1").arg(name) keeps the verb translatable while
+    // injecting the (already-localized) game name as a parameter.
+    QString title = tr("Open %1").arg(name);
+    QString file = QFileDialog::getOpenFileName(this, title, "", tr("N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)"));
     CoreRomSettings romSettings;
 
     if (!file.isEmpty())

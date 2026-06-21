@@ -122,8 +122,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     // Kept as members so they live for the lifetime of the window
     // (Qt requires the QTranslator objects to stay alive while
     //  their translations are in use).
-    QTranslator ui_AppTranslator;   // loads RMG_<lang>.qm   from ":/i18n"
-    QTranslator ui_QtTranslator;    // loads qt_<lang>.qm    from Qt's translations dir
+    QTranslator ui_AppTranslator;       // loads RMG_<lang>.qm    from ":/i18n"
+    QTranslator ui_QtTranslator;        // loads qt_<lang>.qm     from Qt's translations dir (general Qt strings)
+    QTranslator ui_QtBaseTranslator;    // loads qtbase_<lang>.qm from Qt's translations dir (QDialogButtonBox, QFileDialog standard buttons)
 
     Dialog::LogDialog logDialog;
 #ifdef NETPLAY

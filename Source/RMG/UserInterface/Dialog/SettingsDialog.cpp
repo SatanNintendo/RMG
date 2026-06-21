@@ -1518,17 +1518,17 @@ void SettingsDialog::on_changeSaveSramDirButton_clicked(void)
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->japaneseIPLRomLineEdit, tr("Open Japanese Retail 64DD IPL"), "IPL ROMs (*.n64)");
+    this->chooseFile(this->japaneseIPLRomLineEdit, tr("Open Japanese Retail 64DD IPL"), tr("IPL ROMs (*.n64)"));
 }
 
 void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->americanIPLRomLineEdit, tr("Open American Retail 64DD IPL"), "IPL ROMs (*.n64)");
+    this->chooseFile(this->americanIPLRomLineEdit, tr("Open American Retail 64DD IPL"), tr("IPL ROMs (*.n64)"));
 }
 
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), "IPL ROMs (*.n64)");
+    this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), tr("IPL ROMs (*.n64)"));
 }
 
 void SettingsDialog::on_clearJapaneseIPLRomPathButton_clicked(void)
@@ -1704,10 +1704,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), "PIF ROMs (*.rom)", { "5C124E7948ADA85DA603A522782940D0", "4921D5F2165DEE6E2496F4388C4C81DA" });
+    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), tr("PIF ROMs (*.rom)"), { "5C124E7948ADA85DA603A522782940D0", "4921D5F2165DEE6E2496F4388C4C81DA" });
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), "PIF ROMs (*.rom)", { "D4232DC935CAD0650AC2664D52281F3A", "2B6EEC586FAA43F3462333B844834554" });
+    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), tr("PIF ROMs (*.rom)"), { "D4232DC935CAD0650AC2664D52281F3A", "2B6EEC586FAA43F3462333B844834554" });
 }
