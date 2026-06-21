@@ -105,16 +105,20 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
         this->showErrorMessage("CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
     }
 
-    // Install translations as early as possible: configureTheme() and
-    // initializeUI() both build Qt widgets, and we want retranslateUi()
-    // (called inside setupUi) to see the translators already in place
-    // so that the very first paint uses the user's chosen language.
-    // We deliberately ignore the return value here - if no translation
+    // Apply the theme (palette + style) BEFORE installing translators.
+    // This ensures the dark palette is fully set up before any
+    // LanguageChange events (posted by installTranslator) are processed,
+    // preventing any potential palette reset during widget re-polishing.
+    this->configureTheme(app);
+
+    // Install translations after the theme is applied but BEFORE
+    // initializeUI() (which calls setupUi → retranslateUi). This way:
+    //   1. The palette is already set (dark theme works correctly)
+    //   2. retranslateUi() sees the translators on the very first paint
+    // We deliberately ignore the return value - if no translation
     // matches (e.g. user picked "System Default" on an English system)
     // the source English strings are perfectly fine.
     this->loadTranslator();
-
-    this->configureTheme(app);
 
     this->initializeUI(launchROM);
     this->initializeActions();
