@@ -5,7 +5,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
+# Qt 6.2 is required because we use qt6_add_translations() (added in 6.2)
+# and QLocale::Territory / QLocale::AnyTerritory (also introduced in 6.2).
+find_package(Qt6 6.2 COMPONENTS Gui Widgets Core LinguistTools REQUIRED)
 
 if (NOT WIN32)
     find_package(Qt6 REQUIRED COMPONENTS DBus)
@@ -156,4 +158,38 @@ endif(KCA_DRAG_DROP)
 if (NETPLAY)
     target_link_libraries(RMG Qt6::WebSockets)
 endif(NETPLAY)
+
+#
+# Translations
+#
+# - Glob every Translations/*.ts file in this source directory.
+# - qt6_add_translations() compiles each .ts -> .qm at build time,
+#   wraps them into an embedded Qt resource at ":/i18n/RMG_<lang>.qm",
+#   and links that resource into the RMG executable.
+# - Because the resources are embedded, no extra runtime file
+#   installation is required: the .qm files ship inside the binary.
+# - To add a new language, drop a new "RMG_<locale>.ts" file into
+#   Source/RMG/Translations/ and re-run CMake; the new language will
+#   automatically be picked up and become selectable in Settings.
+#
+# qt6_add_translations() is available since Qt 6.2; it is the official
+# replacement for the deprecated qt5_add_translation() / lrelease()
+# manual workflow. The default resource prefix is ":/i18n".
+#
+file(GLOB RMG_TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Translations/*.ts")
+
+if (RMG_TS_FILES)
+    # qt6_add_translations() defaults to embedding the compiled .qm files
+    # under the ":/i18n" resource prefix, which matches what
+    # MainWindow::loadTranslator() looks for. We deliberately do NOT
+    # pass RESOURCE_PREFIX here so that the call works on every Qt 6.2+
+    # (the RESOURCE_PREFIX parameter exists since 6.2 but had a few
+    # implementation quirks in early point releases - the default
+    # behavior is stable and is exactly what we want).
+    qt6_add_translations(RMG
+        TS_FILES ${RMG_TS_FILES}
+    )
+else()
+    message(WARNING "RMG: no translation .ts files found in ${CMAKE_CURRENT_SOURCE_DIR}/Translations - i18n will be disabled")
+endif()
 

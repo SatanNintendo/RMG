@@ -37,6 +37,7 @@ enum class SettingsID
     GUI_StatusBar,
     GUI_Theme,
     GUI_IconTheme,
+    GUI_Language,
     GUI_CheckForUpdates,
     GUI_LastUpdateCheck,
     GUI_ConfirmExitWhileInGame,

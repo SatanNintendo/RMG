@@ -151,6 +151,13 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_IconTheme:
         setting = {SETTING_SECTION_GUI, "IconTheme", std::string("Automatic")};
         break;
+    case SettingsID::GUI_Language:
+        // Empty string means "use the system locale" (auto-detect).
+        // Any other value is a locale code stored as the part of the
+        // translation filename after "RMG_" and before ".qm",
+        // e.g. "ru", "de", "pt_BR", "zh_CN".
+        setting = {SETTING_SECTION_GUI, "Language", std::string("")};
+        break;
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
         break;

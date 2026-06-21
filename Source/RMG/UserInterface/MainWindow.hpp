@@ -33,6 +33,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QAction>
+#include <QTranslator>
 
 #include "ui_MainWindow.h"
 
@@ -117,6 +118,13 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     QString ui_WindowTitle;
 
+    // Translators installed on the QCoreApplication.
+    // Kept as members so they live for the lifetime of the window
+    // (Qt requires the QTranslator objects to stay alive while
+    //  their translations are in use).
+    QTranslator ui_AppTranslator;   // loads RMG_<lang>.qm   from ":/i18n"
+    QTranslator ui_QtTranslator;    // loads qt_<lang>.qm    from Qt's translations dir
+
     Dialog::LogDialog logDialog;
 #ifdef NETPLAY
     Dialog::NetplaySessionDialog* netplaySessionDialog = nullptr;
@@ -130,6 +138,15 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void configureTheme(QApplication* app);
 
     QString getWindowTitle(void);
+
+    // Installs the application and Qt translators based on the
+    // GUI_Language setting. Must be called AFTER CoreInit() (so
+    // the setting is readable) and BEFORE setupUi()/initializeUI()
+    // (so that retranslateUi() picks up the translations).
+    // Returns true if at least one translator was successfully
+    // loaded; false otherwise (which is not an error - it just
+    // means the source English strings will be used).
+    bool loadTranslator(void);
 
     void showErrorMessage(QString text, QString details = "", bool force = true);
 

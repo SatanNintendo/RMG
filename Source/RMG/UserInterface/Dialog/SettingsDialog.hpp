@@ -125,6 +125,13 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void commonHotkeySettings(SettingsDialogAction);
     void commonPluginSettings(SettingsDialogAction);
 
+    // Scans the embedded ":/i18n" Qt resource directory for compiled
+    // translation files (RMG_<locale>.qm) and populates the
+    // languageComboBox with a human-readable entry for each one. The
+    // first entry ("System Default") is provided by the .ui file and
+    // is never removed. This is safe to call multiple times.
+    void populateLanguageComboBox(void);
+
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 

@@ -19,8 +19,11 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QDirIterator>
+#include <QLocale>
 #include <QLabel>
 #include <QDir>
+
+#include <algorithm>
 
 #include <RMG-Core/CachedRomHeaderAndSettings.hpp>
 #include <RMG-Core/Directories.hpp>
@@ -461,9 +464,137 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
     // select currently chosen theme in UI
     this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
+
+    // Populate the language combo box from the embedded :/i18n resource
+    // directory. Each compiled .qm file is named "RMG_<locale>.qm" (e.g.
+    // "RMG_ru.qm", "RMG_pt_BR.qm"); we extract "<locale>" and use
+    // QLocale to render a human-readable language name. The first entry
+    // ("System Default", with empty user data) is already inserted in the
+    // .ui file - we only append discovered languages below it.
+    this->populateLanguageComboBox();
+    // Restore the user's choice. An empty stored value means "System Default"
+    // (item index 0). Any other value is matched against the locale code
+    // stored as combo box user data.
+    const std::string storedLanguage = CoreSettingsGetStringValue(SettingsID::GUI_Language);
+    const QString storedLanguageQStr = QString::fromStdString(storedLanguage).trimmed();
+    if (storedLanguageQStr.isEmpty())
+    {
+        this->languageComboBox->setCurrentIndex(0);
+    }
+    else
+    {
+        const int matchedIndex = this->languageComboBox->findData(storedLanguageQStr);
+        if (matchedIndex >= 0)
+        {
+            this->languageComboBox->setCurrentIndex(matchedIndex);
+        }
+        else
+        {
+            // The stored language no longer has a matching .qm file
+            // (translation may have been removed); fall back to System Default
+            // so the user isn't left with an invisible selection.
+            this->languageComboBox->setCurrentIndex(0);
+        }
+    }
+
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
+}
+
+void SettingsDialog::populateLanguageComboBox(void)
+{
+    // The combo box is pre-populated in the .ui file with a single
+    // "System Default" entry at index 0 (with empty user data). We
+    // remove any items added by a previous call (defensive guard for
+    // re-entry, e.g. if the dialog is opened twice without being
+    // destroyed) and then re-add the discovered languages.
+    while (this->languageComboBox->count() > 1)
+    {
+        this->languageComboBox->removeItem(this->languageComboBox->count() - 1);
+    }
+
+    // Enumerate embedded translation files. The CMake build copies each
+    // .ts file to a .qm and embeds it under ":/i18n/RMG_<locale>.qm" via
+    // qt6_add_translations(). QDir(":i18n") iterates over the resource
+    // entries that the resource compiler placed there.
+    QDir i18nDir(QStringLiteral(":/i18n"));
+    if (!i18nDir.exists())
+    {
+        // No translations were embedded at build time - the only entry
+        // will be "System Default" (which still results in the source
+        // English strings being used at runtime, so this is fine).
+        return;
+    }
+
+    QStringList qmFiles = i18nDir.entryList(QStringList() << QStringLiteral("RMG_*.qm"), QDir::Files, QDir::Name);
+
+    // For each .qm file, derive the locale code and a display name.
+    // We sort by display name for a stable, predictable order in the UI.
+    struct LanguageEntry
+    {
+        QString displayName; // e.g. "Russian (Russia)"
+        QString localeCode;  // e.g. "ru" or "pt_BR"
+    };
+    QList<LanguageEntry> entries;
+
+    for (const QString& qmFile : qmFiles)
+    {
+        // Strip "RMG_" prefix and ".qm" suffix.
+        QString localeCode = qmFile;
+        localeCode.remove(0, QStringLiteral("RMG_").length());
+        if (localeCode.endsWith(QStringLiteral(".qm"), Qt::CaseInsensitive))
+        {
+            localeCode.chop(QStringLiteral(".qm").length());
+        }
+        if (localeCode.isEmpty())
+        {
+            continue;
+        }
+
+        // Build a QLocale from the code and ask Qt for a human-readable
+        // name. QLocale::languageToString produces "Russian" for "ru",
+        // "Portuguese" for "pt", etc. If the territory is also encoded
+        // (e.g. "pt_BR"), we add it to disambiguate.
+        QLocale locale(localeCode);
+        QString displayName;
+        if (locale.language() == QLocale::C)
+        {
+            // Couldn't parse - fall back to the raw code so the user at
+            // least sees something rather than an empty string.
+            displayName = localeCode;
+        }
+        else
+        {
+            displayName = QLocale::languageToString(locale.language());
+            const QLocale::Territory territory = locale.territory();
+            // Only append the territory when it is meaningful (i.e. not
+            // the default "AnyTerritory" placeholder) - this is what
+            // gives us "Portuguese (Brazil)" for "pt_BR" while leaving
+            // plain "ru" as just "Russian".
+            if (territory != QLocale::AnyTerritory)
+            {
+                displayName += QStringLiteral(" (") + QLocale::territoryToString(territory) + QStringLiteral(")");
+            }
+        }
+
+        entries.append({displayName, localeCode});
+    }
+
+    // Sort by display name alphabetically (case-insensitive), keeping
+    // the behavior deterministic across builds.
+    std::sort(entries.begin(), entries.end(),
+        [](const LanguageEntry& a, const LanguageEntry& b)
+        {
+            return a.displayName.toLower() < b.displayName.toLower();
+        });
+
+    for (const LanguageEntry& e : entries)
+    {
+        // Item text = human-readable name, user data = locale code
+        // (what we actually persist in settings and feed to QTranslator).
+        this->languageComboBox->addItem(e.displayName, e.localeCode);
+    }
 }
 
 void SettingsDialog::loadInterfaceEmulationSettings(void)
@@ -623,6 +754,9 @@ void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
 {
     this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
+    // The default GUI_Language value is an empty string, which maps to
+    // index 0 ("System Default") in the combo box.
+    this->languageComboBox->setCurrentIndex(0);
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
@@ -862,6 +996,14 @@ void SettingsDialog::saveInterfaceGeneralSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
     CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
+
+    // Persist the language choice. Index 0 ("System Default") has empty
+    // user data, so currentData().toString() returns "" - which is exactly
+    // what loadTranslator() expects for "use the system locale". For any
+    // other selection we store the locale code (e.g. "ru", "pt_BR").
+    const QString languageCode = this->languageComboBox->currentData().toString();
+    CoreSettingsSetValue(SettingsID::GUI_Language, languageCode.toStdString());
+
 #ifdef UPDATER
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
 #endif // UPDATER

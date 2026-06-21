@@ -42,8 +42,10 @@
 #include <QDesktopServices>
 #include <QGuiApplication>
 #include <QStyleFactory>
-#include <QActionGroup> 
+#include <QActionGroup>
 #include <QFileDialog>
+#include <QLibraryInfo>
+#include <QLocale>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QSettings>
@@ -51,6 +53,7 @@
 #include <QMenuBar>
 #include <QString>
 #include <QTimer>
+#include <QTranslator>
 #include <QDir>
 #include <QUrl>
 
@@ -101,6 +104,15 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     {
         this->showErrorMessage("CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
     }
+
+    // Install translations as early as possible: configureTheme() and
+    // initializeUI() both build Qt widgets, and we want retranslateUi()
+    // (called inside setupUi) to see the translators already in place
+    // so that the very first paint uses the user's chosen language.
+    // We deliberately ignore the return value here - if no translation
+    // matches (e.g. user picked "System Default" on an English system)
+    // the source English strings are perfectly fine.
+    this->loadTranslator();
 
     this->configureTheme(app);
 
@@ -443,47 +455,91 @@ void MainWindow::configureTheme(QApplication* app)
     QIcon::setFallbackThemeName(fallbackThemeName);
 }
 
-QString MainWindow::getWindowTitle(void)
+bool MainWindow::loadTranslator(void)
 {
-    const QDate currentDate = QDateTime::currentDateTime().date();
-    const QStringList firstWordList = {
-    {
-        "lesbian",
-        "gay",
-        "bisexual",
-        "transgender",
-        "queer",
-    }};
-    const QStringList secondWordList = {
-    {
-        " rights!!!",
-        "s rise up!!!"
-    }};
+    // We support two sources of translations:
+    //   1) RMG's own translations, embedded as Qt resources at ":/i18n".
+    //      Each file is named "RMG_<locale>.qm" (e.g. RMG_ru.qm, RMG_pt_BR.qm).
+    //   2) Qt's own translations (standard dialogs, button labels etc.),
+    //      shipped with Qt at QLibraryInfo::TranslationsPath.
 
-    QString windowTitle = QCoreApplication::applicationName();
+    // Read the user's language preference. Empty string = auto-detect
+    // from the system locale. Otherwise it's a locale code ("ru", "de",
+    // "pt_BR", ...). The setting was registered in Settings.cpp.
+    const std::string languageSetting = CoreSettingsGetStringValue(SettingsID::GUI_Language);
+    const QString languageCode = QString::fromStdString(languageSetting).trimmed();
 
-    // initialize random seed
-    srand(time(nullptr));
-
-    bool showCustomWindowTitle = (rand() % 10) < 3;
-
-    if (showCustomWindowTitle && currentDate.month() == 3 && currentDate.day() == 31)
+    // Determine the actual locale to use. When the user has chosen
+    // "System Default" (empty string), fall back to the system locale.
+    // Otherwise build a QLocale from the stored code; if the code is
+    // invalid, QLocale::QLocale() will produce the default (C) locale,
+    // which is harmless - no translation will match, so we'll just
+    // end up using the source English strings.
+    QLocale locale;
+    if (languageCode.isEmpty())
     {
-        QString secondWord = secondWordList.at(rand() % secondWordList.count());
-        windowTitle += " (transgender" + secondWord + ")";
-    }
-    else if (showCustomWindowTitle && currentDate.month() == 6)
-    {
-        QString firstWsord = firstWordList.at(rand() % firstWordList.count());
-        QString secondWord = secondWordList.at(rand() % secondWordList.count());
-        windowTitle += " (" + firstWsord + secondWord + ")";
+        locale = QLocale::system();
     }
     else
     {
-        windowTitle += " (";
-        windowTitle += QString::fromStdString(CoreGetVersion());
-        windowTitle += ")";
+        locale = QLocale(languageCode);
+        if (locale.language() == QLocale::C)
+        {
+            // QLocale couldn't parse the code; fall back to system locale.
+            locale = QLocale::system();
+        }
     }
+
+    bool appLoaded = false;
+    bool qtLoaded  = false;
+
+    // 1) Load RMG's own translation.
+    //    QTranslator::load(QLocale, "RMG", "_", ":/i18n") will try
+    //    several candidate filenames in order of decreasing specificity:
+    //      :/i18n/RMG_ru_RU.qm
+    //      :/i18n/RMG_ru.qm
+    //    and use the first one that exists.
+    if (this->ui_AppTranslator.load(locale, QStringLiteral("RMG"), QStringLiteral("_"), QStringLiteral(":/i18n")))
+    {
+        // QCoreApplication::installTranslator is a static method,
+        // so we don't need qApp or a QApplication include here.
+        QCoreApplication::installTranslator(&this->ui_AppTranslator);
+        appLoaded = true;
+    }
+
+    // 2) Load Qt's standard translation (for native dialogs/buttons).
+    //    On most Linux distros this is installed under
+    //    <prefix>/share/qt6/translations, which QLibraryInfo resolves
+    //    for us. On Windows it ships inside the Qt binaries.
+    const QString qtTranslationsDir = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+    if (this->ui_QtTranslator.load(locale, QStringLiteral("qt"), QStringLiteral("_"), qtTranslationsDir))
+    {
+        QCoreApplication::installTranslator(&this->ui_QtTranslator);
+        qtLoaded = true;
+    }
+
+    return appLoaded || qtLoaded;
+}
+
+QString MainWindow::getWindowTitle(void)
+{
+    // The window title is now always the application name
+    // followed by the current version in parentheses.
+    //
+    // Earlier versions of RMG used to inject rotating pride-themed
+    // taglines (e.g. "lesbian rights!!!", "transgender rights!!!",
+    // "gay rise up!!!") into the window title. These strings were
+    // picked randomly on each launch (with extra rules for specific
+    // calendar dates such as March 31 and the whole month of June).
+    //
+    // That behavior has been removed at the request of the fork
+    // maintainer: an emulator shouldn't push political/sexual
+    // messaging through its chrome. The title is now deterministic
+    // and contains only the application name and version.
+    QString windowTitle = QCoreApplication::applicationName();
+    windowTitle += " (";
+    windowTitle += QString::fromStdString(CoreGetVersion());
+    windowTitle += ")";
 
     return windowTitle;
 }
