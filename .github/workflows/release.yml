@@ -110,7 +110,8 @@ jobs:
           sudo apt-get -y upgrade
           sudo apt-get -y install cmake libusb-1.0-0-dev libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
             libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
-            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers
+            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers \
+            qt6-l10n-tools
 
           # SDL3 build dependencies
           sudo apt-get -y install build-essential git make \
@@ -218,6 +219,7 @@ jobs:
             mingw-w64-ucrt-x86_64-libpng
             mingw-w64-ucrt-x86_64-sdl3
             mingw-w64-ucrt-x86_64-qt6
+            mingw-w64-ucrt-x86_64-qt6-translations
             mingw-w64-ucrt-x86_64-libusb
             mingw-w64-ucrt-x86_64-hidapi
             mingw-w64-ucrt-x86_64-speexdsp
@@ -253,6 +255,25 @@ jobs:
 
       - name: Create Installer
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
+
+      - name: Copy Qt translations for portable build
+        # Copy qtbase_*.qm and qt_*.qm from the MSYS2 Qt install into
+        # Bin/Release/translations/. MainWindow::loadTranslator() looks
+        # in <app_dir>/translations/ as one of its search paths, so the
+        # standard Qt buttons (OK/Cancel/Apply/Open/Save) will be
+        # localized in the portable build.
+        run: |
+          mkdir -p Bin/Release/translations
+          QT_TRANS_DIR="/ucrt64/share/qt6/translations"
+          if [ -d "$QT_TRANS_DIR" ]; then
+            cp -v "$QT_TRANS_DIR"/qtbase_*.qm Bin/Release/translations/ 2>/dev/null || true
+            cp -v "$QT_TRANS_DIR"/qt_*.qm      Bin/Release/translations/ 2>/dev/null || true
+            echo "Copied Qt translations:"
+            ls Bin/Release/translations/
+          else
+            echo "WARNING: Qt translations directory $QT_TRANS_DIR not found — standard Qt buttons will fall back to English."
+          fi
+        shell: msys2 {0}
 
       - name: Mark portable build
         # portable.txt tells RMG to store settings next to the .exe
