@@ -1126,11 +1126,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Memory</source>
-            <translation>Память</translation>
+            <translation>Карта памяти</translation>
         </message>
         <message>
             <source>None</source>
-            <translation>Нет</translation>
+            <translation>Ничего</translation>
         </message>
         <message>
             <source>Open Gameboy ROM</source>
@@ -1150,7 +1150,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Rumble</source>
-            <translation>Вибрация</translation>
+            <translation>Вибромодуль</translation>
         </message>
         <message>
             <source>SDL controller mode</source>
@@ -1162,7 +1162,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Transfer</source>
-            <translation>Переносной</translation>
+            <translation>Transfer</translation>
         </message>
         <message>
             <source>Transfer Pak</source>
