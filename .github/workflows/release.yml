@@ -1,0 +1,402 @@
+name: RMG Release
+
+# =============================================================================
+# Manual release build workflow for RMG.
+#
+# Triggered manually from the GitHub Actions tab ("Run workflow" button).
+# Builds the production binaries for Linux (AppImage) and Windows (portable
+# ZIP + Inno Setup installer), uploads them as workflow artifacts, and
+# optionally creates a GitHub Release with all binaries attached.
+#
+# Based on .github/workflows/build.yml, but stripped down to:
+#   - Release-only (no Debug)
+#   - Features always ON (NETPLAY/VRU/UPDATER/USE_ANGRYLION)
+#   - x86_64 Linux + x86_64 Windows only (the architectures that get
+#     AppImage / installer artifacts in the upstream workflow)
+#   - Adds SHA256 checksums and a GitHub Release step
+#
+# Usage:
+#   1. Go to Actions → "RMG Release" → "Run workflow"
+#   2. (Optional) Enter a version tag like "v1.2.3"
+#   3. (Optional) Toggle "Create GitHub Release"
+#   4. Wait ~25-35 minutes for all three jobs to finish
+#   5. Artifacts are downloadable from the workflow run page; if
+#      "Create GitHub Release" was on, they are also attached to a
+#      new (or updated) release at the chosen tag.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: >-
+          Tag name for the release (e.g. "v1.2.3").
+          Leave empty to use "git describe --tags --always".
+          When "Create GitHub Release" is enabled, this tag is created
+          (or updated) on the workflow's commit.
+        required: false
+        default: ''
+        type: string
+      create_github_release:
+        description: 'Create a GitHub Release (in addition to uploading workflow artifacts)'
+        required: true
+        default: true
+        type: boolean
+      prerelease:
+        description: 'Mark the GitHub Release as a pre-release'
+        required: false
+        default: false
+        type: boolean
+      make_latest:
+        description: >-
+          Mark as the "latest" release (true / false / legacy).
+          Only meaningful when "Create GitHub Release" is enabled.
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+          - 'legacy'
+
+# Required so softprops/action-gh-release can create tags and releases
+# on the repository. Scoped to the minimum needed.
+permissions:
+  contents: write
+
+# Don't allow two release runs on the same branch to clobber each other.
+# A new run will queue behind an in-progress one instead of cancelling it,
+# so long-running builds aren't wasted.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Build features flag — kept as a single env var so every job uses the
+  # same value without repeating the long -D list of feature toggles.
+  # All features are force-enabled for release builds (matches the
+  # upstream build.yml behavior for the artifacts that actually ship).
+  RMG_FEATURES: 'ON'
+
+jobs:
+  # ===========================================================================
+  # Linux x86_64 — produces the AppImage that ships in releases.
+  # ===========================================================================
+  build-linux-x86_64:
+    name: Build Linux x86_64 (AppImage)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # full history so git describe works
+
+      - name: Install ccache
+        uses: hendrikmuhs/ccache-action@v1.2.23
+        with:
+          key: release-linux-x86_64
+
+      - name: Install Packages
+        run: |
+          # Remove snap (long update times) — copied from build.yml.
+          sudo systemctl disable --now snapd
+          sudo apt-get purge -y snapd
+          echo "Package: snapd"    | sudo tee /etc/apt/preferences.d/disable-snap.pref
+          echo "Pin: release a=*"  | sudo tee -a /etc/apt/preferences.d/disable-snap.pref
+          echo "Pin-Priority: -10" | sudo tee -a /etc/apt/preferences.d/disable-snap.pref
+          sudo apt-mark hold firefox
+
+          sudo apt-get -y update
+          sudo apt-get -y upgrade
+          sudo apt-get -y install cmake libusb-1.0-0-dev libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
+            libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
+            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers
+
+          # SDL3 build dependencies
+          sudo apt-get -y install build-essential git make \
+            pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+            libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+            libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+            libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
+
+      - name: Prepare Environment
+        run: |
+          # GIT_REVISION is used to name the uploaded artifact folder.
+          echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
+
+      - name: Build SDL3
+        run: |
+          export sdl_dir="$(pwd)/../SDL3"
+          git clone https://github.com/libsdl-org/SDL.git "$sdl_dir" -b release-3.4.10 --depth=1
+
+          mkdir -p "$sdl_dir/build"
+          cmake -S "$sdl_dir" -B "$sdl_dir/build" \
+                -DCMAKE_BUILD_TYPE="Release" \
+                -DCMAKE_INSTALL_LIBDIR="lib/x86_64-linux-gnu" \
+                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/x86_64-linux-gnu" \
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+          cmake --build "$sdl_dir/build" --parallel "$(nproc)"
+          sudo cmake --install "$sdl_dir/build" --prefix /usr/
+
+      - name: Build RMG (Linux, install for AppImage)
+        run: |
+          export src_dir="$(pwd)"
+          export build_dir="$(pwd)/Build/AppImage"
+          export bin_dir="$(pwd)/Bin/AppImage"
+
+          mkdir -p "$build_dir" Bin/
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
+                -DNETPLAY=${{ env.RMG_FEATURES }} \
+                -DVRU=${{ env.RMG_FEATURES }} \
+                -DUSE_ANGRYLION=${{ env.RMG_FEATURES }} \
+                -DUPDATER=${{ env.RMG_FEATURES }} \
+                -DAPPIMAGE_UPDATER=${{ env.RMG_FEATURES }} \
+                -DPORTABLE_INSTALL=OFF \
+                -DCMAKE_INSTALL_PREFIX="/usr" \
+                -DCMAKE_INSTALL_LIBDIR="lib" \
+                -G "Unix Makefiles"
+
+          cmake --build "$build_dir" --parallel "$(nproc)"
+          cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
+        shell: bash
+
+      - name: Create AppImage
+        run: |
+          ./Package/AppImage/Create.sh
+        shell: bash
+
+      - name: Generate SHA256 checksums
+        run: |
+          cd Bin
+          # Compute sha256 for every AppImage produced.
+          # One checksum per line, in the format "<hash>  <filename>".
+          sha256sum *.AppImage > SHA256SUMS-Linux.txt
+          echo "Checksums:"
+          cat SHA256SUMS-Linux.txt
+
+      - name: Upload RMG (AppImage)
+        uses: actions/upload-artifact@v7
+        with:
+          name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
+          path: |
+            Bin/*.AppImage
+            Bin/SHA256SUMS-Linux.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  # ===========================================================================
+  # Windows x86_64 — produces a portable folder and an Inno Setup installer.
+  # ===========================================================================
+  build-windows:
+    name: Build Windows x86_64 (Portable + Installer)
+    runs-on: windows-2025
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install ccache
+        uses: hendrikmuhs/ccache-action@v1.2.23
+        with:
+          key: release-windows
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: inherit
+          update: true
+          msystem: ucrt64
+          install: >-
+            make
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-freetype
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-sdl3
+            mingw-w64-ucrt-x86_64-qt6
+            mingw-w64-ucrt-x86_64-libusb
+            mingw-w64-ucrt-x86_64-hidapi
+            mingw-w64-ucrt-x86_64-speexdsp
+            mingw-w64-ucrt-x86_64-libsamplerate
+            mingw-w64-ucrt-x86_64-nasm
+            mingw-w64-ucrt-x86_64-minizip
+            mingw-w64-ucrt-x86_64-vulkan-headers
+            git
+
+      - name: Prepare Environment
+        run: |
+          $env:revision = git describe --tags --always
+          echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Build RMG (Windows Portable)
+        run: |
+          export src_dir="$(pwd)"
+          export build_dir="$(pwd)/Build/Release"
+
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
+                -DNETPLAY=${{ env.RMG_FEATURES }} \
+                -DVRU=${{ env.RMG_FEATURES }} \
+                -DUSE_ANGRYLION=${{ env.RMG_FEATURES }} \
+                -DUPDATER=${{ env.RMG_FEATURES }} \
+                -DPORTABLE_INSTALL=ON \
+                -G "MSYS Makefiles"
+
+          cmake --build "$build_dir" --parallel "$(nproc)"
+          cmake --install "$build_dir" --strip --prefix="$src_dir"
+          cmake --build "$build_dir" --target=bundle_dependencies
+        shell: msys2 {0}
+
+      - name: Create Installer
+        run: .\Build\Release\Source\Installer\CreateInstaller.bat
+
+      - name: Mark portable build
+        # portable.txt tells RMG to store settings next to the .exe
+        # rather than in %APPDATA%, matching the upstream release behavior.
+        run: touch Bin/Release/portable.txt
+        shell: msys2 {0}
+
+      - name: Generate SHA256 checksums (Windows)
+        # Use PowerShell here because certutil is fiddly with file lists
+        # and sha256sum isn't available outside MSYS2.
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-Location -Path "Bin\Release"
+          $out = "SHA256SUMS-Windows.txt"
+          "SHA256 checksums for Windows portable build" | Out-File -FilePath $out -Encoding ascii
+          "Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC' )" | Out-File -FilePath $out -Append -Encoding ascii
+          "----------------------------------------------------------------" | Out-File -FilePath $out -Append -Encoding ascii
+          Get-ChildItem -File | Where-Object { $_.Name -ne $out } | ForEach-Object {
+              $hash = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
+              "{0}  {1}" -f $hash, $_.Name | Out-File -FilePath $out -Append -Encoding ascii
+          }
+          Get-Content $out
+        shell: pwsh
+
+      - name: Upload RMG (Portable)
+        uses: actions/upload-artifact@v7
+        with:
+          name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
+          path: Bin/Release/*
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload RMG (Installer)
+        uses: actions/upload-artifact@v7
+        with:
+          name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
+          path: Bin/*.exe
+          if-no-files-found: error
+          retention-days: 90
+
+  # ===========================================================================
+  # Release job — only runs if "Create GitHub Release" was enabled.
+  # Collects every artifact produced by the build jobs, builds a unified
+  # SHA256SUMS.txt, then creates/updates the GitHub Release.
+  # ===========================================================================
+  release:
+    name: Create GitHub Release
+    needs: [build-linux-x86_64, build-windows]
+    runs-on: ubuntu-24.04
+    # Compare against the string 'true' because workflow_dispatch inputs
+    # are surfaced as strings in the github.event.inputs context.
+    if: ${{ github.event.inputs.create_github_release == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          # Use the explicit version_tag if provided, otherwise fall back
+          # to `git describe --tags --always` (e.g. "v1.0-5-g123abc").
+          INPUT_TAG="${{ github.event.inputs.version_tag }}"
+          if [ -n "$INPUT_TAG" ]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG="$(git describe --tags --always)"
+          fi
+
+          # Basic sanitization: only allow alphanumerics, dot, dash, plus.
+          # This guards against accidentally injecting shell metacharacters
+          # into the tag (which would be passed to git/gh CLI later).
+          if ! echo "$TAG" | grep -qE '^[A-Za-z0-9._+-]+$'; then
+            echo "::error::Invalid tag '$TAG' — only A-Z a-z 0-9 . _ + - are allowed."
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Will create release with tag: $TAG"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+          # Without merge-multiple, each artifact lands in its own subdirectory
+          # named after the artifact. We want that so we can flatten selectively
+          # in the next step.
+
+      - name: Prepare release assets and combined checksums
+        run: |
+          set -e
+          mkdir -p release-assets
+
+          echo "::group::Downloaded artifact tree"
+          find artifacts -type f | sort
+          echo "::endgroup::"
+
+          # Flatten every file into release-assets/, but skip the per-build
+          # SHA256SUMS-*.txt files (we generate a single unified one below).
+          find artifacts -type f \
+              ! -name 'SHA256SUMS-Linux.txt' \
+              ! -name 'SHA256SUMS-Windows.txt' \
+              -exec cp {} release-assets/ \;
+
+          # Compute SHA256 for every asset in release-assets/.
+          cd release-assets
+          sha256sum * > SHA256SUMS.txt
+          echo "::group::Final release assets"
+          ls -la
+          echo "::endgroup::"
+          echo "::group::Checksums"
+          cat SHA256SUMS.txt
+          echo "::endgroup::"
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          # generate_release_notes creates an auto-generated changelog
+          # section using GitHub's built-in PR/commit summary mechanism.
+          # Combined with body below, the release page shows:
+          #   - install instructions
+          #   - auto-generated changelog
+          #   - attached binaries + checksums
+          generate_release_notes: true
+          body: |
+            ## RMG ${{ steps.tag.outputs.tag }}
+
+            ### Install
+
+            * **Linux**: download `RMG-Portable-Linux64-*.AppImage`, make it executable (`chmod +x RMG-*.AppImage`), and run it.
+            * **Windows (installer)**: download `RMG-Setup-Windows64-*.exe` and run it.
+            * **Windows (portable)**: download `RMG-Portable-Windows64-*` (zip), extract it anywhere, and run `RMG.exe`.
+
+            ### Verifying downloads
+
+            Each asset has a corresponding SHA256 hash in `SHA256SUMS.txt`.
+            Verify with:
+            ```bash
+            sha256sum -c SHA256SUMS.txt --ignore-missing
+            ```
+          prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          make_latest: ${{ github.event.inputs.make_latest }}
+          files: release-assets/*
+          fail_on_unmatched_files: true
