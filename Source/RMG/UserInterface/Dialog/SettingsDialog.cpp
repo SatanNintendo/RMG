@@ -454,15 +454,17 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
     while (stylesDirectoryIter.hasNext())
     {
         QFileInfo fileInfo(stylesDirectoryIter.next());
-        this->themeComboBox->addItem(fileInfo.fileName());
+        this->themeComboBox->addItem(fileInfo.fileName(), fileInfo.fileName());
     }
 
 #ifdef _WIN32
-    this->themeComboBox->insertItem(1,"Windows Vista");
+    this->themeComboBox->insertItem(1, "Windows Vista", QString("Windows Vista"));
 #endif
 
-    // select currently chosen theme in UI
-    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
+    // select currently chosen theme in UI using userData (locale-independent key)
+    const QString storedTheme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme));
+    const int themeIndex = this->themeComboBox->findData(storedTheme);
+    this->themeComboBox->setCurrentIndex(themeIndex >= 0 ? themeIndex : 0);
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
 
     // Populate the language combo box from the embedded :/i18n resource
@@ -752,7 +754,9 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
 
 void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
 {
-    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
+    const QString defaultTheme = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme));
+    const int defaultThemeIndex = this->themeComboBox->findData(defaultTheme);
+    this->themeComboBox->setCurrentIndex(defaultThemeIndex >= 0 ? defaultThemeIndex : 0);
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
     // The default GUI_Language value is an empty string, which maps to
     // index 0 ("System Default") in the combo box.
@@ -994,7 +998,7 @@ void SettingsDialog::saveHotkeySettings(void)
 
 void SettingsDialog::saveInterfaceGeneralSettings(void)
 {
-    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentData().toString().toStdString());
     CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
 
     // Persist the language choice. Index 0 ("System Default") has empty
