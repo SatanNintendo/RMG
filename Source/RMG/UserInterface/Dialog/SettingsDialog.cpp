@@ -457,6 +457,25 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
         this->themeComboBox->addItem(fileInfo.fileName(), fileInfo.fileName());
     }
 
+    // IMPORTANT: uic (Qt's .ui -> .h code generator) does NOT emit any code
+    // for the <property name="userData"> tag on QComboBox items. This is a
+    // long-standing Qt limitation — the property is silently dropped. As a
+    // result, the three items created from the .ui file (Native, Fusion,
+    // Fusion Dark) have empty Qt::UserRole data, and currentData()/findData()
+    // would return empty/null until we set the userData here in C++.
+    //
+    // The text remains translatable (defined in the .ui file, so users see
+    // "Системная" / "Fusion" / "Fusion (тёмная)" in Russian), but the
+    // locale-independent key stored in settings must be set programmatically.
+    //
+    // We set the userData BEFORE the Windows Vista insertItem() below, so the
+    // indices match the .ui file order (0=Native, 1=Fusion, 2=Fusion Dark).
+    // After insertItem(1, "Windows Vista") the order becomes:
+    //   0=Native, 1=Windows Vista, 2=Fusion, 3=Fusion Dark
+    this->themeComboBox->setItemData(0, QStringLiteral("Native"),      Qt::UserRole);
+    this->themeComboBox->setItemData(1, QStringLiteral("Fusion"),      Qt::UserRole);
+    this->themeComboBox->setItemData(2, QStringLiteral("Fusion Dark"), Qt::UserRole);
+
 #ifdef _WIN32
     this->themeComboBox->insertItem(1, "Windows Vista", QString("Windows Vista"));
 #endif

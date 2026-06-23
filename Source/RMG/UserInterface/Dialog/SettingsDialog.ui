@@ -66,29 +66,29 @@
                   </widget>
                  </item>
                  <item>
+                  <!--
+                    NOTE: The userData for each item is set programmatically in
+                    SettingsDialog::loadInterfaceGeneralSettings() via setItemData(),
+                    because uic (Qt's .ui -> .h generator) silently ignores the
+                    <property name="userData"> tag on QComboBox items. Only the
+                    translatable text is kept here; the locale-independent key
+                    (Native / Fusion / Fusion Dark) used for settings persistence
+                    is added in C++.
+                  -->
                   <widget class="QComboBox" name="themeComboBox">
                    <item>
                     <property name="text">
                      <string>Native</string>
-                    </property>
-                    <property name="userData">
-                     <string notr="true">Native</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
                      <string>Fusion</string>
                     </property>
-                    <property name="userData">
-                     <string notr="true">Fusion</string>
-                    </property>
                    </item>
                    <item>
                     <property name="text">
                      <string>Fusion Dark</string>
-                    </property>
-                    <property name="userData">
-                     <string notr="true">Fusion Dark</string>
                     </property>
                    </item>
                   </widget>
