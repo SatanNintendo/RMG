@@ -2329,4 +2329,1403 @@ li.checked::marker { content: "\2612"; }
             <translation>v0.2.2 доступна</translation>
         </message>
     </context>
+    <context>
+        <name>UserInterface::MainWindow</name>
+        <message>
+            <source>&amp;100%</source>
+            <translation>&amp;100%</translation>
+        </message>
+        <message>
+            <source>&amp;25%</source>
+            <translation>&amp;25%</translation>
+        </message>
+        <message>
+            <source>&amp;300%</source>
+            <translation>&amp;300%</translation>
+        </message>
+        <message>
+            <source>&amp;50%</source>
+            <translation>&amp;50%</translation>
+        </message>
+        <message>
+            <source>&amp;75%</source>
+            <translation>&amp;75%</translation>
+        </message>
+        <message>
+            <source>&amp;About RMG</source>
+            <translation>&amp;О RMG</translation>
+        </message>
+        <message>
+            <source>&amp;Audio</source>
+            <translation>&amp;Звук</translation>
+        </message>
+        <message>
+            <source>&amp;Check For Updates</source>
+            <translation>&amp;Проверить обновления</translation>
+        </message>
+        <message>
+            <source>&amp;Clear ROM Cache</source>
+            <translation>О&amp;чистить кэш ROM</translation>
+        </message>
+        <message>
+            <source>&amp;Create Session</source>
+            <translation>&amp;Создать сессию</translation>
+        </message>
+        <message>
+            <source>&amp;Current Save State</source>
+            <translation>&amp;Текущий слот сохранения</translation>
+        </message>
+        <message>
+            <source>&amp;Exit</source>
+            <translation>В&amp;ыход</translation>
+        </message>
+        <message>
+            <source>&amp;Fullscreen</source>
+            <translation>Во &amp;весь экран</translation>
+        </message>
+        <message>
+            <source>&amp;GS Button</source>
+            <translation>Кнопка &amp;GameShark</translation>
+        </message>
+        <message>
+            <source>&amp;Game List</source>
+            <translation>Список &amp;игр</translation>
+        </message>
+        <message>
+            <source>&amp;Github Repository</source>
+            <translation>Репозиторий &amp;GitHub</translation>
+        </message>
+        <message>
+            <source>&amp;Graphics</source>
+            <translation>&amp;Графика</translation>
+        </message>
+        <message>
+            <source>&amp;Hard Reset</source>
+            <translation>&amp;Жёсткий сброс</translation>
+        </message>
+        <message>
+            <source>&amp;Input</source>
+            <translation>&amp;Ввод</translation>
+        </message>
+        <message>
+            <source>&amp;Limit FPS</source>
+            <translation>&amp;Ограничить FPS</translation>
+        </message>
+        <message>
+            <source>&amp;Log</source>
+            <translation>&amp;Журнал</translation>
+        </message>
+        <message>
+            <source>&amp;Pause</source>
+            <translation>&amp;Пауза</translation>
+        </message>
+        <message>
+            <source>&amp;RSP</source>
+            <translation>&amp;RSP</translation>
+        </message>
+        <message>
+            <source>&amp;Refresh ROMs</source>
+            <translation>&amp;Обновить список ROM</translation>
+        </message>
+        <message>
+            <source>&amp;Reset</source>
+            <translation>&amp;Сброс</translation>
+        </message>
+        <message>
+            <source>&amp;Settings</source>
+            <translation>&amp;Настройки</translation>
+        </message>
+        <message>
+            <source>&amp;Slot 0</source>
+            <translation>Слот &amp;0</translation>
+        </message>
+        <message>
+            <source>&amp;Soft Reset</source>
+            <translation>&amp;Мягкий сброс</translation>
+        </message>
+        <message>
+            <source>&amp;Start ROM</source>
+            <translation>&amp;Запустить ROM</translation>
+        </message>
+        <message>
+            <source>&amp;Status Bar</source>
+            <translation>Строка &amp;состояния</translation>
+        </message>
+        <message>
+            <source>&amp;Toolbar</source>
+            <translation>&amp;Панель инструментов</translation>
+        </message>
+        <message>
+            <source>&amp;Uniform Size (Grid View)</source>
+            <translation>&amp;Одинаковый размер (сетка)</translation>
+        </message>
+        <message>
+            <source>125%</source>
+            <translation>125%</translation>
+        </message>
+        <message>
+            <source>150%</source>
+            <translation>150%</translation>
+        </message>
+        <message>
+            <source>175%</source>
+            <translation>175%</translation>
+        </message>
+        <message>
+            <source>2&amp;00%</source>
+            <translation>2&amp;00%</translation>
+        </message>
+        <message>
+            <source>225%</source>
+            <translation>225%</translation>
+        </message>
+        <message>
+            <source>250%</source>
+            <translation>250%</translation>
+        </message>
+        <message>
+            <source>275%</source>
+            <translation>275%</translation>
+        </message>
+        <message>
+            <source>Browse Sessions</source>
+            <translation>Просмотр сессий</translation>
+        </message>
+        <message>
+            <source>Cheats...</source>
+            <translation>Чит-коды...</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Ошибка</translation>
+        </message>
+        <message>
+            <source>Ga&amp;me Grid</source>
+            <translation>Сетка &amp;игр</translation>
+        </message>
+        <message>
+            <source>He&amp;lp</source>
+            <translation>Спр&amp;авка</translation>
+        </message>
+        <message>
+            <source>L&amp;oad State</source>
+            <translation>З&amp;агрузить состояние</translation>
+        </message>
+        <message>
+            <source>Loa&amp;d...</source>
+            <translation>Загрузит&amp;ь...</translation>
+        </message>
+        <message>
+            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
+            <translation>ROM и диски N64 (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
+            <translation>Образ диска N64DD (*.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Netplay</source>
+            <translation>Сетевая игра</translation>
+        </message>
+        <message>
+            <source>Open 64DD Disk</source>
+            <translation>Открыть 64DD диск</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM</source>
+            <translation>Открыть N64 ROM</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM or 64DD Disk</source>
+            <translation>Открыть N64 ROM или 64DD диск</translation>
+        </message>
+        <message>
+            <source>Open Save State</source>
+            <translation>Открыть сохранение состояния</translation>
+        </message>
+        <message>
+            <source>Rosalie's Mupen GUI (VERSION)</source>
+            <translation>Rosalie's Mupen GUI (VERSION)</translation>
+        </message>
+        <message>
+            <source>S&amp;hutdown</source>
+            <translation>О&amp;становить</translation>
+        </message>
+        <message>
+            <source>S&amp;ystem</source>
+            <translation>С&amp;истема</translation>
+        </message>
+        <message>
+            <source>Sa&amp;ve State</source>
+            <translation>Со&amp;хранить состояние</translation>
+        </message>
+        <message>
+            <source>Save As...</source>
+            <translation>Сохранить как...</translation>
+        </message>
+        <message>
+            <source>Save State</source>
+            <translation>Сохранить состояние</translation>
+        </message>
+        <message>
+            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
+            <translation>Сохранения (*.dat *.state *.st* *.pj*);;Все файлы (*)</translation>
+        </message>
+        <message>
+            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
+            <translation>Сохранение состояния (*.state);;Project64 (*.pj);;Все файлы (*)</translation>
+        </message>
+        <message>
+            <source>Scree&amp;nshot</source>
+            <translation>С&amp;нимок экрана</translation>
+        </message>
+        <message>
+            <source>Search</source>
+            <translation>Поиск</translation>
+        </message>
+        <message>
+            <source>Select ROM Directory</source>
+            <translation>Выбрать каталог ROM</translation>
+        </message>
+        <message>
+            <source>Setti&amp;ngs</source>
+            <translation>Настр&amp;ойки</translation>
+        </message>
+        <message>
+            <source>Slot %1</source>
+            <translation>Слот %1</translation>
+        </message>
+        <message>
+            <source>Slot &amp;1</source>
+            <translation>Слот &amp;1</translation>
+        </message>
+        <message>
+            <source>Slot &amp;2</source>
+            <translation>Слот &amp;2</translation>
+        </message>
+        <message>
+            <source>Slot &amp;3</source>
+            <translation>Слот &amp;3</translation>
+        </message>
+        <message>
+            <source>Slot &amp;4</source>
+            <translation>Слот &amp;4</translation>
+        </message>
+        <message>
+            <source>Slot &amp;5</source>
+            <translation>Слот &amp;5</translation>
+        </message>
+        <message>
+            <source>Slot &amp;6</source>
+            <translation>Слот &amp;6</translation>
+        </message>
+        <message>
+            <source>Slot &amp;7</source>
+            <translation>Слот &amp;7</translation>
+        </message>
+        <message>
+            <source>Slot &amp;8</source>
+            <translation>Слот &amp;8</translation>
+        </message>
+        <message>
+            <source>Slot &amp;9</source>
+            <translation>Слот &amp;9</translation>
+        </message>
+        <message>
+            <source>Speed &amp;Factor</source>
+            <translation>Скорость &amp;воспроизведения</translation>
+        </message>
+        <message>
+            <source>Start Co&amp;mbo</source>
+            <translation>Запустить ко&amp;мбо</translation>
+        </message>
+        <message>
+            <source>View</source>
+            <translation>Вид</translation>
+        </message>
+        <message>
+            <source>View Session</source>
+            <translation>Открыть сессию</translation>
+        </message>
+        <message>
+            <source>toolBar</source>
+            <translation>Панель инструментов</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::RomBrowserWidget</name>
+        <message>
+            <source>%1 MB</source>
+            <translation>%1 МБ</translation>
+        </message>
+        <message>
+            <source>Browse...</source>
+            <translation>Обзор...</translation>
+        </message>
+        <message>
+            <source>Cartridge</source>
+            <translation>Картридж</translation>
+        </message>
+        <message>
+            <source>Change Cover Image...</source>
+            <translation>Изменить обложку...</translation>
+        </message>
+        <message>
+            <source>Change ROM Directory...</source>
+            <translation>Сменить каталог ROM...</translation>
+        </message>
+        <message>
+            <source>Cover Image (*.png *.jpeg *.jpg)</source>
+            <translation>Обложка (*.png *.jpeg *.jpg)</translation>
+        </message>
+        <message>
+            <source>Disk</source>
+            <translation>Диск</translation>
+        </message>
+        <message>
+            <source>Edit Cheats</source>
+            <translation>Изменить чит-коды</translation>
+        </message>
+        <message>
+            <source>Edit Game Input Settings</source>
+            <translation>Изменить настройки ввода игры</translation>
+        </message>
+        <message>
+            <source>Edit Game Settings</source>
+            <translation>Изменить настройки игры</translation>
+        </message>
+        <message>
+            <source>File Ext.</source>
+            <translation>Расширение</translation>
+        </message>
+        <message>
+            <source>File Extension</source>
+            <translation>Расширение файла</translation>
+        </message>
+        <message>
+            <source>File Name</source>
+            <translation>Имя файла</translation>
+        </message>
+        <message>
+            <source>File Size</source>
+            <translation>Размер</translation>
+        </message>
+        <message>
+            <source>Format</source>
+            <translation>Формат</translation>
+        </message>
+        <message>
+            <source>Game Format</source>
+            <translation>Формат игры</translation>
+        </message>
+        <message>
+            <source>Game I.D.</source>
+            <translation>ID игры</translation>
+        </message>
+        <message>
+            <source>Game Region</source>
+            <translation>Регион игры</translation>
+        </message>
+        <message>
+            <source>I.D.</source>
+            <translation>ID</translation>
+        </message>
+        <message>
+            <source>Internal Name</source>
+            <translation>Внутреннее имя</translation>
+        </message>
+        <message>
+            <source>MD5</source>
+            <translation>MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Название</translation>
+        </message>
+        <message>
+            <source>Open Cover Image</source>
+            <translation>Открыть обложку</translation>
+        </message>
+        <message>
+            <source>Open ROM Directory</source>
+            <translation>Открыть каталог ROM</translation>
+        </message>
+        <message>
+            <source>Play Game</source>
+            <translation>Запустить игру</translation>
+        </message>
+        <message>
+            <source>Play Game with Cartridge...</source>
+            <translation>Запустить игру с картриджем...</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk</source>
+            <translation>Запустить игру с диском</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk...</source>
+            <translation>Запустить игру с диском...</translation>
+        </message>
+        <message>
+            <source>Play Game with State</source>
+            <translation>Запустить игру со сохранением</translation>
+        </message>
+        <message>
+            <source>ROM Information</source>
+            <translation>Информация о ROM</translation>
+        </message>
+        <message>
+            <source>Refresh ROM List</source>
+            <translation>Обновить список ROM</translation>
+        </message>
+        <message>
+            <source>Region</source>
+            <translation>Регион</translation>
+        </message>
+        <message>
+            <source>Remove Cover Image</source>
+            <translation>Удалить обложку</translation>
+        </message>
+        <message>
+            <source>Reset Column Sizes</source>
+            <translation>Сбросить размеры столбцов</translation>
+        </message>
+        <message>
+            <source>Set Cover Image...</source>
+            <translation>Установить обложку...</translation>
+        </message>
+        <message>
+            <source>Show/Hide Columns</source>
+            <translation>Показать/скрыть столбцы</translation>
+        </message>
+        <message>
+            <source>Slot %1 - </source>
+            <translation>Слот %1 — </translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::RomBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Загрузка</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Dialog::NetplaySessionBrowserDialog</name>
+        <message>
+            <source>Calculating...</source>
+            <translation>Вычисление...</translation>
+        </message>
+        <message>
+            <source>Join</source>
+            <translation>Подключиться</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Netplay Session Browser</source>
+            <translation>Браузер сессий сетевой игры</translation>
+        </message>
+        <message>
+            <source>Nickname</source>
+            <translation>Никнейм</translation>
+        </message>
+        <message>
+            <source>Open %1</source>
+            <translation>Открыть %1</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Обновить</translation>
+        </message>
+        <message>
+            <source>Server</source>
+            <translation>Сервер</translation>
+        </message>
+        <message>
+            <source>Server ping</source>
+            <translation>Пинг сервера</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserWidget</name>
+        <message>
+            <source>Game</source>
+            <translation>Игра</translation>
+        </message>
+        <message>
+            <source>Game MD5</source>
+            <translation>MD5 игры</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Название</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>Нет</translation>
+        </message>
+        <message>
+            <source>Password?</source>
+            <translation>Пароль?</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Да</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Загрузка</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::ControllerWidget</name>
+        <message>
+            <source>+</source>
+            <translation>+</translation>
+        </message>
+        <message>
+            <source>-</source>
+            <translation>-</translation>
+        </message>
+        <message>
+            <source>A:</source>
+            <translation>A:</translation>
+        </message>
+        <message>
+            <source>Add</source>
+            <translation>Добавить</translation>
+        </message>
+        <message>
+            <source>Analog Stick</source>
+            <translation>Аналоговый стик</translation>
+        </message>
+        <message>
+            <source>Analog Stick Sensitivity: </source>
+            <translation>Чувствительность аналогового стика: </translation>
+        </message>
+        <message>
+            <source>Analog Stick Sensitivity: 100%</source>
+            <translation>Чувствительность аналогового стика: 100%</translation>
+        </message>
+        <message>
+            <source>Are you sure you want to clear the main profile?</source>
+            <translation>Вы уверены, что хотите очистить основной профиль?</translation>
+        </message>
+        <message>
+            <source>Auto-Configure</source>
+            <translation>Автонастройка</translation>
+        </message>
+        <message>
+            <source>B:</source>
+            <translation>B:</translation>
+        </message>
+        <message>
+            <source>C-Buttons</source>
+            <translation>Кнопки C</translation>
+        </message>
+        <message>
+            <source>ControllerWidget</source>
+            <translation>Виджет контроллера</translation>
+        </message>
+        <message>
+            <source>Deadzone: %1%</source>
+            <translation>Мёртвая зона: %1%</translation>
+        </message>
+        <message>
+            <source>Deadzone: 25%</source>
+            <translation>Мёртвая зона: 25%</translation>
+        </message>
+        <message>
+            <source>Digital Pad</source>
+            <translation>Цифровой крест</translation>
+        </message>
+        <message>
+            <source>Down:</source>
+            <translation>Вниз:</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Ошибка</translation>
+        </message>
+        <message>
+            <source>Hotkeys</source>
+            <translation>Горячие клавиши</translation>
+        </message>
+        <message>
+            <source>Input Device</source>
+            <translation>Устройство ввода</translation>
+        </message>
+        <message>
+            <source>L-Shoulder:</source>
+            <translation>Лево-плечо:</translation>
+        </message>
+        <message>
+            <source>Left:</source>
+            <translation>Влево:</translation>
+        </message>
+        <message>
+            <source>Options</source>
+            <translation>Опции</translation>
+        </message>
+        <message>
+            <source>Profile</source>
+            <translation>Профиль</translation>
+        </message>
+        <message>
+            <source>R-Shoulder:</source>
+            <translation>Право-плечо:</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Обновить</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Удалить</translation>
+        </message>
+        <message>
+            <source>Reset</source>
+            <translation>Сброс</translation>
+        </message>
+        <message>
+            <source>Right:</source>
+            <translation>Вправо:</translation>
+        </message>
+        <message>
+            <source>Start:</source>
+            <translation>Старт:</translation>
+        </message>
+        <message>
+            <source>Up:</source>
+            <translation>Вверх:</translation>
+        </message>
+        <message>
+            <source>Z-Trigger:</source>
+            <translation>Z-триггер:</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Dialog::SettingsDialog</name>
+        <message>
+            <source>&amp;Use PIF ROM</source>
+            <translation>&amp;Использовать PIF ROM</translation>
+        </message>
+        <message>
+            <source>1</source>
+            <translation>1</translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation>100%</translation>
+        </message>
+        <message>
+            <source>125%</source>
+            <translation>125%</translation>
+        </message>
+        <message>
+            <source>150%</source>
+            <translation>150%</translation>
+        </message>
+        <message>
+            <source>16 KB EEPROM</source>
+            <translation>16 КБ EEPROM</translation>
+        </message>
+        <message>
+            <source>175%</source>
+            <translation>175%</translation>
+        </message>
+        <message>
+            <source>2</source>
+            <translation>2</translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation>200%</translation>
+        </message>
+        <message>
+            <source>225%</source>
+            <translation>225%</translation>
+        </message>
+        <message>
+            <source>25%</source>
+            <translation>25%</translation>
+        </message>
+        <message>
+            <source>250%</source>
+            <translation>250%</translation>
+        </message>
+        <message>
+            <source>275%</source>
+            <translation>275%</translation>
+        </message>
+        <message>
+            <source>3</source>
+            <translation>3</translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation>300%</translation>
+        </message>
+        <message>
+            <source>4</source>
+            <translation>4</translation>
+        </message>
+        <message>
+            <source>4 KB EEPROM</source>
+            <translation>4 КБ EEPROM</translation>
+        </message>
+        <message>
+            <source>4 MB</source>
+            <translation>4 МБ</translation>
+        </message>
+        <message>
+            <source>5</source>
+            <translation>5</translation>
+        </message>
+        <message>
+            <source>50%</source>
+            <translation>50%</translation>
+        </message>
+        <message>
+            <source>6</source>
+            <translation>6</translation>
+        </message>
+        <message>
+            <source>64DD</source>
+            <translation>64DD</translation>
+        </message>
+        <message>
+            <source>75%</source>
+            <translation>75%</translation>
+        </message>
+        <message>
+            <source>8 MB</source>
+            <translation>8 МБ</translation>
+        </message>
+        <message>
+            <source>American Retail 64DD IPL ROM</source>
+            <translation>Американский розничный 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Ask for confirmation during drag and drop</source>
+            <translation>Запрашивать подтверждение при перетаскивании</translation>
+        </message>
+        <message>
+            <source>Ask for confirmation on exit</source>
+            <translation>Запрашивать подтверждение при выходе</translation>
+        </message>
+        <message>
+            <source>Audio</source>
+            <translation>Звук</translation>
+        </message>
+        <message>
+            <source>Audio Plugin</source>
+            <translation>Плагин звука</translation>
+        </message>
+        <message>
+            <source>Automatic</source>
+            <translation>Автоматически</translation>
+        </message>
+        <message>
+            <source>Automatically switch to fullscreen on emulation start</source>
+            <translation>Автоматически переходить в полный экран при запуске эмуляции</translation>
+        </message>
+        <message>
+            <source>Background color</source>
+            <translation>Цвет фона</translation>
+        </message>
+        <message>
+            <source>Black</source>
+            <translation>Чёрная</translation>
+        </message>
+        <message>
+            <source>Bottom Left</source>
+            <translation>Снизу слева</translation>
+        </message>
+        <message>
+            <source>Bottom Right</source>
+            <translation>Снизу справа</translation>
+        </message>
+        <message>
+            <source>CPU Emulator</source>
+            <translation>Эмулятор ЦП</translation>
+        </message>
+        <message>
+            <source>CPU emulator</source>
+            <translation>Эмулятор ЦП</translation>
+        </message>
+        <message>
+            <source>Cached Interpreter</source>
+            <translation>Кэширующий интерпретатор</translation>
+        </message>
+        <message>
+            <source>Capture Screenshot</source>
+            <translation>Сделать снимок экрана</translation>
+        </message>
+        <message>
+            <source>Change</source>
+            <translation>Изменить</translation>
+        </message>
+        <message>
+            <source>Changes will be applied on next application run</source>
+            <translation>Изменения вступят в силу при следующем запуске приложения</translation>
+        </message>
+        <message>
+            <source>Changes will be applied on next emulation run</source>
+            <translation>Изменения вступят в силу при следующем запуске эмуляции</translation>
+        </message>
+        <message>
+            <source>Cheats</source>
+            <translation>Чит-коды</translation>
+        </message>
+        <message>
+            <source>Check for updates</source>
+            <translation>Проверять обновления</translation>
+        </message>
+        <message>
+            <source>Controller pak</source>
+            <translation>Контроллер Pak</translation>
+        </message>
+        <message>
+            <source>Core</source>
+            <translation>Ядро</translation>
+        </message>
+        <message>
+            <source>Counter Factor</source>
+            <translation>Коэффициент счётчика</translation>
+        </message>
+        <message>
+            <source>Current Save State</source>
+            <translation>Текущий слот сохранения</translation>
+        </message>
+        <message>
+            <source>Decrease Volume</source>
+            <translation>Уменьшить громкость</translation>
+        </message>
+        <message>
+            <source>Development 64DD IPL ROM</source>
+            <translation>Разработческий 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Directories</source>
+            <translation>Каталоги</translation>
+        </message>
+        <message>
+            <source>Disk save type</source>
+            <translation>Тип сохранения диска</translation>
+        </message>
+        <message>
+            <source>Duration</source>
+            <translation>Длительность</translation>
+        </message>
+        <message>
+            <source>Dynamic Recompiler</source>
+            <translation>Динамический рекомпилятор</translation>
+        </message>
+        <message>
+            <source>Emulation</source>
+            <translation>Эмуляция</translation>
+        </message>
+        <message>
+            <source>Enable On-Screen Display</source>
+            <translation>Включить экранное уведомление (OSD)</translation>
+        </message>
+        <message>
+            <source>Exit</source>
+            <translation>Выход</translation>
+        </message>
+        <message>
+            <source>Flash RAM</source>
+            <translation>Flash RAM</translation>
+        </message>
+        <message>
+            <source>Full Disk Copy</source>
+            <translation>Полная копия диска</translation>
+        </message>
+        <message>
+            <source>Full Screen</source>
+            <translation>Полный экран</translation>
+        </message>
+        <message>
+            <source>Fusion</source>
+            <translation>Fusion</translation>
+        </message>
+        <message>
+            <source>Fusion Dark</source>
+            <translation>Fusion (тёмная)</translation>
+        </message>
+        <message>
+            <source>GS Button</source>
+            <translation>Кнопка GameShark</translation>
+        </message>
+        <message>
+            <source>Game</source>
+            <translation>Игра</translation>
+        </message>
+        <message>
+            <source>General</source>
+            <translation>Общие</translation>
+        </message>
+        <message>
+            <source>Good Name</source>
+            <translation>Корректное имя</translation>
+        </message>
+        <message>
+            <source>Graphics</source>
+            <translation>Графика</translation>
+        </message>
+        <message>
+            <source>Hard Reset</source>
+            <translation>Жёсткий сброс</translation>
+        </message>
+        <message>
+            <source>Hide cursor during emulation</source>
+            <translation>Скрывать курсор во время эмуляции</translation>
+        </message>
+        <message>
+            <source>Hide cursor during fullscreen emulation</source>
+            <translation>Скрывать курсор при полноэкранной эмуляции</translation>
+        </message>
+        <message>
+            <source>Horizontal padding</source>
+            <translation>Горизонтальный отступ</translation>
+        </message>
+        <message>
+            <source>Hotkeys</source>
+            <translation>Горячие клавиши</translation>
+        </message>
+        <message>
+            <source>IPL ROMs (*.n64)</source>
+            <translation>ROM IPL (*.n64)</translation>
+        </message>
+        <message>
+            <source>Icon theme</source>
+            <translation>Тема значков</translation>
+        </message>
+        <message>
+            <source>Increase Volume</source>
+            <translation>Увеличить громкость</translation>
+        </message>
+        <message>
+            <source>Input</source>
+            <translation>Ввод</translation>
+        </message>
+        <message>
+            <source>Input Plugin</source>
+            <translation>Плагин ввода</translation>
+        </message>
+        <message>
+            <source>Interface</source>
+            <translation>Интерфейс</translation>
+        </message>
+        <message>
+            <source>Internal ROM Name</source>
+            <translation>Внутреннее имя ROM</translation>
+        </message>
+        <message>
+            <source>Japanese Retail 64DD IPL ROM</source>
+            <translation>Японский розничный 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Language</source>
+            <translation>Язык</translation>
+        </message>
+        <message>
+            <source>Limit FPS</source>
+            <translation>Ограничить FPS</translation>
+        </message>
+        <message>
+            <source>Load</source>
+            <translation>Загрузить</translation>
+        </message>
+        <message>
+            <source>Load State</source>
+            <translation>Загрузить состояние</translation>
+        </message>
+        <message>
+            <source>Location</source>
+            <translation>Расположение</translation>
+        </message>
+        <message>
+            <source>Log</source>
+            <translation>Журнал</translation>
+        </message>
+        <message>
+            <source>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</source>
+            <translation>При использовании LLE-плагина видео (например paraLLEl) убедитесь, что выбран LLE-плагин RSP (например paraLLEl RSP)</translation>
+        </message>
+        <message>
+            <source>Memory Size</source>
+            <translation>Размер памяти</translation>
+        </message>
+        <message>
+            <source>NTSC PIF ROM</source>
+            <translation>PIF ROM (NTSC)</translation>
+        </message>
+        <message>
+            <source>Native</source>
+            <translation>Системная</translation>
+        </message>
+        <message>
+            <source>Netplay</source>
+            <translation>Сетевая игра</translation>
+        </message>
+        <message>
+            <source>Nickname</source>
+            <translation>Никнейм</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>Нет</translation>
+        </message>
+        <message>
+            <source>None</source>
+            <translation>Нет</translation>
+        </message>
+        <message>
+            <source>OSD</source>
+            <translation>OSD (экранные уведомления)</translation>
+        </message>
+        <message>
+            <source>Open American Retail 64DD IPL</source>
+            <translation>Открыть американский розничный 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Development 64DD IPL</source>
+            <translation>Открыть японский разработческий 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Retail 64DD IPL</source>
+            <translation>Открыть японский розничный 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open NTSC PIF ROM</source>
+            <translation>Открыть PIF ROM (NTSC)</translation>
+        </message>
+        <message>
+            <source>Open PAL PIF ROM</source>
+            <translation>Открыть PIF ROM (PAL)</translation>
+        </message>
+        <message>
+            <source>OpenGL</source>
+            <translation>OpenGL</translation>
+        </message>
+        <message>
+            <source>OpenGL ES</source>
+            <translation>OpenGL ES</translation>
+        </message>
+        <message>
+            <source>OpenGL type</source>
+            <translation>Тип OpenGL</translation>
+        </message>
+        <message>
+            <source>Overclocking Factor</source>
+            <translation>Коэффициент разгона</translation>
+        </message>
+        <message>
+            <source>Override core settings</source>
+            <translation>Переопределять настройки ядра</translation>
+        </message>
+        <message>
+            <source>Override game specific settings</source>
+            <translation>Переопределять настройки игры</translation>
+        </message>
+        <message>
+            <source>PAL PIF ROM</source>
+            <translation>PIF ROM (PAL)</translation>
+        </message>
+        <message>
+            <source>PIF ROMs (*.rom)</source>
+            <translation>ROM PIF (*.rom)</translation>
+        </message>
+        <message>
+            <source>Pause</source>
+            <translation>Пауза</translation>
+        </message>
+        <message>
+            <source>Pause emulation on focus loss</source>
+            <translation>Пауза эмуляции при потере фокуса</translation>
+        </message>
+        <message>
+            <source>Plugins</source>
+            <translation>Плагины</translation>
+        </message>
+        <message>
+            <source>Pure Interpreter</source>
+            <translation>Чистый интерпретатор</translation>
+        </message>
+        <message>
+            <source>RAM Area Only</source>
+            <translation>Только область RAM</translation>
+        </message>
+        <message>
+            <source>ROM Browser</source>
+            <translation>Браузер ROM</translation>
+        </message>
+        <message>
+            <source>ROM search limit</source>
+            <translation>Максимум ROM при поиске</translation>
+        </message>
+        <message>
+            <source>RSP</source>
+            <translation>RSP</translation>
+        </message>
+        <message>
+            <source>Randomize PI/SI Interrupt Timing</source>
+            <translation>Случайные интервалы прерываний PI/SI</translation>
+        </message>
+        <message>
+            <source>Randomize PI/SI interrupt timing</source>
+            <translation>Случайные интервалы прерываний PI/SI</translation>
+        </message>
+        <message>
+            <source>Reality Signal Processor Plugin</source>
+            <translation>Плагин RSP (Reality Signal Processor)</translation>
+        </message>
+        <message>
+            <source>Refresh ROM List</source>
+            <translation>Обновить список ROM</translation>
+        </message>
+        <message>
+            <source>Remove duplicate keybindings</source>
+            <translation>Удалять дубликаты назначений клавиш</translation>
+        </message>
+        <message>
+            <source>Resume emulation on focus gain</source>
+            <translation>Продолжать эмуляцию при возврате фокуса</translation>
+        </message>
+        <message>
+            <source>SDL3</source>
+            <translation>SDL3</translation>
+        </message>
+        <message>
+            <source>SI DMA Duration</source>
+            <translation>Длительность SI DMA</translation>
+        </message>
+        <message>
+            <source>SRAM</source>
+            <translation>SRAM</translation>
+        </message>
+        <message>
+            <source>Save (SRAM) Directory</source>
+            <translation>Каталог сохранений (SRAM)</translation>
+        </message>
+        <message>
+            <source>Save (State) Directory</source>
+            <translation>Каталог сохранений (State)</translation>
+        </message>
+        <message>
+            <source>Save As</source>
+            <translation>Сохранить как</translation>
+        </message>
+        <message>
+            <source>Save State</source>
+            <translation>Сохранить состояние</translation>
+        </message>
+        <message>
+            <source>Save Type</source>
+            <translation>Тип сохранения</translation>
+        </message>
+        <message>
+            <source>Save filename format</source>
+            <translation>Формат имени файла сохранения</translation>
+        </message>
+        <message>
+            <source>Screenshot Directory</source>
+            <translation>Каталог скриншотов</translation>
+        </message>
+        <message>
+            <source>Search</source>
+            <translation>Поиск</translation>
+        </message>
+        <message>
+            <source>Search sub-directories</source>
+            <translation>Искать в подкаталогах</translation>
+        </message>
+        <message>
+            <source>Select Save (SRAM) Directory</source>
+            <translation>Выбрать каталог сохранений (SRAM)</translation>
+        </message>
+        <message>
+            <source>Select Save (State) Directory</source>
+            <translation>Выбрать каталог сохранений (State)</translation>
+        </message>
+        <message>
+            <source>Select Screenshot Directory</source>
+            <translation>Выбрать каталог скриншотов</translation>
+        </message>
+        <message>
+            <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
+            <translation>Выберите язык интерфейса. Выберите «По умолчанию (системный)», чтобы использовать язык операционной системы. Изменения вступят в силу при следующем запуске приложения.</translation>
+        </message>
+        <message>
+            <source>Server list URL</source>
+            <translation>URL списка серверов</translation>
+        </message>
+        <message>
+            <source>Settings</source>
+            <translation>Настройки</translation>
+        </message>
+        <message>
+            <source>Show verbose messages</source>
+            <translation>Показывать подробные сообщения</translation>
+        </message>
+        <message>
+            <source>Shutdown</source>
+            <translation>Остановить</translation>
+        </message>
+        <message>
+            <source>Slot 0</source>
+            <translation>Слот 0</translation>
+        </message>
+        <message>
+            <source>Slot 1</source>
+            <translation>Слот 1</translation>
+        </message>
+        <message>
+            <source>Slot 2</source>
+            <translation>Слот 2</translation>
+        </message>
+        <message>
+            <source>Slot 3</source>
+            <translation>Слот 3</translation>
+        </message>
+        <message>
+            <source>Slot 4</source>
+            <translation>Слот 4</translation>
+        </message>
+        <message>
+            <source>Slot 5</source>
+            <translation>Слот 5</translation>
+        </message>
+        <message>
+            <source>Slot 6</source>
+            <translation>Слот 6</translation>
+        </message>
+        <message>
+            <source>Slot 7</source>
+            <translation>Слот 7</translation>
+        </message>
+        <message>
+            <source>Slot 8</source>
+            <translation>Слот 8</translation>
+        </message>
+        <message>
+            <source>Slot 9</source>
+            <translation>Слот 9</translation>
+        </message>
+        <message>
+            <source>Soft Reset</source>
+            <translation>Мягкий сброс</translation>
+        </message>
+        <message>
+            <source>Speed Factor</source>
+            <translation>Скорость</translation>
+        </message>
+        <message>
+            <source>Start Combo</source>
+            <translation>Запустить комбо</translation>
+        </message>
+        <message>
+            <source>Start ROM</source>
+            <translation>Запустить ROM</translation>
+        </message>
+        <message>
+            <source>Statusbar message duration</source>
+            <translation>Длительность сообщений в строке состояния</translation>
+        </message>
+        <message>
+            <source>System</source>
+            <translation>Система</translation>
+        </message>
+        <message>
+            <source>System Default</source>
+            <translation>По умолчанию (системный)</translation>
+        </message>
+        <message>
+            <source>Text color</source>
+            <translation>Цвет текста</translation>
+        </message>
+        <message>
+            <source>The On-Screen Display will only work with OpenGL video plugins</source>
+            <translation>Экранные уведомления (OSD) работают только с OpenGL-плагинами видео</translation>
+        </message>
+        <message>
+            <source>Theme</source>
+            <translation>Тема</translation>
+        </message>
+        <message>
+            <source>Toggle Mute Volume</source>
+            <translation>Включить/выключить звук</translation>
+        </message>
+        <message>
+            <source>Top Left</source>
+            <translation>Сверху слева</translation>
+        </message>
+        <message>
+            <source>Top Right</source>
+            <translation>Сверху справа</translation>
+        </message>
+        <message>
+            <source>Transfer Pak</source>
+            <translation>Transfer Pak</translation>
+        </message>
+        <message>
+            <source>Vertical padding</source>
+            <translation>Вертикальный отступ</translation>
+        </message>
+        <message>
+            <source>Video Plugin</source>
+            <translation>Плагин видео</translation>
+        </message>
+        <message>
+            <source>Video capture backend</source>
+            <translation>Бэкенд захвата видео</translation>
+        </message>
+        <message>
+            <source>View</source>
+            <translation>Вид</translation>
+        </message>
+        <message>
+            <source>White</source>
+            <translation>Белая</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Да</translation>
+        </message>
+        <message>
+            <source>px</source>
+            <translation>пикс</translation>
+        </message>
+        <message>
+            <source>seconds</source>
+            <translation>секунд</translation>
+        </message>
+    
+    </context>
 </TS>

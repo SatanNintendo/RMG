@@ -2344,4 +2344,1403 @@ li.checked::marker { content: "\2612"; }
             <translation>v0.2.2 Available</translation>
         </message>
     </context>
+    <context>
+        <name>UserInterface::MainWindow</name>
+        <message>
+            <source>&amp;100%</source>
+            <translation>&amp;100%</translation>
+        </message>
+        <message>
+            <source>&amp;25%</source>
+            <translation>&amp;25%</translation>
+        </message>
+        <message>
+            <source>&amp;300%</source>
+            <translation>&amp;300%</translation>
+        </message>
+        <message>
+            <source>&amp;50%</source>
+            <translation>&amp;50%</translation>
+        </message>
+        <message>
+            <source>&amp;75%</source>
+            <translation>&amp;75%</translation>
+        </message>
+        <message>
+            <source>&amp;About RMG</source>
+            <translation>&amp;About RMG</translation>
+        </message>
+        <message>
+            <source>&amp;Audio</source>
+            <translation>&amp;Audio</translation>
+        </message>
+        <message>
+            <source>&amp;Check For Updates</source>
+            <translation>&amp;Check For Updates</translation>
+        </message>
+        <message>
+            <source>&amp;Clear ROM Cache</source>
+            <translation>&amp;Clear ROM Cache</translation>
+        </message>
+        <message>
+            <source>&amp;Create Session</source>
+            <translation>&amp;Create Session</translation>
+        </message>
+        <message>
+            <source>&amp;Current Save State</source>
+            <translation>&amp;Current Save State</translation>
+        </message>
+        <message>
+            <source>&amp;Exit</source>
+            <translation>&amp;Exit</translation>
+        </message>
+        <message>
+            <source>&amp;Fullscreen</source>
+            <translation>&amp;Fullscreen</translation>
+        </message>
+        <message>
+            <source>&amp;GS Button</source>
+            <translation>&amp;GS Button</translation>
+        </message>
+        <message>
+            <source>&amp;Game List</source>
+            <translation>&amp;Game List</translation>
+        </message>
+        <message>
+            <source>&amp;Github Repository</source>
+            <translation>&amp;Github Repository</translation>
+        </message>
+        <message>
+            <source>&amp;Graphics</source>
+            <translation>&amp;Graphics</translation>
+        </message>
+        <message>
+            <source>&amp;Hard Reset</source>
+            <translation>&amp;Hard Reset</translation>
+        </message>
+        <message>
+            <source>&amp;Input</source>
+            <translation>&amp;Input</translation>
+        </message>
+        <message>
+            <source>&amp;Limit FPS</source>
+            <translation>&amp;Limit FPS</translation>
+        </message>
+        <message>
+            <source>&amp;Log</source>
+            <translation>&amp;Log</translation>
+        </message>
+        <message>
+            <source>&amp;Pause</source>
+            <translation>&amp;Pause</translation>
+        </message>
+        <message>
+            <source>&amp;RSP</source>
+            <translation>&amp;RSP</translation>
+        </message>
+        <message>
+            <source>&amp;Refresh ROMs</source>
+            <translation>&amp;Refresh ROMs</translation>
+        </message>
+        <message>
+            <source>&amp;Reset</source>
+            <translation>&amp;Reset</translation>
+        </message>
+        <message>
+            <source>&amp;Settings</source>
+            <translation>&amp;Settings</translation>
+        </message>
+        <message>
+            <source>&amp;Slot 0</source>
+            <translation>&amp;Slot 0</translation>
+        </message>
+        <message>
+            <source>&amp;Soft Reset</source>
+            <translation>&amp;Soft Reset</translation>
+        </message>
+        <message>
+            <source>&amp;Start ROM</source>
+            <translation>&amp;Start ROM</translation>
+        </message>
+        <message>
+            <source>&amp;Status Bar</source>
+            <translation>&amp;Status Bar</translation>
+        </message>
+        <message>
+            <source>&amp;Toolbar</source>
+            <translation>&amp;Toolbar</translation>
+        </message>
+        <message>
+            <source>&amp;Uniform Size (Grid View)</source>
+            <translation>&amp;Uniform Size (Grid View)</translation>
+        </message>
+        <message>
+            <source>125%</source>
+            <translation>125%</translation>
+        </message>
+        <message>
+            <source>150%</source>
+            <translation>150%</translation>
+        </message>
+        <message>
+            <source>175%</source>
+            <translation>175%</translation>
+        </message>
+        <message>
+            <source>2&amp;00%</source>
+            <translation>2&amp;00%</translation>
+        </message>
+        <message>
+            <source>225%</source>
+            <translation>225%</translation>
+        </message>
+        <message>
+            <source>250%</source>
+            <translation>250%</translation>
+        </message>
+        <message>
+            <source>275%</source>
+            <translation>275%</translation>
+        </message>
+        <message>
+            <source>Browse Sessions</source>
+            <translation>Browse Sessions</translation>
+        </message>
+        <message>
+            <source>Cheats...</source>
+            <translation>Cheats...</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>Ga&amp;me Grid</source>
+            <translation>Ga&amp;me Grid</translation>
+        </message>
+        <message>
+            <source>He&amp;lp</source>
+            <translation>He&amp;lp</translation>
+        </message>
+        <message>
+            <source>L&amp;oad State</source>
+            <translation>L&amp;oad State</translation>
+        </message>
+        <message>
+            <source>Loa&amp;d...</source>
+            <translation>Loa&amp;d...</translation>
+        </message>
+        <message>
+            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Netplay</source>
+            <translation>Netplay</translation>
+        </message>
+        <message>
+            <source>Open 64DD Disk</source>
+            <translation>Open 64DD Disk</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM</source>
+            <translation>Open N64 ROM</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM or 64DD Disk</source>
+            <translation>Open N64 ROM or 64DD Disk</translation>
+        </message>
+        <message>
+            <source>Open Save State</source>
+            <translation>Open Save State</translation>
+        </message>
+        <message>
+            <source>Rosalie's Mupen GUI (VERSION)</source>
+            <translation>Rosalie's Mupen GUI (VERSION)</translation>
+        </message>
+        <message>
+            <source>S&amp;hutdown</source>
+            <translation>S&amp;hutdown</translation>
+        </message>
+        <message>
+            <source>S&amp;ystem</source>
+            <translation>S&amp;ystem</translation>
+        </message>
+        <message>
+            <source>Sa&amp;ve State</source>
+            <translation>Sa&amp;ve State</translation>
+        </message>
+        <message>
+            <source>Save As...</source>
+            <translation>Save As...</translation>
+        </message>
+        <message>
+            <source>Save State</source>
+            <translation>Save State</translation>
+        </message>
+        <message>
+            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
+            <translation>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</translation>
+        </message>
+        <message>
+            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
+            <translation>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</translation>
+        </message>
+        <message>
+            <source>Scree&amp;nshot</source>
+            <translation>Scree&amp;nshot</translation>
+        </message>
+        <message>
+            <source>Search</source>
+            <translation>Search</translation>
+        </message>
+        <message>
+            <source>Select ROM Directory</source>
+            <translation>Select ROM Directory</translation>
+        </message>
+        <message>
+            <source>Setti&amp;ngs</source>
+            <translation>Setti&amp;ngs</translation>
+        </message>
+        <message>
+            <source>Slot %1</source>
+            <translation>Slot %1</translation>
+        </message>
+        <message>
+            <source>Slot &amp;1</source>
+            <translation>Slot &amp;1</translation>
+        </message>
+        <message>
+            <source>Slot &amp;2</source>
+            <translation>Slot &amp;2</translation>
+        </message>
+        <message>
+            <source>Slot &amp;3</source>
+            <translation>Slot &amp;3</translation>
+        </message>
+        <message>
+            <source>Slot &amp;4</source>
+            <translation>Slot &amp;4</translation>
+        </message>
+        <message>
+            <source>Slot &amp;5</source>
+            <translation>Slot &amp;5</translation>
+        </message>
+        <message>
+            <source>Slot &amp;6</source>
+            <translation>Slot &amp;6</translation>
+        </message>
+        <message>
+            <source>Slot &amp;7</source>
+            <translation>Slot &amp;7</translation>
+        </message>
+        <message>
+            <source>Slot &amp;8</source>
+            <translation>Slot &amp;8</translation>
+        </message>
+        <message>
+            <source>Slot &amp;9</source>
+            <translation>Slot &amp;9</translation>
+        </message>
+        <message>
+            <source>Speed &amp;Factor</source>
+            <translation>Speed &amp;Factor</translation>
+        </message>
+        <message>
+            <source>Start Co&amp;mbo</source>
+            <translation>Start Co&amp;mbo</translation>
+        </message>
+        <message>
+            <source>View</source>
+            <translation>View</translation>
+        </message>
+        <message>
+            <source>View Session</source>
+            <translation>View Session</translation>
+        </message>
+        <message>
+            <source>toolBar</source>
+            <translation>toolBar</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::RomBrowserWidget</name>
+        <message>
+            <source>%1 MB</source>
+            <translation>%1 MB</translation>
+        </message>
+        <message>
+            <source>Browse...</source>
+            <translation>Browse...</translation>
+        </message>
+        <message>
+            <source>Cartridge</source>
+            <translation>Cartridge</translation>
+        </message>
+        <message>
+            <source>Change Cover Image...</source>
+            <translation>Change Cover Image...</translation>
+        </message>
+        <message>
+            <source>Change ROM Directory...</source>
+            <translation>Change ROM Directory...</translation>
+        </message>
+        <message>
+            <source>Cover Image (*.png *.jpeg *.jpg)</source>
+            <translation>Cover Image (*.png *.jpeg *.jpg)</translation>
+        </message>
+        <message>
+            <source>Disk</source>
+            <translation>Disk</translation>
+        </message>
+        <message>
+            <source>Edit Cheats</source>
+            <translation>Edit Cheats</translation>
+        </message>
+        <message>
+            <source>Edit Game Input Settings</source>
+            <translation>Edit Game Input Settings</translation>
+        </message>
+        <message>
+            <source>Edit Game Settings</source>
+            <translation>Edit Game Settings</translation>
+        </message>
+        <message>
+            <source>File Ext.</source>
+            <translation>File Ext.</translation>
+        </message>
+        <message>
+            <source>File Extension</source>
+            <translation>File Extension</translation>
+        </message>
+        <message>
+            <source>File Name</source>
+            <translation>File Name</translation>
+        </message>
+        <message>
+            <source>File Size</source>
+            <translation>File Size</translation>
+        </message>
+        <message>
+            <source>Format</source>
+            <translation>Format</translation>
+        </message>
+        <message>
+            <source>Game Format</source>
+            <translation>Game Format</translation>
+        </message>
+        <message>
+            <source>Game I.D.</source>
+            <translation>Game I.D.</translation>
+        </message>
+        <message>
+            <source>Game Region</source>
+            <translation>Game Region</translation>
+        </message>
+        <message>
+            <source>I.D.</source>
+            <translation>I.D.</translation>
+        </message>
+        <message>
+            <source>Internal Name</source>
+            <translation>Internal Name</translation>
+        </message>
+        <message>
+            <source>MD5</source>
+            <translation>MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Name</translation>
+        </message>
+        <message>
+            <source>Open Cover Image</source>
+            <translation>Open Cover Image</translation>
+        </message>
+        <message>
+            <source>Open ROM Directory</source>
+            <translation>Open ROM Directory</translation>
+        </message>
+        <message>
+            <source>Play Game</source>
+            <translation>Play Game</translation>
+        </message>
+        <message>
+            <source>Play Game with Cartridge...</source>
+            <translation>Play Game with Cartridge...</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk</source>
+            <translation>Play Game with Disk</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk...</source>
+            <translation>Play Game with Disk...</translation>
+        </message>
+        <message>
+            <source>Play Game with State</source>
+            <translation>Play Game with State</translation>
+        </message>
+        <message>
+            <source>ROM Information</source>
+            <translation>ROM Information</translation>
+        </message>
+        <message>
+            <source>Refresh ROM List</source>
+            <translation>Refresh ROM List</translation>
+        </message>
+        <message>
+            <source>Region</source>
+            <translation>Region</translation>
+        </message>
+        <message>
+            <source>Remove Cover Image</source>
+            <translation>Remove Cover Image</translation>
+        </message>
+        <message>
+            <source>Reset Column Sizes</source>
+            <translation>Reset Column Sizes</translation>
+        </message>
+        <message>
+            <source>Set Cover Image...</source>
+            <translation>Set Cover Image...</translation>
+        </message>
+        <message>
+            <source>Show/Hide Columns</source>
+            <translation>Show/Hide Columns</translation>
+        </message>
+        <message>
+            <source>Slot %1 - </source>
+            <translation>Slot %1 - </translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::RomBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Dialog::NetplaySessionBrowserDialog</name>
+        <message>
+            <source>Calculating...</source>
+            <translation>Calculating...</translation>
+        </message>
+        <message>
+            <source>Join</source>
+            <translation>Join</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Netplay Session Browser</source>
+            <translation>Netplay Session Browser</translation>
+        </message>
+        <message>
+            <source>Nickname</source>
+            <translation>Nickname</translation>
+        </message>
+        <message>
+            <source>Open %1</source>
+            <translation>Open %1</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Refresh</translation>
+        </message>
+        <message>
+            <source>Server</source>
+            <translation>Server</translation>
+        </message>
+        <message>
+            <source>Server ping</source>
+            <translation>Server ping</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserWidget</name>
+        <message>
+            <source>Game</source>
+            <translation>Game</translation>
+        </message>
+        <message>
+            <source>Game MD5</source>
+            <translation>Game MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Name</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>No</translation>
+        </message>
+        <message>
+            <source>Password?</source>
+            <translation>Password?</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Yes</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Widget::ControllerWidget</name>
+        <message>
+            <source>+</source>
+            <translation>+</translation>
+        </message>
+        <message>
+            <source>-</source>
+            <translation>-</translation>
+        </message>
+        <message>
+            <source>A:</source>
+            <translation>A:</translation>
+        </message>
+        <message>
+            <source>Add</source>
+            <translation>Add</translation>
+        </message>
+        <message>
+            <source>Analog Stick</source>
+            <translation>Analog Stick</translation>
+        </message>
+        <message>
+            <source>Analog Stick Sensitivity: </source>
+            <translation>Analog Stick Sensitivity: </translation>
+        </message>
+        <message>
+            <source>Analog Stick Sensitivity: 100%</source>
+            <translation>Analog Stick Sensitivity: 100%</translation>
+        </message>
+        <message>
+            <source>Are you sure you want to clear the main profile?</source>
+            <translation>Are you sure you want to clear the main profile?</translation>
+        </message>
+        <message>
+            <source>Auto-Configure</source>
+            <translation>Auto-Configure</translation>
+        </message>
+        <message>
+            <source>B:</source>
+            <translation>B:</translation>
+        </message>
+        <message>
+            <source>C-Buttons</source>
+            <translation>C-Buttons</translation>
+        </message>
+        <message>
+            <source>ControllerWidget</source>
+            <translation>ControllerWidget</translation>
+        </message>
+        <message>
+            <source>Deadzone: %1%</source>
+            <translation>Deadzone: %1%</translation>
+        </message>
+        <message>
+            <source>Deadzone: 25%</source>
+            <translation>Deadzone: 25%</translation>
+        </message>
+        <message>
+            <source>Digital Pad</source>
+            <translation>Digital Pad</translation>
+        </message>
+        <message>
+            <source>Down:</source>
+            <translation>Down:</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>Hotkeys</source>
+            <translation>Hotkeys</translation>
+        </message>
+        <message>
+            <source>Input Device</source>
+            <translation>Input Device</translation>
+        </message>
+        <message>
+            <source>L-Shoulder:</source>
+            <translation>L-Shoulder:</translation>
+        </message>
+        <message>
+            <source>Left:</source>
+            <translation>Left:</translation>
+        </message>
+        <message>
+            <source>Options</source>
+            <translation>Options</translation>
+        </message>
+        <message>
+            <source>Profile</source>
+            <translation>Profile</translation>
+        </message>
+        <message>
+            <source>R-Shoulder:</source>
+            <translation>R-Shoulder:</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Refresh</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Remove</translation>
+        </message>
+        <message>
+            <source>Reset</source>
+            <translation>Reset</translation>
+        </message>
+        <message>
+            <source>Right:</source>
+            <translation>Right:</translation>
+        </message>
+        <message>
+            <source>Start:</source>
+            <translation>Start:</translation>
+        </message>
+        <message>
+            <source>Up:</source>
+            <translation>Up:</translation>
+        </message>
+        <message>
+            <source>Z-Trigger:</source>
+            <translation>Z-Trigger:</translation>
+        </message>
+    
+    </context>
+
+    <context>
+        <name>UserInterface::Dialog::SettingsDialog</name>
+        <message>
+            <source>&amp;Use PIF ROM</source>
+            <translation>&amp;Use PIF ROM</translation>
+        </message>
+        <message>
+            <source>1</source>
+            <translation>1</translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation>100%</translation>
+        </message>
+        <message>
+            <source>125%</source>
+            <translation>125%</translation>
+        </message>
+        <message>
+            <source>150%</source>
+            <translation>150%</translation>
+        </message>
+        <message>
+            <source>16 KB EEPROM</source>
+            <translation>16 KB EEPROM</translation>
+        </message>
+        <message>
+            <source>175%</source>
+            <translation>175%</translation>
+        </message>
+        <message>
+            <source>2</source>
+            <translation>2</translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation>200%</translation>
+        </message>
+        <message>
+            <source>225%</source>
+            <translation>225%</translation>
+        </message>
+        <message>
+            <source>25%</source>
+            <translation>25%</translation>
+        </message>
+        <message>
+            <source>250%</source>
+            <translation>250%</translation>
+        </message>
+        <message>
+            <source>275%</source>
+            <translation>275%</translation>
+        </message>
+        <message>
+            <source>3</source>
+            <translation>3</translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation>300%</translation>
+        </message>
+        <message>
+            <source>4</source>
+            <translation>4</translation>
+        </message>
+        <message>
+            <source>4 KB EEPROM</source>
+            <translation>4 KB EEPROM</translation>
+        </message>
+        <message>
+            <source>4 MB</source>
+            <translation>4 MB</translation>
+        </message>
+        <message>
+            <source>5</source>
+            <translation>5</translation>
+        </message>
+        <message>
+            <source>50%</source>
+            <translation>50%</translation>
+        </message>
+        <message>
+            <source>6</source>
+            <translation>6</translation>
+        </message>
+        <message>
+            <source>64DD</source>
+            <translation>64DD</translation>
+        </message>
+        <message>
+            <source>75%</source>
+            <translation>75%</translation>
+        </message>
+        <message>
+            <source>8 MB</source>
+            <translation>8 MB</translation>
+        </message>
+        <message>
+            <source>American Retail 64DD IPL ROM</source>
+            <translation>American Retail 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Ask for confirmation during drag and drop</source>
+            <translation>Ask for confirmation during drag and drop</translation>
+        </message>
+        <message>
+            <source>Ask for confirmation on exit</source>
+            <translation>Ask for confirmation on exit</translation>
+        </message>
+        <message>
+            <source>Audio</source>
+            <translation>Audio</translation>
+        </message>
+        <message>
+            <source>Audio Plugin</source>
+            <translation>Audio Plugin</translation>
+        </message>
+        <message>
+            <source>Automatic</source>
+            <translation>Automatic</translation>
+        </message>
+        <message>
+            <source>Automatically switch to fullscreen on emulation start</source>
+            <translation>Automatically switch to fullscreen on emulation start</translation>
+        </message>
+        <message>
+            <source>Background color</source>
+            <translation>Background color</translation>
+        </message>
+        <message>
+            <source>Black</source>
+            <translation>Black</translation>
+        </message>
+        <message>
+            <source>Bottom Left</source>
+            <translation>Bottom Left</translation>
+        </message>
+        <message>
+            <source>Bottom Right</source>
+            <translation>Bottom Right</translation>
+        </message>
+        <message>
+            <source>CPU Emulator</source>
+            <translation>CPU Emulator</translation>
+        </message>
+        <message>
+            <source>CPU emulator</source>
+            <translation>CPU emulator</translation>
+        </message>
+        <message>
+            <source>Cached Interpreter</source>
+            <translation>Cached Interpreter</translation>
+        </message>
+        <message>
+            <source>Capture Screenshot</source>
+            <translation>Capture Screenshot</translation>
+        </message>
+        <message>
+            <source>Change</source>
+            <translation>Change</translation>
+        </message>
+        <message>
+            <source>Changes will be applied on next application run</source>
+            <translation>Changes will be applied on next application run</translation>
+        </message>
+        <message>
+            <source>Changes will be applied on next emulation run</source>
+            <translation>Changes will be applied on next emulation run</translation>
+        </message>
+        <message>
+            <source>Cheats</source>
+            <translation>Cheats</translation>
+        </message>
+        <message>
+            <source>Check for updates</source>
+            <translation>Check for updates</translation>
+        </message>
+        <message>
+            <source>Controller pak</source>
+            <translation>Controller pak</translation>
+        </message>
+        <message>
+            <source>Core</source>
+            <translation>Core</translation>
+        </message>
+        <message>
+            <source>Counter Factor</source>
+            <translation>Counter Factor</translation>
+        </message>
+        <message>
+            <source>Current Save State</source>
+            <translation>Current Save State</translation>
+        </message>
+        <message>
+            <source>Decrease Volume</source>
+            <translation>Decrease Volume</translation>
+        </message>
+        <message>
+            <source>Development 64DD IPL ROM</source>
+            <translation>Development 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Directories</source>
+            <translation>Directories</translation>
+        </message>
+        <message>
+            <source>Disk save type</source>
+            <translation>Disk save type</translation>
+        </message>
+        <message>
+            <source>Duration</source>
+            <translation>Duration</translation>
+        </message>
+        <message>
+            <source>Dynamic Recompiler</source>
+            <translation>Dynamic Recompiler</translation>
+        </message>
+        <message>
+            <source>Emulation</source>
+            <translation>Emulation</translation>
+        </message>
+        <message>
+            <source>Enable On-Screen Display</source>
+            <translation>Enable On-Screen Display</translation>
+        </message>
+        <message>
+            <source>Exit</source>
+            <translation>Exit</translation>
+        </message>
+        <message>
+            <source>Flash RAM</source>
+            <translation>Flash RAM</translation>
+        </message>
+        <message>
+            <source>Full Disk Copy</source>
+            <translation>Full Disk Copy</translation>
+        </message>
+        <message>
+            <source>Full Screen</source>
+            <translation>Full Screen</translation>
+        </message>
+        <message>
+            <source>Fusion</source>
+            <translation>Fusion</translation>
+        </message>
+        <message>
+            <source>Fusion Dark</source>
+            <translation>Fusion Dark</translation>
+        </message>
+        <message>
+            <source>GS Button</source>
+            <translation>GS Button</translation>
+        </message>
+        <message>
+            <source>Game</source>
+            <translation>Game</translation>
+        </message>
+        <message>
+            <source>General</source>
+            <translation>General</translation>
+        </message>
+        <message>
+            <source>Good Name</source>
+            <translation>Good Name</translation>
+        </message>
+        <message>
+            <source>Graphics</source>
+            <translation>Graphics</translation>
+        </message>
+        <message>
+            <source>Hard Reset</source>
+            <translation>Hard Reset</translation>
+        </message>
+        <message>
+            <source>Hide cursor during emulation</source>
+            <translation>Hide cursor during emulation</translation>
+        </message>
+        <message>
+            <source>Hide cursor during fullscreen emulation</source>
+            <translation>Hide cursor during fullscreen emulation</translation>
+        </message>
+        <message>
+            <source>Horizontal padding</source>
+            <translation>Horizontal padding</translation>
+        </message>
+        <message>
+            <source>Hotkeys</source>
+            <translation>Hotkeys</translation>
+        </message>
+        <message>
+            <source>IPL ROMs (*.n64)</source>
+            <translation>IPL ROMs (*.n64)</translation>
+        </message>
+        <message>
+            <source>Icon theme</source>
+            <translation>Icon theme</translation>
+        </message>
+        <message>
+            <source>Increase Volume</source>
+            <translation>Increase Volume</translation>
+        </message>
+        <message>
+            <source>Input</source>
+            <translation>Input</translation>
+        </message>
+        <message>
+            <source>Input Plugin</source>
+            <translation>Input Plugin</translation>
+        </message>
+        <message>
+            <source>Interface</source>
+            <translation>Interface</translation>
+        </message>
+        <message>
+            <source>Internal ROM Name</source>
+            <translation>Internal ROM Name</translation>
+        </message>
+        <message>
+            <source>Japanese Retail 64DD IPL ROM</source>
+            <translation>Japanese Retail 64DD IPL ROM</translation>
+        </message>
+        <message>
+            <source>Language</source>
+            <translation>Language</translation>
+        </message>
+        <message>
+            <source>Limit FPS</source>
+            <translation>Limit FPS</translation>
+        </message>
+        <message>
+            <source>Load</source>
+            <translation>Load</translation>
+        </message>
+        <message>
+            <source>Load State</source>
+            <translation>Load State</translation>
+        </message>
+        <message>
+            <source>Location</source>
+            <translation>Location</translation>
+        </message>
+        <message>
+            <source>Log</source>
+            <translation>Log</translation>
+        </message>
+        <message>
+            <source>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</source>
+            <translation>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</translation>
+        </message>
+        <message>
+            <source>Memory Size</source>
+            <translation>Memory Size</translation>
+        </message>
+        <message>
+            <source>NTSC PIF ROM</source>
+            <translation>NTSC PIF ROM</translation>
+        </message>
+        <message>
+            <source>Native</source>
+            <translation>Native</translation>
+        </message>
+        <message>
+            <source>Netplay</source>
+            <translation>Netplay</translation>
+        </message>
+        <message>
+            <source>Nickname</source>
+            <translation>Nickname</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>No</translation>
+        </message>
+        <message>
+            <source>None</source>
+            <translation>None</translation>
+        </message>
+        <message>
+            <source>OSD</source>
+            <translation>OSD</translation>
+        </message>
+        <message>
+            <source>Open American Retail 64DD IPL</source>
+            <translation>Open American Retail 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Development 64DD IPL</source>
+            <translation>Open Japanese Development 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Retail 64DD IPL</source>
+            <translation>Open Japanese Retail 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open NTSC PIF ROM</source>
+            <translation>Open NTSC PIF ROM</translation>
+        </message>
+        <message>
+            <source>Open PAL PIF ROM</source>
+            <translation>Open PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>OpenGL</source>
+            <translation>OpenGL</translation>
+        </message>
+        <message>
+            <source>OpenGL ES</source>
+            <translation>OpenGL ES</translation>
+        </message>
+        <message>
+            <source>OpenGL type</source>
+            <translation>OpenGL type</translation>
+        </message>
+        <message>
+            <source>Overclocking Factor</source>
+            <translation>Overclocking Factor</translation>
+        </message>
+        <message>
+            <source>Override core settings</source>
+            <translation>Override core settings</translation>
+        </message>
+        <message>
+            <source>Override game specific settings</source>
+            <translation>Override game specific settings</translation>
+        </message>
+        <message>
+            <source>PAL PIF ROM</source>
+            <translation>PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>PIF ROMs (*.rom)</source>
+            <translation>PIF ROMs (*.rom)</translation>
+        </message>
+        <message>
+            <source>Pause</source>
+            <translation>Pause</translation>
+        </message>
+        <message>
+            <source>Pause emulation on focus loss</source>
+            <translation>Pause emulation on focus loss</translation>
+        </message>
+        <message>
+            <source>Plugins</source>
+            <translation>Plugins</translation>
+        </message>
+        <message>
+            <source>Pure Interpreter</source>
+            <translation>Pure Interpreter</translation>
+        </message>
+        <message>
+            <source>RAM Area Only</source>
+            <translation>RAM Area Only</translation>
+        </message>
+        <message>
+            <source>ROM Browser</source>
+            <translation>ROM Browser</translation>
+        </message>
+        <message>
+            <source>ROM search limit</source>
+            <translation>ROM search limit</translation>
+        </message>
+        <message>
+            <source>RSP</source>
+            <translation>RSP</translation>
+        </message>
+        <message>
+            <source>Randomize PI/SI Interrupt Timing</source>
+            <translation>Randomize PI/SI Interrupt Timing</translation>
+        </message>
+        <message>
+            <source>Randomize PI/SI interrupt timing</source>
+            <translation>Randomize PI/SI interrupt timing</translation>
+        </message>
+        <message>
+            <source>Reality Signal Processor Plugin</source>
+            <translation>Reality Signal Processor Plugin</translation>
+        </message>
+        <message>
+            <source>Refresh ROM List</source>
+            <translation>Refresh ROM List</translation>
+        </message>
+        <message>
+            <source>Remove duplicate keybindings</source>
+            <translation>Remove duplicate keybindings</translation>
+        </message>
+        <message>
+            <source>Resume emulation on focus gain</source>
+            <translation>Resume emulation on focus gain</translation>
+        </message>
+        <message>
+            <source>SDL3</source>
+            <translation>SDL3</translation>
+        </message>
+        <message>
+            <source>SI DMA Duration</source>
+            <translation>SI DMA Duration</translation>
+        </message>
+        <message>
+            <source>SRAM</source>
+            <translation>SRAM</translation>
+        </message>
+        <message>
+            <source>Save (SRAM) Directory</source>
+            <translation>Save (SRAM) Directory</translation>
+        </message>
+        <message>
+            <source>Save (State) Directory</source>
+            <translation>Save (State) Directory</translation>
+        </message>
+        <message>
+            <source>Save As</source>
+            <translation>Save As</translation>
+        </message>
+        <message>
+            <source>Save State</source>
+            <translation>Save State</translation>
+        </message>
+        <message>
+            <source>Save Type</source>
+            <translation>Save Type</translation>
+        </message>
+        <message>
+            <source>Save filename format</source>
+            <translation>Save filename format</translation>
+        </message>
+        <message>
+            <source>Screenshot Directory</source>
+            <translation>Screenshot Directory</translation>
+        </message>
+        <message>
+            <source>Search</source>
+            <translation>Search</translation>
+        </message>
+        <message>
+            <source>Search sub-directories</source>
+            <translation>Search sub-directories</translation>
+        </message>
+        <message>
+            <source>Select Save (SRAM) Directory</source>
+            <translation>Select Save (SRAM) Directory</translation>
+        </message>
+        <message>
+            <source>Select Save (State) Directory</source>
+            <translation>Select Save (State) Directory</translation>
+        </message>
+        <message>
+            <source>Select Screenshot Directory</source>
+            <translation>Select Screenshot Directory</translation>
+        </message>
+        <message>
+            <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
+            <translation>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</translation>
+        </message>
+        <message>
+            <source>Server list URL</source>
+            <translation>Server list URL</translation>
+        </message>
+        <message>
+            <source>Settings</source>
+            <translation>Settings</translation>
+        </message>
+        <message>
+            <source>Show verbose messages</source>
+            <translation>Show verbose messages</translation>
+        </message>
+        <message>
+            <source>Shutdown</source>
+            <translation>Shutdown</translation>
+        </message>
+        <message>
+            <source>Slot 0</source>
+            <translation>Slot 0</translation>
+        </message>
+        <message>
+            <source>Slot 1</source>
+            <translation>Slot 1</translation>
+        </message>
+        <message>
+            <source>Slot 2</source>
+            <translation>Slot 2</translation>
+        </message>
+        <message>
+            <source>Slot 3</source>
+            <translation>Slot 3</translation>
+        </message>
+        <message>
+            <source>Slot 4</source>
+            <translation>Slot 4</translation>
+        </message>
+        <message>
+            <source>Slot 5</source>
+            <translation>Slot 5</translation>
+        </message>
+        <message>
+            <source>Slot 6</source>
+            <translation>Slot 6</translation>
+        </message>
+        <message>
+            <source>Slot 7</source>
+            <translation>Slot 7</translation>
+        </message>
+        <message>
+            <source>Slot 8</source>
+            <translation>Slot 8</translation>
+        </message>
+        <message>
+            <source>Slot 9</source>
+            <translation>Slot 9</translation>
+        </message>
+        <message>
+            <source>Soft Reset</source>
+            <translation>Soft Reset</translation>
+        </message>
+        <message>
+            <source>Speed Factor</source>
+            <translation>Speed Factor</translation>
+        </message>
+        <message>
+            <source>Start Combo</source>
+            <translation>Start Combo</translation>
+        </message>
+        <message>
+            <source>Start ROM</source>
+            <translation>Start ROM</translation>
+        </message>
+        <message>
+            <source>Statusbar message duration</source>
+            <translation>Statusbar message duration</translation>
+        </message>
+        <message>
+            <source>System</source>
+            <translation>System</translation>
+        </message>
+        <message>
+            <source>System Default</source>
+            <translation>System Default</translation>
+        </message>
+        <message>
+            <source>Text color</source>
+            <translation>Text color</translation>
+        </message>
+        <message>
+            <source>The On-Screen Display will only work with OpenGL video plugins</source>
+            <translation>The On-Screen Display will only work with OpenGL video plugins</translation>
+        </message>
+        <message>
+            <source>Theme</source>
+            <translation>Theme</translation>
+        </message>
+        <message>
+            <source>Toggle Mute Volume</source>
+            <translation>Toggle Mute Volume</translation>
+        </message>
+        <message>
+            <source>Top Left</source>
+            <translation>Top Left</translation>
+        </message>
+        <message>
+            <source>Top Right</source>
+            <translation>Top Right</translation>
+        </message>
+        <message>
+            <source>Transfer Pak</source>
+            <translation>Transfer Pak</translation>
+        </message>
+        <message>
+            <source>Vertical padding</source>
+            <translation>Vertical padding</translation>
+        </message>
+        <message>
+            <source>Video Plugin</source>
+            <translation>Video Plugin</translation>
+        </message>
+        <message>
+            <source>Video capture backend</source>
+            <translation>Video capture backend</translation>
+        </message>
+        <message>
+            <source>View</source>
+            <translation>View</translation>
+        </message>
+        <message>
+            <source>White</source>
+            <translation>White</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Yes</translation>
+        </message>
+        <message>
+            <source>px</source>
+            <translation>px</translation>
+        </message>
+        <message>
+            <source>seconds</source>
+            <translation>seconds</translation>
+        </message>
+    
+    </context>
 </TS>
