@@ -217,7 +217,14 @@ endif(NETPLAY)
 # translations are missing and the UI falls back to English source
 # strings.
 #
-file(GLOB RMG_TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Translations/*.ts")
+# CONFIGURE_DEPENDS makes CMake re-glob at configure time whenever a
+# .ts file is added, removed, or its mtime changes. Without it, an
+# incremental build after editing a .ts file may NOT trigger lrelease
+# to recompile the .qm — the binary would ship the stale .qm from the
+# previous build and new/changed translations would silently fail to
+# appear. This is the most common cause of "I edited the .ts file but
+# the translation doesn't show up" reports.
+file(GLOB RMG_TS_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Translations/*.ts")
 
 if (RMG_TS_FILES AND RMG_HAS_LINGUIST_TOOLS)
     # qt6_add_translations() defaults to embedding the compiled .qm files
@@ -230,6 +237,15 @@ if (RMG_TS_FILES AND RMG_HAS_LINGUIST_TOOLS)
     qt6_add_translations(RMG
         TS_FILES ${RMG_TS_FILES}
     )
+
+    # Diagnostic: print the .ts files we're compiling so the user can
+    # verify in the CMake output that their edited .ts files are being
+    # picked up. Also print a count of .qm files that will be generated.
+    list(LENGTH RMG_TS_FILES RMG_TS_COUNT)
+    message(STATUS "RMG: compiling ${RMG_TS_COUNT} translation .ts file(s) to .qm:")
+    foreach(_ts ${RMG_TS_FILES})
+        message(STATUS "  ${_ts}")
+    endforeach()
 elseif (RMG_TS_FILES AND NOT RMG_HAS_LINGUIST_TOOLS)
     message(WARNING
         "RMG: ${RMG_TS_FILES} were found but Qt6LinguistTools is not "
