@@ -15,7 +15,34 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 
 # Qt 6.2 is required because we use qt6_add_translations() (added in 6.2)
 # and QLocale::Territory / QLocale::AnyTerritory (also introduced in 6.2).
-find_package(Qt6 6.2 COMPONENTS Gui Widgets Core LinguistTools REQUIRED)
+#
+# LinguistTools is intentionally NOT in the REQUIRED list:
+#   - On Windows the official Qt installer bundles LinguistTools together
+#     with the rest of Qt, so it is always available and translations are
+#     compiled into the binary as before.
+#   - On Linux the LinguistTools CMake config lives in a separate
+#     distribution package (e.g. `qt6-linguist-tools` / `qt6-l10n-tools`
+#     on Debian/Ubuntu, `qt6-tools` on Fedora). Some build environments
+#     (CI runners, minimal containers) install only the runtime Qt
+#     libraries and intentionally skip the tools package to save space.
+#   - Making LinguistTools optional lets those minimal Linux environments
+#     still build a working RMG binary; the only thing they lose is the
+#     embedded .qm resources (i.e. the in-app language selector falls
+#     back to English source strings). Installing the LinguistTools
+#     package later and re-running CMake is enough to enable i18n.
+find_package(Qt6 6.2 COMPONENTS Gui Widgets Core REQUIRED)
+find_package(Qt6 6.2 COMPONENTS LinguistTools QUIET)
+set(RMG_HAS_LINGUIST_TOOLS OFF)
+if (Qt6LinguistTools_FOUND)
+    set(RMG_HAS_LINGUIST_TOOLS ON)
+else()
+    message(WARNING
+        "Qt6LinguistTools not found - .ts files will NOT be compiled to .qm "
+        "and no translations will be embedded into the RMG binary. "
+        "Install the qt6-linguist-tools (or qt6-l10n-tools) package and "
+        "re-run CMake to enable translations. The build will otherwise "
+        "succeed and produce a working English-only RMG binary.")
+endif()
 
 if (NOT WIN32)
     find_package(Qt6 REQUIRED COMPONENTS DBus)
@@ -184,9 +211,15 @@ endif(NETPLAY)
 # replacement for the deprecated qt5_add_translation() / lrelease()
 # manual workflow. The default resource prefix is ":/i18n".
 #
+# This block is skipped when Qt6LinguistTools is not installed (see
+# the find_package() call near the top of this file). In that case
+# the build still produces a working RMG binary; only the embedded
+# translations are missing and the UI falls back to English source
+# strings.
+#
 file(GLOB RMG_TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Translations/*.ts")
 
-if (RMG_TS_FILES)
+if (RMG_TS_FILES AND RMG_HAS_LINGUIST_TOOLS)
     # qt6_add_translations() defaults to embedding the compiled .qm files
     # under the ":/i18n" resource prefix, which matches what
     # MainWindow::loadTranslator() looks for. We deliberately do NOT
@@ -197,6 +230,11 @@ if (RMG_TS_FILES)
     qt6_add_translations(RMG
         TS_FILES ${RMG_TS_FILES}
     )
+elseif (RMG_TS_FILES AND NOT RMG_HAS_LINGUIST_TOOLS)
+    message(WARNING
+        "RMG: ${RMG_TS_FILES} were found but Qt6LinguistTools is not "
+        "installed - skipping .ts -> .qm compilation. See the warning "
+        "above for how to install the missing package.")
 else()
     message(WARNING "RMG: no translation .ts files found in ${CMAKE_CURRENT_SOURCE_DIR}/Translations - i18n will be disabled")
 endif()
