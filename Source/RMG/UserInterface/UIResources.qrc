@@ -1,5 +1,6 @@
 <RCC>
 <qresource>
+  <file>Resource/toolbar.qss</file>
   <file>Resource/RMG.png</file>
   <file>Resource/CoverFallback.png</file>
 
@@ -76,5 +77,8 @@
   <file alias="icons/white/svg/server-line.svg">Resource/icons/white/svg/server-line.svg</file>
   <file alias="icons/white/svg/settings-3-line.svg">Resource/icons/white/svg/settings-3-line.svg</file>
   <file alias="icons/white/svg/volume-up-line.svg">Resource/icons/white/svg/volume-up-line.svg</file>
+  <file alias="icons/white/svg/rsp-chip.svg">Resource/icons/white/svg/rsp-chip.svg</file>
+
+  <file alias="icons/black/svg/rsp-chip.svg">Resource/icons/black/svg/rsp-chip.svg</file>
 </qresource>
 </RCC>

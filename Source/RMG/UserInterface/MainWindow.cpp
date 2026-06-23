@@ -44,6 +44,7 @@
 #include <QStyleFactory>
 #include <QActionGroup>
 #include <QFileDialog>
+#include <QFile>
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
@@ -457,6 +458,14 @@ void MainWindow::configureTheme(QApplication* app)
 
     // fallback for icons we don't provide (i.e standard system icons)
     QIcon::setFallbackThemeName(fallbackThemeName);
+
+    // Apply glossy toolbar style with press effect
+    QFile toolbarQss(":/Resource/toolbar.qss");
+    if (toolbarQss.open(QIODevice::ReadOnly))
+    {
+        QString currentStyle = app->styleSheet();
+        app->setStyleSheet(currentStyle + "\n" + toolbarQss.readAll());
+    }
 }
 
 bool MainWindow::loadTranslator(void)

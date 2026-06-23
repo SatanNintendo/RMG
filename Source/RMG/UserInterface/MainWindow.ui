@@ -426,7 +426,7 @@
   </action>
   <action name="action_Settings_Rsp">
    <property name="icon">
-    <iconset theme="settings-3-line"/>
+    <iconset theme="rsp-chip"/>
    </property>
    <property name="text">
     <string>&amp;RSP</string>
