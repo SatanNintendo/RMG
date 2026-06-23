@@ -168,6 +168,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Code:</translation>
         </message>
         <message>
+            <source>Edit Cheat</source>
+            <translation>Edit Cheat</translation>
+        </message>
+        <message>
             <source>Name</source>
             <translation>Name</translation>
         </message>
@@ -245,6 +249,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Analog Stick Sensitivity: 100%</translation>
         </message>
         <message>
+            <source>Are you sure you want to clear the main profile?</source>
+            <translation>Are you sure you want to clear the main profile?</translation>
+        </message>
+        <message>
             <source>Auto-Configure</source>
             <translation>Auto-Configure</translation>
         </message>
@@ -261,6 +269,10 @@ li.checked::marker { content: "\2612"; }
             <translation>ControllerWidget</translation>
         </message>
         <message>
+            <source>Deadzone: %1%</source>
+            <translation>Deadzone: %1%</translation>
+        </message>
+        <message>
             <source>Deadzone: 25%</source>
             <translation>Deadzone: 25%</translation>
         </message>
@@ -271,6 +283,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Down:</source>
             <translation>Down:</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
         </message>
         <message>
             <source>Hotkeys</source>
@@ -332,6 +348,14 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>CreateNetplaySessionDialog</name>
         <message>
+            <source>Calculating...</source>
+            <translation>Calculating...</translation>
+        </message>
+        <message>
+            <source>Create</source>
+            <translation>Create</translation>
+        </message>
+        <message>
             <source>Create Netplay Session</source>
             <translation>Create Netplay Session</translation>
         </message>
@@ -365,6 +389,13 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Form</source>
             <translation>Form</translation>
+        </message>
+    </context>
+    <context>
+        <name>CreateNetplaySessionWidget</name>
+        <message>
+            <source>Creating server</source>
+            <translation>Creating server</translation>
         </message>
     </context>
     <context>
@@ -573,6 +604,13 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
+        <name>KeybindButton</name>
+        <message>
+            <source>Press key... [%1]</source>
+            <translation>Press key... [%1]</translation>
+        </message>
+    </context>
+    <context>
         <name>LogDialog</name>
         <message>
             <source>Log</source>
@@ -586,8 +624,28 @@ li.checked::marker { content: "\2612"; }
             <translation>Advanced</translation>
         </message>
         <message>
+            <source>Buttons</source>
+            <translation>Buttons</translation>
+        </message>
+        <message>
+            <source>C button treshold: %1%</source>
+            <translation>C button treshold: %1%</translation>
+        </message>
+        <message>
+            <source>C button treshold: 100%</source>
+            <translation>C button treshold: 100%</translation>
+        </message>
+        <message>
             <source>Changes will be applied on next emulation run</source>
             <translation>Changes will be applied on next emulation run</translation>
+        </message>
+        <message>
+            <source>Deadzone: %1%</source>
+            <translation>Deadzone: %1%</translation>
+        </message>
+        <message>
+            <source>Deadzone: 100%</source>
+            <translation>Deadzone: 100%</translation>
         </message>
         <message>
             <source>Default frequency</source>
@@ -622,8 +680,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Rosalie's Mupen GUI - Audio Plugin</translation>
         </message>
         <message>
+            <source>Rosalie's Mupen GUI - GameCube Adapter Input Plugin</source>
+            <translation>Rosalie's Mupen GUI - GameCube Adapter Input Plugin</translation>
+        </message>
+        <message>
             <source>Rosalie's Mupen GUI - Input Plugin</source>
             <translation>Rosalie's Mupen GUI - Input Plugin</translation>
+        </message>
+        <message>
+            <source>Sensitivity: %1%</source>
+            <translation>Sensitivity: %1%</translation>
+        </message>
+        <message>
+            <source>Sensitivity: 100%</source>
+            <translation>Sensitivity: 100%</translation>
+        </message>
+        <message>
+            <source>Swap Z and L</source>
+            <translation>Swap Z and L</translation>
         </message>
         <message>
             <source>Swap left and right channel</source>
@@ -632,6 +706,14 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>TextLabel</source>
             <translation>TextLabel</translation>
+        </message>
+        <message>
+            <source>Trigger treshold: %1%</source>
+            <translation>Trigger treshold: %1%</translation>
+        </message>
+        <message>
+            <source>Trigger treshold: 100%</source>
+            <translation>Trigger treshold: 100%</translation>
         </message>
         <message>
             <source>Volume</source>
@@ -873,6 +955,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Cheats...</translation>
         </message>
         <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
             <source>Ga&amp;me Grid</source>
             <translation>Ga&amp;me Grid</translation>
         </message>
@@ -887,6 +973,18 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Loa&amp;d...</source>
             <translation>Loa&amp;d...</translation>
+        </message>
+        <message>
+            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>Netplay</source>
@@ -957,6 +1055,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Setti&amp;ngs</translation>
         </message>
         <message>
+            <source>Slot %1</source>
+            <translation>Slot %1</translation>
+        </message>
+        <message>
             <source>Slot &amp;1</source>
             <translation>Slot &amp;1</translation>
         </message>
@@ -1016,12 +1118,32 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>NetplaySessionBrowserDialog</name>
         <message>
+            <source>Calculating...</source>
+            <translation>Calculating...</translation>
+        </message>
+        <message>
+            <source>Join</source>
+            <translation>Join</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
             <source>Netplay Session Browser</source>
             <translation>Netplay Session Browser</translation>
         </message>
         <message>
             <source>Nickname</source>
             <translation>Nickname</translation>
+        </message>
+        <message>
+            <source>Open %1</source>
+            <translation>Open %1</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Refresh</translation>
         </message>
         <message>
             <source>Server</source>
@@ -1041,6 +1163,40 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Form</source>
             <translation>Form</translation>
+        </message>
+    </context>
+    <context>
+        <name>NetplaySessionBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    </context>
+    <context>
+        <name>NetplaySessionBrowserWidget</name>
+        <message>
+            <source>Game</source>
+            <translation>Game</translation>
+        </message>
+        <message>
+            <source>Game MD5</source>
+            <translation>Game MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Name</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>No</translation>
+        </message>
+        <message>
+            <source>Password?</source>
+            <translation>Password?</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Yes</translation>
         </message>
     </context>
     <context>
@@ -1076,6 +1232,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Session name</source>
             <translation>Session name</translation>
+        </message>
+        <message>
+            <source>Start</source>
+            <translation>Start</translation>
         </message>
     </context>
     <context>
@@ -1114,6 +1274,14 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Controller Pak</source>
             <translation>Controller Pak</translation>
+        </message>
+        <message>
+            <source>Controller doesn't support rumble</source>
+            <translation>Controller doesn't support rumble</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
         </message>
         <message>
             <source>Filter events based on joystick type for axis</source>
@@ -1189,6 +1357,17 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
+        <name>QtMessageBox</name>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>Information</source>
+            <translation>Information</translation>
+        </message>
+    </context>
+    <context>
         <name>RomBrowserEmptyWidget</name>
         <message>
             <source>.n64/.z64/.v64 (N64 Roms)</source>
@@ -1220,14 +1399,172 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
+        <name>RomBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    </context>
+    <context>
+        <name>RomBrowserSearchWidget</name>
+        <message>
+            <source>Close</source>
+            <translation>Close</translation>
+        </message>
+        <message>
+            <source>Search games...</source>
+            <translation>Search games...</translation>
+        </message>
+    </context>
+    <context>
         <name>RomBrowserWidget</name>
+        <message>
+            <source>%1 MB</source>
+            <translation>%1 MB</translation>
+        </message>
+        <message>
+            <source>Browse...</source>
+            <translation>Browse...</translation>
+        </message>
+        <message>
+            <source>Cartridge</source>
+            <translation>Cartridge</translation>
+        </message>
+        <message>
+            <source>Change Cover Image...</source>
+            <translation>Change Cover Image...</translation>
+        </message>
+        <message>
+            <source>Change ROM Directory...</source>
+            <translation>Change ROM Directory...</translation>
+        </message>
         <message>
             <source>Cover Image (*.png *.jpeg *.jpg)</source>
             <translation>Cover Image (*.png *.jpeg *.jpg)</translation>
         </message>
         <message>
+            <source>Disk</source>
+            <translation>Disk</translation>
+        </message>
+        <message>
+            <source>Edit Cheats</source>
+            <translation>Edit Cheats</translation>
+        </message>
+        <message>
+            <source>Edit Game Input Settings</source>
+            <translation>Edit Game Input Settings</translation>
+        </message>
+        <message>
+            <source>Edit Game Settings</source>
+            <translation>Edit Game Settings</translation>
+        </message>
+        <message>
+            <source>File Ext.</source>
+            <translation>File Ext.</translation>
+        </message>
+        <message>
+            <source>File Extension</source>
+            <translation>File Extension</translation>
+        </message>
+        <message>
+            <source>File Name</source>
+            <translation>File Name</translation>
+        </message>
+        <message>
+            <source>File Size</source>
+            <translation>File Size</translation>
+        </message>
+        <message>
+            <source>Format</source>
+            <translation>Format</translation>
+        </message>
+        <message>
+            <source>Game Format</source>
+            <translation>Game Format</translation>
+        </message>
+        <message>
+            <source>Game I.D.</source>
+            <translation>Game I.D.</translation>
+        </message>
+        <message>
+            <source>Game Region</source>
+            <translation>Game Region</translation>
+        </message>
+        <message>
+            <source>I.D.</source>
+            <translation>I.D.</translation>
+        </message>
+        <message>
+            <source>Internal Name</source>
+            <translation>Internal Name</translation>
+        </message>
+        <message>
+            <source>MD5</source>
+            <translation>MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Name</translation>
+        </message>
+        <message>
             <source>Open Cover Image</source>
             <translation>Open Cover Image</translation>
+        </message>
+        <message>
+            <source>Open ROM Directory</source>
+            <translation>Open ROM Directory</translation>
+        </message>
+        <message>
+            <source>Play Game</source>
+            <translation>Play Game</translation>
+        </message>
+        <message>
+            <source>Play Game with Cartridge...</source>
+            <translation>Play Game with Cartridge...</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk</source>
+            <translation>Play Game with Disk</translation>
+        </message>
+        <message>
+            <source>Play Game with Disk...</source>
+            <translation>Play Game with Disk...</translation>
+        </message>
+        <message>
+            <source>Play Game with State</source>
+            <translation>Play Game with State</translation>
+        </message>
+        <message>
+            <source>ROM Information</source>
+            <translation>ROM Information</translation>
+        </message>
+        <message>
+            <source>Refresh ROM List</source>
+            <translation>Refresh ROM List</translation>
+        </message>
+        <message>
+            <source>Region</source>
+            <translation>Region</translation>
+        </message>
+        <message>
+            <source>Remove Cover Image</source>
+            <translation>Remove Cover Image</translation>
+        </message>
+        <message>
+            <source>Reset Column Sizes</source>
+            <translation>Reset Column Sizes</translation>
+        </message>
+        <message>
+            <source>Set Cover Image...</source>
+            <translation>Set Cover Image...</translation>
+        </message>
+        <message>
+            <source>Show/Hide Columns</source>
+            <translation>Show/Hide Columns</translation>
+        </message>
+        <message>
+            <source>Slot %1 - </source>
+            <translation>Slot %1 - </translation>
         </message>
     </context>
     <context>
@@ -1239,6 +1576,14 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>CRC2</source>
             <translation>CRC2</translation>
+        </message>
+        <message>
+            <source>Cartridge</source>
+            <translation>Cartridge</translation>
+        </message>
+        <message>
+            <source>Disk</source>
+            <translation>Disk</translation>
         </message>
         <message>
             <source>File Name</source>
@@ -1568,6 +1913,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Hotkeys</translation>
         </message>
         <message>
+            <source>IPL ROMs (*.n64)</source>
+            <translation>IPL ROMs (*.n64)</translation>
+        </message>
+        <message>
             <source>Icon theme</source>
             <translation>Icon theme</translation>
         </message>
@@ -1702,6 +2051,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>PAL PIF ROM</source>
             <translation>PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>PIF ROMs (*.rom)</source>
+            <translation>PIF ROMs (*.rom)</translation>
         </message>
         <message>
             <source>Pause</source>
@@ -1971,12 +2324,20 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>UpdateDialog</name>
         <message>
+            <source>%1 Available</source>
+            <translation>%1 Available</translation>
+        </message>
+        <message>
             <source>A new version is available</source>
             <translation>A new version is available</translation>
         </message>
         <message>
             <source>Don't check for updates again</source>
             <translation>Don't check for updates again</translation>
+        </message>
+        <message>
+            <source>Update</source>
+            <translation>Update</translation>
         </message>
         <message>
             <source>v0.2.2 Available</source>

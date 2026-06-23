@@ -57,12 +57,12 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
 
     // change ok button name
     QPushButton* joinButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    joinButton->setText("Join");
+    joinButton->setText(tr("Join"));
     joinButton->setEnabled(false);
 
     // change restore defaults button name
     QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    refreshButton->setText("Refresh");
+    refreshButton->setText(tr("Refresh"));
     refreshButton->setIcon(QIcon::fromTheme("refresh-line"));
     refreshButton->setEnabled(false);
 
@@ -356,7 +356,7 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
         this->pingTimerId = -1;
     }
 
-    this->pingLineEdit->setText("Calculating...");
+    this->pingLineEdit->setText(tr("Calculating..."));
     this->sessionBrowserWidget->StartRefresh();
 
     this->pingTimerId = this->startTimer(2000);

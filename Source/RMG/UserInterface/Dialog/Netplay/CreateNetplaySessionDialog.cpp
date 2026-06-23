@@ -51,7 +51,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
 
     // change ok button name
     QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    createButton->setText("Create");
+    createButton->setText(tr("Create"));
     createButton->setEnabled(false);
 
     // set validator for nickname
@@ -285,7 +285,7 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
         this->pingTimerId = -1;
     }
 
-    this->pingLineEdit->setText("Calculating...");
+    this->pingLineEdit->setText(tr("Calculating..."));
 
     this->pingTimerId = this->startTimer(2000);
 

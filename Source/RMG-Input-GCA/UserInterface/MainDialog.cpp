@@ -55,40 +55,28 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
 
 void MainDialog::on_deadZoneSlider_valueChanged(int value)
 {
-    QString title;
-    title = "Deadzone: ";
-    title += QString::number(value);
-    title += "%";
+    QString title = tr("Deadzone: %1%").arg(value);
 
     this->deadZoneGroupBox->setTitle(title);
 }
 
 void MainDialog::on_sensitivitySlider_valueChanged(int value)
 {
-    QString title;
-    title = "Sensitivity: ";
-    title += QString::number(value);
-    title += "%";
+    QString title = tr("Sensitivity: %1%").arg(value);
 
     this->sensitivityGroupBox->setTitle(title);
 }
 
 void MainDialog::on_triggerTresholdSlider_valueChanged(int value)
 {
-    QString title;
-    title = "Trigger treshold: ";
-    title += QString::number(value);
-    title += "%";
+    QString title = tr("Trigger treshold: %1%").arg(value);
 
     this->triggerTresholdGroupBox->setTitle(title);
 }
 
 void MainDialog::on_cButtonTresholdSlider_valueChanged(int value)
 {
-    QString title;
-    title = "C button treshold: ";
-    title += QString::number(value);
-    title += "%";
+    QString title = tr("C button treshold: %1%").arg(value);
 
     this->cButtonTresholdGroupBox->setTitle(title);
 }

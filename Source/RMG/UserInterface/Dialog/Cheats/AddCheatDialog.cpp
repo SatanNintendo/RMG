@@ -37,7 +37,7 @@ AddCheatDialog::~AddCheatDialog(void)
 void AddCheatDialog::SetCheat(CoreCheat cheat)
 {
     // change window title
-    this->setWindowTitle("Edit Cheat");
+    this->setWindowTitle(tr("Edit Cheat"));
 
     // fill in UI elements
     this->nameLineEdit->setText(QString::fromStdString(cheat.Name));

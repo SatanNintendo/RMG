@@ -27,7 +27,7 @@ CreateNetplaySessionWidget::CreateNetplaySessionWidget(QWidget* parent) : QStack
     this->addWidget(this->emptyWidget);
 
     // configure loading widget
-    this->loadingWidget = new Widget::NetplaySessionBrowserLoadingWidget(this, "Creating server");
+    this->loadingWidget = new Widget::NetplaySessionBrowserLoadingWidget(this, tr("Creating server"));
     this->loadingWidget->SetWidgetIndex(this->addWidget(this->loadingWidget));
     connect(this, &QStackedWidget::currentChanged, this->loadingWidget, &NetplaySessionBrowserLoadingWidget::on_NetplaySessionBrowserWidget_currentChanged);
 

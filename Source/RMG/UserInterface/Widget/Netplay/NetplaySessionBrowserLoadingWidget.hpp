@@ -22,7 +22,7 @@ class NetplaySessionBrowserLoadingWidget : public QWidget
 {
     Q_OBJECT
 public:
-    NetplaySessionBrowserLoadingWidget(QWidget* parent, QString loadingText = "Loading");
+    NetplaySessionBrowserLoadingWidget(QWidget* parent, QString loadingText = QString());
     ~NetplaySessionBrowserLoadingWidget();
 
     void SetWidgetIndex(int index);

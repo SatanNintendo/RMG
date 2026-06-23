@@ -150,8 +150,8 @@ void OptionsDialog::on_testRumbleButton_clicked()
     {
         QMessageBox msgBox(this);
         msgBox.setIcon(QMessageBox::Icon::Critical);
-        msgBox.setWindowTitle("Error");
-        msgBox.setText("Controller doesn't support rumble");
+        msgBox.setWindowTitle(tr("Error"));
+        msgBox.setText(tr("Controller doesn't support rumble"));
         msgBox.addButton(QMessageBox::Ok);
         msgBox.exec();
         return;

@@ -65,11 +65,11 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
     webSocket->sendTextMessage(QJsonDocument(json).toJson());
 
     QPushButton* startButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    startButton->setText("Start");
+    startButton->setText(tr("Start"));
     startButton->setEnabled(false);
 
     QPushButton* cheatsButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    cheatsButton->setText("Cheats");
+    cheatsButton->setText(tr("Cheats"));
     cheatsButton->setIcon(QIcon::fromTheme("code-box-line"));
 
     this->updateCheatsTreeWidget();

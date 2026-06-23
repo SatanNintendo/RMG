@@ -19,6 +19,12 @@ NetplaySessionBrowserLoadingWidget::NetplaySessionBrowserLoadingWidget(QWidget* 
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
     
+    // fall back to the localized default when no explicit text was supplied
+    if (loadingText.isEmpty())
+    {
+        loadingText = tr("Loading");
+    }
+
     this->baseLoadingText = loadingText;
     this->loadingLabel = new QLabel(this);
     this->loadingLabel->setText(this->baseLoadingText);

@@ -636,7 +636,7 @@ void MainWindow::showErrorMessage(QString text, QString details, bool force)
 
     QMessageBox* msgBox = new QMessageBox(this);
     msgBox->setIcon(QMessageBox::Icon::Critical);
-    msgBox->setWindowTitle("Error");
+    msgBox->setWindowTitle(tr("Error"));
     msgBox->setText(text);
     msgBox->setDetailedText(details);
     msgBox->addButton(QMessageBox::Ok);
@@ -1145,7 +1145,7 @@ QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
     QString filePath;
 
     // base text
-    saveStateSlotText = "Slot " + QString::number(slot);
+    saveStateSlotText = tr("Slot %1").arg(slot);
 
     // add date and time text when it isnt empty
     dateTimeText = this->getSaveStateSlotDateTimeText(action);

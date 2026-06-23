@@ -466,6 +466,101 @@ TRANSLATIONS = {
     "px": "пикс",
     "seconds": "секунд",
     "v0.2.2 Available": "v0.2.2 доступна",
+
+    # === Newly wrapped strings (tr() added in source) ===
+    # RomBrowserWidget.cpp — column headers
+    "Name": "Название",
+    "Internal Name": "Внутреннее имя",
+    "MD5": "MD5",
+    "Format": "Формат",
+    "File Name": "Имя файла",
+    "File Ext.": "Расширение",
+    "File Size": "Размер",
+    "I.D.": "ID",
+    "Region": "Регион",
+    "Game Format": "Формат игры",
+    "File Extension": "Расширение файла",
+    "Game I.D.": "ID игры",
+    "Game Region": "Регион игры",
+    # RomBrowserWidget.cpp — context menu actions
+    "Play Game": "Запустить игру",
+    "Play Game with Disk": "Запустить игру с диском",
+    "Play Game with State": "Запустить игру со сохранением",
+    "Refresh ROM List": "Обновить список ROM",
+    "Open ROM Directory": "Открыть каталог ROM",
+    "Change ROM Directory...": "Сменить каталог ROM...",
+    "ROM Information": "Информация о ROM",
+    "Edit Game Settings": "Изменить настройки игры",
+    "Edit Game Input Settings": "Изменить настройки ввода игры",
+    "Edit Cheats": "Изменить чит-коды",
+    "Reset Column Sizes": "Сбросить размеры столбцов",
+    "Show/Hide Columns": "Показать/скрыть столбцы",
+    "Set Cover Image...": "Установить обложку...",
+    "Remove Cover Image": "Удалить обложку",
+    "Play Game with Cartridge...": "Запустить игру с картриджем...",
+    "Play Game with Disk...": "Запустить игру с диском...",
+    "Change Cover Image...": "Изменить обложку...",
+    "Browse...": "Обзор...",
+    "Disk": "Диск",
+    "Cartridge": "Картридж",
+    "%1 MB": "%1 МБ",
+    "Slot %1 - ": "Слот %1 — ",
+    "Slot %1": "Слот %1",
+    # RomBrowserLoadingWidget.cpp
+    "Loading": "Загрузка",
+    # RomBrowserSearchWidget.cpp
+    "Search games...": "Поиск игр...",
+    "Close": "Закрыть",
+    # NetplaySessionBrowserDialog.cpp
+    "Join": "Подключиться",
+    "Calculating...": "Вычисление...",
+    # NetplaySessionBrowserWidget.cpp — column headers
+    "Game": "Игра",
+    "Game MD5": "MD5 игры",
+    "Password?": "Пароль?",
+    "No": "Нет",
+    # NetplaySessionBrowserLoadingWidget / CreateNetplaySessionWidget
+    "Creating server": "Создание сервера",
+    # CreateNetplaySessionDialog.cpp
+    "Create": "Создать",
+    # NetplaySessionDialog.cpp
+    "Start": "Начать",
+    "Cheats": "Чит-коды",
+    # AddCheatDialog.cpp
+    "Edit Cheat": "Изменить чит-код",
+    # UpdateDialog.cpp
+    "Update": "Обновить",
+    "%1 Available": "%1 доступна",
+    # RomInfoDialog.cpp — Disk/Cartridge already above
+    # KeybindButton.cpp
+    "Press key... [%1]": "Нажмите клавишу... [%1]",
+    # ControllerWidget.cpp — dynamic slider titles
+    "Deadzone: %1%": "Мёртвая зона: %1%",
+    "Error": "Ошибка",
+    "Are you sure you want to clear the main profile?": "Вы уверены, что хотите очистить основной профиль?",
+    "Controller doesn't support rumble": "Контроллер не поддерживает вибрацию",
+    # MainWindow.cpp
+    "Information": "Информация",
+    # RMG-Input-GCA MainDialog.cpp
+    "Sensitivity: %1%": "Чувствительность: %1%",
+    "Trigger treshold: %1%": "Порог триггера: %1%",
+    "C button treshold: %1%": "Порог кнопок C: %1%",
+    # RMG-Input-GCA MainDialog.ui — static defaults and labels
+    "Deadzone: 100%": "Мёртвая зона: 100%",
+    "Sensitivity: 100%": "Чувствительность: 100%",
+    "Trigger treshold: 100%": "Порог триггера: 100%",
+    "C button treshold: 100%": "Порог кнопок C: 100%",
+    "Buttons": "Кнопки",
+    "Swap Z and L": "Поменять местами Z и L",
+    "Rosalie's Mupen GUI - GameCube Adapter Input Plugin": "Rosalie's Mupen GUI — плагин ввода через адаптер GameCube",
+    # MainWindow.cpp — file dialog filters (already used tr() but missing from dict)
+    "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)": "ROM и диски N64 (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)",
+    "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)": "ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)",
+    "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)": "Образ диска N64DD (*.ndd *.d64 *.zip *.7z)",
+    "IPL ROMs (*.n64)": "ROM IPL (*.n64)",
+    "PIF ROMs (*.rom)": "ROM PIF (*.rom)",
+    # NetplaySessionBrowserDialog.cpp
+    "Open %1": "Открыть %1",
 }
 
 
@@ -493,7 +588,7 @@ def extract_ui_strings(ui_path):
 
 
 def extract_cpp_tr_strings(cpp_path):
-    """Extract tr("...") calls from a C++ file."""
+    """Extract tr("...") and QCoreApplication::translate("Ctx", "...") calls from a C++ file."""
     text = Path(cpp_path).read_text(encoding="utf-8", errors="replace")
 
     class_name = Path(cpp_path).stem
@@ -509,6 +604,16 @@ def extract_cpp_tr_strings(cpp_path):
         s = raw.replace('\\"', '"').replace('\\n', '\n').replace('\\t', '\t').replace('\\\\', '\\')
         results.append((class_name, s))
 
+    # Match QCoreApplication::translate("Context", "Source") (and
+    # QApplication::translate). The first quoted argument is the
+    # context, the second is the source string.
+    qapp_pattern = r'\bQ(?:CoreApplication|Application)::translate\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
+    for m in re.finditer(qapp_pattern, text):
+        ctx = m.group(1)
+        raw = m.group(2)
+        s = raw.replace('\\"', '"').replace('\\n', '\n').replace('\\t', '\t').replace('\\\\', '\\')
+        results.append((ctx, s))
+
     return results
 
 
@@ -518,6 +623,7 @@ def main():
     scan_dirs = [
         repo_root / "Source" / "RMG",
         repo_root / "Source" / "RMG-Input",
+        repo_root / "Source" / "RMG-Input-GCA",
         repo_root / "Source" / "RMG-Audio",
     ]
 

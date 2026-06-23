@@ -62,7 +62,7 @@ def extract_ui_strings(ui_path):
 
 
 def extract_cpp_tr_strings(cpp_path):
-    """Extract tr("...") calls from a C++ file."""
+    """Extract tr("...") and QCoreApplication::translate("Ctx", "...") calls from a C++ file."""
     text = Path(cpp_path).read_text(encoding="utf-8", errors="replace")
 
     # Determine the C++ class name for the context.
@@ -85,6 +85,18 @@ def extract_cpp_tr_strings(cpp_path):
         s = raw.replace('\\"', '"').replace('\\n', '\n').replace('\\t', '\t').replace('\\\\', '\\')
         results.append((class_name, s))
 
+    # Match QCoreApplication::translate("Context", "Source") (and
+    # QApplication::translate / QObject::tr with explicit context).
+    # The first quoted argument is the context, the second is the
+    # source string. We override the class-derived context with the
+    # explicit one supplied by the caller.
+    qapp_pattern = r'\bQ(?:CoreApplication|Application)::translate\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
+    for m in re.finditer(qapp_pattern, text):
+        ctx = m.group(1)
+        raw = m.group(2)
+        s = raw.replace('\\"', '"').replace('\\n', '\n').replace('\\t', '\t').replace('\\\\', '\\')
+        results.append((ctx, s))
+
     return results
 
 
@@ -99,6 +111,7 @@ def main():
     scan_dirs = [
         repo_root / "Source" / "RMG",
         repo_root / "Source" / "RMG-Input",
+        repo_root / "Source" / "RMG-Input-GCA",
         repo_root / "Source" / "RMG-Audio",
     ]
 

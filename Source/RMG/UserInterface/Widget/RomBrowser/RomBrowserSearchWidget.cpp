@@ -13,18 +13,18 @@ using namespace UserInterface::Widget;
 
 RomBrowserSearchWidget::RomBrowserSearchWidget(QWidget* parent) : QWidget(parent)
 {
-	// configure search line edit
-	this->lineEdit = new QLineEdit(this);
-	this->lineEdit->setPlaceholderText("Search games...");
+        // configure search line edit
+        this->lineEdit = new QLineEdit(this);
+        this->lineEdit->setPlaceholderText(tr("Search games..."));
     connect(this->lineEdit, &QLineEdit::textChanged, this, &RomBrowserSearchWidget::on_lineEdit_textChanged);
 
     // configure close button
-	this->closeButton = new QPushButton(this);
-    this->closeButton->setText("Close");
+        this->closeButton = new QPushButton(this);
+    this->closeButton->setText(tr("Close"));
     connect(this->closeButton, &QPushButton::clicked, this, &RomBrowserSearchWidget::on_closeButton_clicked);
 
     // configure layout
-	this->widgetLayout = new QHBoxLayout(this);
+        this->widgetLayout = new QHBoxLayout(this);
     this->widgetLayout->addWidget(this->lineEdit);
     this->widgetLayout->addWidget(this->closeButton);
     this->setLayout(this->widgetLayout);
@@ -36,22 +36,22 @@ RomBrowserSearchWidget::~RomBrowserSearchWidget(void)
 
 void RomBrowserSearchWidget::FocusSearchText(void)
 {
-	this->lineEdit->setFocus();
+        this->lineEdit->setFocus();
 }
 
 void RomBrowserSearchWidget::ClearSearchTerm(void)
 {
-	this->lineEdit->setText("");
+        this->lineEdit->setText("");
 }
 
 void RomBrowserSearchWidget::on_lineEdit_textChanged(const QString& text)
 {
-	emit this->SearchTextChanged(text);
+        emit this->SearchTextChanged(text);
 }
 
 void RomBrowserSearchWidget::on_closeButton_clicked(void)
 {
-	this->hide();
-	this->ClearSearchTerm();
+        this->hide();
+        this->ClearSearchTerm();
 }
 

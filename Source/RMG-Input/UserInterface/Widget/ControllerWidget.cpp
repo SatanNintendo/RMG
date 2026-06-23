@@ -546,7 +546,7 @@ void ControllerWidget::showErrorMessage(QString text, QString details)
 {
     QMessageBox msgBox(this);
     msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
+    msgBox.setWindowTitle(tr("Error"));
     msgBox.setText(text);
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
@@ -736,10 +736,7 @@ void ControllerWidget::GetCurrentInputDevice(InputDevice& device, bool ignoreDev
 
 void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
 {
-    QString title;
-    title = "Deadzone: ";
-    title += QString::number(value);
-    title += "%";
+    QString title = tr("Deadzone: %1%").arg(value);
 
     this->deadZoneGroupBox->setTitle(title);
     this->controllerImageWidget->SetDeadzone(value);
@@ -878,7 +875,7 @@ void ControllerWidget::on_removeProfileButton_clicked()
     {
         QMessageBox messageBox(this);
         messageBox.setIcon(QMessageBox::Icon::Warning);
-        messageBox.setText("Are you sure you want to clear the main profile?");
+        messageBox.setText(tr("Are you sure you want to clear the main profile?"));
         messageBox.addButton(QMessageBox::Yes);
         messageBox.addButton(QMessageBox::No);
         if (messageBox.exec() == QMessageBox::Yes)
