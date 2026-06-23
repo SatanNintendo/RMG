@@ -13,24 +13,52 @@ option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(NO_ASM           "Disables the usage of assembly in the mupen64plus-core" OFF)
 option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GPL compliant license" OFF)
 
+# Optional explicit version override.
+#
+# When set, this string is used verbatim as the RMG version (e.g. the
+# value returned by CoreGetVersion() and shown in the About dialog).
+# When not set, the version is derived from `git describe --tags --always`
+# (falling back to the contents of the VERSION file when git is
+# unavailable or the source tree is not a git checkout).
+#
+# This is useful for:
+#   - CI/release builds that want to pin a clean version string such
+#     as "0.9.0.1" instead of the default "v0.9.0-12-g0961683e" form
+#     produced by git describe when building from a non-tag commit.
+#   - Downstream package maintainers who want to stamp the build with
+#     their own versioning scheme.
+#
+# Usage:
+#   cmake -DRMG_VERSION="0.9.0.1" ...
+set(RMG_VERSION "" CACHE STRING "Explicit RMG version string (overrides git describe / VERSION file)")
+
 project(RMG)
 
-find_package(Git)
-if (GIT_FOUND)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --always
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        RESULT_VARIABLE GIT_RESULT
-        OUTPUT_VARIABLE GIT_VERSION
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-endif(GIT_FOUND)
-if (NOT GIT_FOUND OR NOT ${GIT_RESULT} EQUAL 0)
-    if (NOT ${GIT_RESULT} EQUAL 0)
-        message(WARNING "git failed to retrieve the current revision, falling back to VERSION file!")
+# Resolve the version string in priority order:
+#   1. -DRMG_VERSION=... supplied on the command line.
+#   2. `git describe --tags --always` (the historical default).
+#   3. Contents of the VERSION file at the repo root.
+if (RMG_VERSION)
+    set(GIT_VERSION "${RMG_VERSION}")
+    message(STATUS "RMG: using user-supplied version string: ${GIT_VERSION}")
+else()
+    find_package(Git)
+    if (GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --always
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+            RESULT_VARIABLE GIT_RESULT
+            OUTPUT_VARIABLE GIT_VERSION
+            ERROR_QUIET
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    endif(GIT_FOUND)
+    if (NOT GIT_FOUND OR NOT ${GIT_RESULT} EQUAL 0)
+        if (NOT ${GIT_RESULT} EQUAL 0)
+            message(WARNING "git failed to retrieve the current revision, falling back to VERSION file!")
+        endif()
+        file(STRINGS "VERSION" GIT_VERSION)
     endif()
-    file(STRINGS "VERSION" GIT_VERSION)
 endif()
 
 if (USE_CCACHE)
@@ -120,7 +148,7 @@ if (WIN32)
 
     add_custom_target(bundle_dependencies
         COMMAND bash "${CMAKE_SOURCE_DIR}/Source/Script/BundleDependencies.sh" "${CMAKE_SOURCE_DIR}/Bin/${CMAKE_BUILD_TYPE}/RMG.exe" "${CMAKE_SOURCE_DIR}/Bin/${CMAKE_BUILD_TYPE}"
-	)
+        )
 endif(WIN32)
 
 set(LIB_PERMISSIONS OWNER_READ OWNER_EXECUTE OWNER_WRITE
