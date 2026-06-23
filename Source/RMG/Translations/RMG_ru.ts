@@ -1496,14 +1496,7 @@ li.checked::marker { content: "\2612"; }
             <source>Full Screen</source>
             <translation>Полноэкранный режим</translation>
         </message>
-        <message>
-            <source>Fusion</source>
-            <translation>Fusion</translation>
-        </message>
-        <message>
-            <source>Fusion Dark</source>
-            <translation>Fusion (тёмная)</translation>
-        </message>
+
         <message>
             <source>GS Button</source>
             <translation>Кнопка GS</translation>
@@ -1608,10 +1601,7 @@ li.checked::marker { content: "\2612"; }
             <source>NTSC PIF ROM</source>
             <translation>NTSC PIF ROM</translation>
         </message>
-        <message>
-            <source>Native</source>
-            <translation>Системная</translation>
-        </message>
+
         <message>
             <source>Netplay</source>
             <translation>Сетевая игра</translation>
