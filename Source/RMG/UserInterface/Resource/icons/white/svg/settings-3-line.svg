@@ -1,1 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3.34 17a10.018 10.018 0 0 1-.978-2.326 3 3 0 0 0 .002-5.347A9.99 9.99 0 0 1 4.865 4.99a3 3 0 0 0 4.631-2.674 9.99 9.99 0 0 1 5.007.002 3 3 0 0 0 4.632 2.672c.579.59 1.093 1.261 1.525 2.01.433.749.757 1.53.978 2.326a3 3 0 0 0-.002 5.347 9.99 9.99 0 0 1-2.501 4.337 3 3 0 0 0-4.631 2.674 9.99 9.99 0 0 1-5.007-.002 3 3 0 0 0-4.632-2.672A10.018 10.018 0 0 1 3.34 17zm5.66.196a4.993 4.993 0 0 1 2.25 2.77c.499.047 1 .048 1.499.001A4.993 4.993 0 0 1 15 17.197a4.993 4.993 0 0 1 3.525-.565c.29-.408.54-.843.748-1.298A4.993 4.993 0 0 1 18 12c0-1.26.47-2.437 1.273-3.334a8.126 8.126 0 0 0-.75-1.298A4.993 4.993 0 0 1 15 6.804a4.993 4.993 0 0 1-2.25-2.77c-.499-.047-1-.048-1.499-.001A4.993 4.993 0 0 1 9 6.803a4.993 4.993 0 0 1-3.525.565 7.99 7.99 0 0 0-.748 1.298A4.993 4.993 0 0 1 6 12c0 1.26-.47 2.437-1.273 3.334a8.126 8.126 0 0 0 .75 1.298A4.993 4.993 0 0 1 9 17.196zM12 15a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill="#ffffff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#3a4a5a"/>
+      <stop offset="60%" stop-color="#1a2a38"/>
+      <stop offset="100%" stop-color="#080e14"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#80c8ff"/>
+      <stop offset="40%" stop-color="#2878c0"/>
+      <stop offset="100%" stop-color="#083058"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#020810" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+  <!-- Gear/Settings icon -->
+  <circle cx="32" cy="32" r="5" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <path d="M32 18 L33.5 22 L36 20.5 L37 23.5 L40 23 L39.5 26 L43 27.5 L41 30 L44 32 L41 34 L43 36.5 L39.5 38 L40 41 L37 40.5 L36 43.5 L33.5 42 L32 46 L30.5 42 L28 43.5 L27 40.5 L24 41 L24.5 38 L21 36.5 L23 34 L20 32 L23 30 L21 27.5 L24.5 26 L24 23 L27 23.5 L28 20.5 L30.5 22 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>

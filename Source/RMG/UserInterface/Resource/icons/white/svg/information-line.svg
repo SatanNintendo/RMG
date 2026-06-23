@@ -1,1 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z" fill="#ffffff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#4a5a6a"/>
+      <stop offset="60%" stop-color="#1a2a3a"/>
+      <stop offset="100%" stop-color="#080e14"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#70b8f8"/>
+      <stop offset="40%" stop-color="#2070c0"/>
+      <stop offset="100%" stop-color="#063060"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#000000" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+  
+    <circle cx="32" cy="32" r="14" fill="none" stroke="#fff" stroke-width="2.2"/>
+    <line x1="32" y1="28" x2="32" y2="40" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="32" cy="24" r="1.8" fill="#fff"/>
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>
