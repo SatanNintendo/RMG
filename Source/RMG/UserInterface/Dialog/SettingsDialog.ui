@@ -71,15 +71,24 @@
                     <property name="text">
                      <string>Native</string>
                     </property>
+                    <property name="userData">
+                     <string notr="true">Native</string>
+                    </property>
                    </item>
                    <item>
                     <property name="text">
                      <string>Fusion</string>
                     </property>
+                    <property name="userData">
+                     <string notr="true">Fusion</string>
+                    </property>
                    </item>
                    <item>
                     <property name="text">
                      <string>Fusion Dark</string>
+                    </property>
+                    <property name="userData">
+                     <string notr="true">Fusion Dark</string>
                     </property>
                    </item>
                   </widget>
