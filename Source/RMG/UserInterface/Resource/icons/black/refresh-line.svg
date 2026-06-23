@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#204a6a"/>
+      <stop offset="60%" stop-color="#0a2038"/>
+      <stop offset="100%" stop-color="#000e18"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#60c8ff"/>
+      <stop offset="40%" stop-color="#0080cc"/>
+      <stop offset="100%" stop-color="#003060"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#000000" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+  
+    <path d="M32 20 A12 12 0 1 1 21 27" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <polygon points="20,21 20,28 27,25" fill="#fff"/>
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>

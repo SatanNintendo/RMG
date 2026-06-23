@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#4a4a6a"/>
+      <stop offset="60%" stop-color="#20203a"/>
+      <stop offset="100%" stop-color="#080818"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#b080ff"/>
+      <stop offset="40%" stop-color="#7030d0"/>
+      <stop offset="100%" stop-color="#300060"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#04000e" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+  <!-- Camera icon -->
+  <rect x="18" y="25" width="28" height="20" rx="3" fill="none" stroke="#fff" stroke-width="2.2"/>
+  <circle cx="32" cy="34" r="6" fill="none" stroke="#fff" stroke-width="2.2"/>
+  <path d="M27 25 L29 20 L35 20 L37 25" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>
+  <circle cx="32" cy="34" r="2.5" fill="#fff"/>
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>
