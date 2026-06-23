@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#204a30"/>
+      <stop offset="60%" stop-color="#0a2818"/>
+      <stop offset="100%" stop-color="#001008"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#50e890"/>
+      <stop offset="40%" stop-color="#10a050"/>
+      <stop offset="100%" stop-color="#004020"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#001008" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+
+  <!-- IC Chip body -->
+  <rect x="22" y="22" width="20" height="20" rx="2" fill="#fff"/>
+  <!-- Chip label: RSP -->
+  <text x="32" y="34" text-anchor="middle" font-family="monospace" font-size="6" font-weight="bold" fill="#10a050">RSP</text>
+
+  <!-- Pins left -->
+  <line x1="18" y1="25.5" x2="22" y2="25.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="18" y1="29.5" x2="22" y2="29.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="18" y1="33.5" x2="22" y2="33.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="18" y1="37.5" x2="22" y2="37.5" stroke="#fff" stroke-width="1.8"/>
+
+  <!-- Pins right -->
+  <line x1="42" y1="25.5" x2="46" y2="25.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="42" y1="29.5" x2="46" y2="29.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="42" y1="33.5" x2="46" y2="33.5" stroke="#fff" stroke-width="1.8"/>
+  <line x1="42" y1="37.5" x2="46" y2="37.5" stroke="#fff" stroke-width="1.8"/>
+
+  <!-- Pins top -->
+  <line x1="25.5" y1="18" x2="25.5" y2="22" stroke="#fff" stroke-width="1.8"/>
+  <line x1="29.5" y1="18" x2="29.5" y2="22" stroke="#fff" stroke-width="1.8"/>
+  <line x1="33.5" y1="18" x2="33.5" y2="22" stroke="#fff" stroke-width="1.8"/>
+  <line x1="37.5" y1="18" x2="37.5" y2="22" stroke="#fff" stroke-width="1.8"/>
+
+  <!-- Pins bottom -->
+  <line x1="25.5" y1="42" x2="25.5" y2="46" stroke="#fff" stroke-width="1.8"/>
+  <line x1="29.5" y1="42" x2="29.5" y2="46" stroke="#fff" stroke-width="1.8"/>
+  <line x1="33.5" y1="42" x2="33.5" y2="46" stroke="#fff" stroke-width="1.8"/>
+  <line x1="37.5" y1="42" x2="37.5" y2="46" stroke="#fff" stroke-width="1.8"/>
+
+  <!-- Pin 1 marker (notch) -->
+  <circle cx="24" cy="24" r="1.2" fill="#10a050"/>
+
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>

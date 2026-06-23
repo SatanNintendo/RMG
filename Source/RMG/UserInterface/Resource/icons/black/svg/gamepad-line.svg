@@ -1,1 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M17 4a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6H7a6 6 0 0 1-6-6v-4a6 6 0 0 1 6-6h10zm0 2H7a4 4 0 0 0-3.995 3.8L3 10v4a4 4 0 0 0 3.8 3.995L7 18h10a4 4 0 0 0 3.995-3.8L21 14v-4a4 4 0 0 0-3.8-3.995L17 6zm-7 3v2h2v2H9.999L10 15H8l-.001-2H6v-2h2V9h2zm8 4v2h-2v-2h2zm-2-4v2h-2V9h2z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="body" cx="50%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#5a3a6a"/>
+      <stop offset="60%" stop-color="#2a1038"/>
+      <stop offset="100%" stop-color="#100018"/>
+    </radialGradient>
+    <radialGradient id="face" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#d080ff"/>
+      <stop offset="40%" stop-color="#8020c0"/>
+      <stop offset="100%" stop-color="#380050"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#000" opacity="0.4" filter="url(#shadow)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#body)" stroke="#060010" stroke-width="1"/>
+  <circle cx="32" cy="32" r="24" fill="url(#face)"/>
+
+  <!-- N64 Controller shape - iconic 3-pronged trident -->
+  <!-- Left prong -->
+  <rect x="14" y="28" width="7" height="14" rx="3" fill="#fff"/>
+  <!-- Center prong -->
+  <rect x="28" y="24" width="8" height="18" rx="3" fill="#fff"/>
+  <!-- Right prong -->
+  <rect x="43" y="28" width="7" height="14" rx="3" fill="#fff"/>
+  <!-- Body connecting bar -->
+  <rect x="14" y="28" width="36" height="7" rx="2" fill="#fff"/>
+
+  <!-- D-pad on left prong -->
+  <rect x="15.5" y="32" width="4" height="2" rx="0.5" fill="url(#face)"/>
+  <rect x="16.5" y="31" width="2" height="4" rx="0.5" fill="url(#face)"/>
+
+  <!-- Analog stick in center top -->
+  <circle cx="32" cy="27" r="2.5" fill="url(#face)"/>
+
+  <!-- A button on right prong (red) -->
+  <circle cx="46.5" cy="33" r="2" fill="#ff4040"/>
+  <!-- B button (green) -->
+  <circle cx="43.5" cy="36" r="1.5" fill="#40cc40"/>
+
+  <!-- Z trigger hint at bottom center -->
+  <rect x="30" y="41" width="4" height="2" rx="1" fill="url(#face)"/>
+
+  <ellipse cx="32" cy="22" rx="16" ry="10" fill="url(#gloss)"/>
+</svg>
