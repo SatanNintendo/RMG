@@ -454,17 +454,15 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
     while (stylesDirectoryIter.hasNext())
     {
         QFileInfo fileInfo(stylesDirectoryIter.next());
-        this->themeComboBox->addItem(fileInfo.fileName(), fileInfo.fileName());
+        this->themeComboBox->addItem(fileInfo.fileName());
     }
 
 #ifdef _WIN32
-    this->themeComboBox->insertItem(1, "Windows Vista", QString("Windows Vista"));
+    this->themeComboBox->insertItem(1,"Windows Vista");
 #endif
 
-    // select currently chosen theme in UI using userData (locale-independent key)
-    const QString storedTheme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme));
-    const int themeIndex = this->themeComboBox->findData(storedTheme);
-    this->themeComboBox->setCurrentIndex(themeIndex >= 0 ? themeIndex : 0);
+    // select currently chosen theme in UI
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
 
     // Populate the language combo box from the embedded :/i18n resource
@@ -754,9 +752,7 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
 
 void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
 {
-    const QString defaultTheme = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme));
-    const int defaultThemeIndex = this->themeComboBox->findData(defaultTheme);
-    this->themeComboBox->setCurrentIndex(defaultThemeIndex >= 0 ? defaultThemeIndex : 0);
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
     // The default GUI_Language value is an empty string, which maps to
     // index 0 ("System Default") in the combo box.
@@ -998,7 +994,7 @@ void SettingsDialog::saveHotkeySettings(void)
 
 void SettingsDialog::saveInterfaceGeneralSettings(void)
 {
-    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentData().toString().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
     CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
 
     // Persist the language choice. Index 0 ("System Default") has empty
@@ -1522,17 +1518,17 @@ void SettingsDialog::on_changeSaveSramDirButton_clicked(void)
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->japaneseIPLRomLineEdit, tr("Open Japanese Retail 64DD IPL"), tr("IPL ROMs (*.n64)"));
+    this->chooseFile(this->japaneseIPLRomLineEdit, tr("Open Japanese Retail 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->americanIPLRomLineEdit, tr("Open American Retail 64DD IPL"), tr("IPL ROMs (*.n64)"));
+    this->chooseFile(this->americanIPLRomLineEdit, tr("Open American Retail 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), tr("IPL ROMs (*.n64)"));
+    this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_clearJapaneseIPLRomPathButton_clicked(void)
@@ -1708,10 +1704,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), tr("PIF ROMs (*.rom)"), { "5C124E7948ADA85DA603A522782940D0", "4921D5F2165DEE6E2496F4388C4C81DA" });
+    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), "PIF ROMs (*.rom)", { "5C124E7948ADA85DA603A522782940D0", "4921D5F2165DEE6E2496F4388C4C81DA" });
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), tr("PIF ROMs (*.rom)"), { "D4232DC935CAD0650AC2664D52281F3A", "2B6EEC586FAA43F3462333B844834554" });
+    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), "PIF ROMs (*.rom)", { "D4232DC935CAD0650AC2664D52281F3A", "2B6EEC586FAA43F3462333B844834554" });
 }
