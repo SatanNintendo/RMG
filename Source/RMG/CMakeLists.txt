@@ -4,14 +4,6 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-# Explicitly tell AUTOUIC where to find .ui files.
-# Without this, parallel builds can cause a race condition where
-# the generated ui_SettingsDialog.h is written under a wrong name
-# (e.g. ui_RomInfoDialog.h), breaking compilation.
-set(CMAKE_AUTOUIC_SEARCH_PATHS
-    "${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/Dialog"
-    "${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/Dialog/Netplay"
-)
 
 # Qt 6.2 is required because we use qt6_add_translations() (added in 6.2)
 # and QLocale::Territory / QLocale::AnyTerritory (also introduced in 6.2).
