@@ -4,4 +4,6 @@ Comment=Black Icon Theme
 
 [svg]
 Size=64
-Type=Fixed
+Type=Scalable
+MinSize=64
+MaxSize=1024
