@@ -83,6 +83,9 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     this->viGammaDitherCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_GAMMADITHER));
     this->nativeTextRectsCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_NATIVETEXTRECT));
     this->verticalSyncCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_VSYNC));
+    this->integerScalingCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_INTEGER_SCALING));
+    this->bilinearFilterCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_BILINEAR_FILTER));
+    this->lowLatencyCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_LOW_LATENCY));
 }
 
 MainDialog::~MainDialog()
@@ -152,6 +155,9 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         int viGammaDitherValue = this->viGammaDitherCheckBox->isChecked() ? 1 : 0;
         int nativeTextRectsValue = this->nativeTextRectsCheckBox->isChecked() ? 1 : 0;
         int verticalSyncValue = this->verticalSyncCheckBox->isChecked() ? 1 : 0;
+        int integerScalingValue = this->integerScalingCheckBox->isChecked() ? 1 : 0;
+        int bilinearFilterValue = this->bilinearFilterCheckBox->isChecked() ? 1 : 0;
+        int lowLatencyValue = this->lowLatencyCheckBox->isChecked() ? 1 : 0;
 
         ConfigSetParameter(configVideoParallel, KEY_SSDITHER, M64TYPE_BOOL, &superSampledDitherValue);
         ConfigSetParameter(configVideoParallel, KEY_AA, M64TYPE_BOOL, &viAaValue);
@@ -164,6 +170,9 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         ConfigSetParameter(configVideoParallel, KEY_GAMMADITHER, M64TYPE_BOOL, &viGammaDitherValue);
         ConfigSetParameter(configVideoParallel, KEY_NATIVETEXTRECT, M64TYPE_BOOL, &nativeTextRectsValue);
         ConfigSetParameter(configVideoParallel, KEY_VSYNC, M64TYPE_BOOL, &verticalSyncValue);
+        ConfigSetParameter(configVideoParallel, KEY_INTEGER_SCALING, M64TYPE_BOOL, &integerScalingValue);
+        ConfigSetParameter(configVideoParallel, KEY_BILINEAR_FILTER, M64TYPE_BOOL, &bilinearFilterValue);
+        ConfigSetParameter(configVideoParallel, KEY_LOW_LATENCY, M64TYPE_BOOL, &lowLatencyValue);
 
         ConfigSaveSection("Video-Parallel");
     }
@@ -191,5 +200,8 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         this->viGammaDitherCheckBox->setChecked(true);
         this->nativeTextRectsCheckBox->setChecked(true);
         this->verticalSyncCheckBox->setChecked(false);
+        this->integerScalingCheckBox->setChecked(false);
+        this->bilinearFilterCheckBox->setChecked(false);
+        this->lowLatencyCheckBox->setChecked(false);
     }
 }

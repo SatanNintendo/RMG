@@ -321,6 +321,30 @@
               </widget>
              </item>
              <item>
+              <widget class="QCheckBox" name="integerScalingCheckBox">
+               <property name="text">
+                <string>Integer scaling</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="bilinearFilterCheckBox">
+               <property name="text">
+                <string>Bilinear filter</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="lowLatencyCheckBox">
+               <property name="toolTip">
+                <string>Reduces input lag by ~1 frame using exclusive fullscreen and a 2-image swapchain. NVIDIA/AMD only (not Intel). On Windows also set GRANITE_EXCLUSIVE_FULL_SCREEN=1 environment variable before launching the emulator.</string>
+               </property>
+               <property name="text">
+                <string>Low latency mode (exclusive fullscreen)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
