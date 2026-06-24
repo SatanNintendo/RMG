@@ -1351,8 +1351,13 @@ Vulkan::ImageHandle VideoInterface::scanout(VkImageLayout target_layout, const S
 		divot_image = std::move(aa_image);
 
 	// Scale pass
-	bool is_final_pass = !downscale_steps || scaling_factor <= 1;
+	// Fix from Luna fork: properly track skip_downscale and skip_deinterlace
+	// separately to avoid skipping the deinterlace pass when downscaling
+	// is disabled but upscale deinterlacing is enabled.
+	bool skip_downscale = !downscale_steps || scaling_factor <= 1;
 	bool serrate = (regs.status & VI_CONTROL_SERRATE_BIT) != 0;
+	bool skip_deinterlace = !serrate || !options.upscale_deinterlacing;
+	bool is_final_pass = skip_downscale && skip_deinterlace;
 
 	auto scale_image = scale_stage(*cmd, divot_image.get(),
 	                               regs, lines,
@@ -1361,13 +1366,13 @@ Vulkan::ImageHandle VideoInterface::scanout(VkImageLayout target_layout, const S
 
 	auto src_layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	if (!is_final_pass && scale_image)
+	if (!skip_downscale && scale_image)
 	{
 		cmd->image_barrier(*scale_image, src_layout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		                   layout_to_stage(src_layout), layout_to_access(src_layout),
 		                   VK_PIPELINE_STAGE_2_BLIT_BIT, VK_ACCESS_TRANSFER_READ_BIT);
 
-		is_final_pass = !serrate || !options.upscale_deinterlacing;
+		is_final_pass = skip_deinterlace;
 
 		scale_image = downscale_stage(*cmd, *scale_image, scaling_factor, downscale_steps,
 									  options, is_final_pass);
@@ -1375,7 +1380,7 @@ Vulkan::ImageHandle VideoInterface::scanout(VkImageLayout target_layout, const S
 		src_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	}
 
-	if (!is_final_pass && scale_image)
+	if (!skip_deinterlace && scale_image)
 	{
 		cmd->image_barrier(*scale_image, src_layout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		                   layout_to_stage(src_layout), layout_to_access(src_layout),
