@@ -460,7 +460,6 @@ void MainWindow::configureTheme(QApplication* app)
     QIcon::setFallbackThemeName(fallbackThemeName);
 
     // Apply glossy toolbar style with press effect
-    this->toolBar->setIconSize(QSize(48, 48));
     QFile toolbarQss(":/Resource/toolbar.qss");
     if (toolbarQss.open(QIODevice::ReadOnly))
     {
