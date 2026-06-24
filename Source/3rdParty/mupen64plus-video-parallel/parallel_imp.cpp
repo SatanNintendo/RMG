@@ -31,6 +31,11 @@ bool vk_native_tex_rect;
 bool vk_divot_filter, vk_gamma_dither;
 bool vk_vi_aa, vk_vi_scale, vk_dither_filter;
 bool vk_interlacing;
+bool vk_synchronous;
+bool vk_integer_scaling;
+bool vk_bilinear_filter;
+bool vk_low_latency;
+bool skip_swap_clear;
 
 static const unsigned cmd_len_lut[64] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 4, 6, 12, 14, 12, 14, 20, 22,
@@ -156,19 +161,40 @@ static void calculate_viewport(float* x, float* y, float* width, float* height)
     *height = window_height;
     *x = 0;
     *y = 0;
-    int32_t hw = display_height * *width;
-    int32_t wh = display_width * *height;
 
-    // add letterboxes or pillarboxes if the window has a different aspect ratio
-    // than the current display mode
-    if (hw > wh) {
-        int32_t w_max = wh / display_height;
-        *x += (*width - w_max) / 2;
-        *width = w_max;
-    } else if (hw < wh) {
-        int32_t h_max = hw / display_width;
-        *y += (*height - h_max) / 2;
-        *height = h_max;
+    if (vk_integer_scaling)
+    {
+        // Integer (pixel-perfect) scaling:
+        // Find the largest integer multiplier that fits inside the window.
+        int scale_x = int(*width)  / display_width;
+        int scale_y = int(*height) / display_height;
+        int scale   = scale_x < scale_y ? scale_x : scale_y;
+        if (scale < 1) scale = 1;  // never go below 1x
+
+        int scaled_w = display_width  * scale;
+        int scaled_h = display_height * scale;
+
+        *x      = (int(*width)  - scaled_w) / 2;
+        *y      = (int(*height) - scaled_h) / 2;
+        *width  = scaled_w;
+        *height = scaled_h;
+    }
+    else
+    {
+        int32_t hw = display_height * *width;
+        int32_t wh = display_width * *height;
+
+        // add letterboxes or pillarboxes if the window has a different aspect ratio
+        // than the current display mode
+        if (hw > wh) {
+            int32_t w_max = wh / display_height;
+            *x += (*width - w_max) / 2;
+            *width = w_max;
+        } else if (hw < wh) {
+            int32_t h_max = hw / display_width;
+            *y += (*height - h_max) / 2;
+            *height = h_max;
+        }
     }
 }
 
@@ -225,7 +251,9 @@ static void render_frame(Vulkan::Device &device)
 			cmd->set_depth_test(false, false);
 			cmd->set_cull_mode(VK_CULL_MODE_NONE);
 
-			cmd->set_texture(0, 0, image->get_view(), Vulkan::StockSampler::NearestClamp);
+			cmd->set_texture(0, 0, image->get_view(),
+		                 vk_bilinear_filter ? Vulkan::StockSampler::LinearClamp
+		                                   : Vulkan::StockSampler::NearestClamp);
 			cmd->set_viewport(vp);
 
 			// The vertices are constants in the shader.
@@ -239,25 +267,55 @@ static void render_frame(Vulkan::Device &device)
 
 void vk_rasterize()
 {
-	processor->set_vi_register(RDP::VIRegister::Control, *GET_GFX_INFO(VI_STATUS_REG));
-	processor->set_vi_register(RDP::VIRegister::Origin, *GET_GFX_INFO(VI_ORIGIN_REG));
-	processor->set_vi_register(RDP::VIRegister::Width, *GET_GFX_INFO(VI_WIDTH_REG));
-	processor->set_vi_register(RDP::VIRegister::Intr, *GET_GFX_INFO(VI_INTR_REG));
-	processor->set_vi_register(RDP::VIRegister::VCurrentLine, *GET_GFX_INFO(VI_V_CURRENT_LINE_REG));
-	processor->set_vi_register(RDP::VIRegister::Timing, *GET_GFX_INFO(VI_V_BURST_REG));
-	processor->set_vi_register(RDP::VIRegister::VSync, *GET_GFX_INFO(VI_V_SYNC_REG));
-	processor->set_vi_register(RDP::VIRegister::HSync, *GET_GFX_INFO(VI_H_SYNC_REG));
-	processor->set_vi_register(RDP::VIRegister::Leap, *GET_GFX_INFO(VI_LEAP_REG));
-	processor->set_vi_register(RDP::VIRegister::HStart, *GET_GFX_INFO(VI_H_START_REG));
-	processor->set_vi_register(RDP::VIRegister::VStart, *GET_GFX_INFO(VI_V_START_REG));
-	processor->set_vi_register(RDP::VIRegister::VBurst, *GET_GFX_INFO(VI_V_BURST_REG));
-	processor->set_vi_register(RDP::VIRegister::XScale, *GET_GFX_INFO(VI_X_SCALE_REG));
-	processor->set_vi_register(RDP::VIRegister::YScale, *GET_GFX_INFO(VI_Y_SCALE_REG));
+	// Snapshot all VI registers atomically (ported from Luna fork).
+	// This prevents reading inconsistent values if registers
+	// change between individual reads during rendering.
+	VIRegsSample regs;
+	regs.VI_STATUS        = *GET_GFX_INFO(VI_STATUS_REG);
+	regs.VI_ORIGIN        = *GET_GFX_INFO(VI_ORIGIN_REG);
+	regs.VI_WIDTH         = *GET_GFX_INFO(VI_WIDTH_REG);
+	regs.VI_INTR          = *GET_GFX_INFO(VI_INTR_REG);
+	regs.VI_V_CURRENT_LINE = *GET_GFX_INFO(VI_V_CURRENT_LINE_REG);
+	regs.VI_TIMING        = *GET_GFX_INFO(VI_V_BURST_REG);
+	regs.VI_V_SYNC        = *GET_GFX_INFO(VI_V_SYNC_REG);
+	regs.VI_H_SYNC        = *GET_GFX_INFO(VI_H_SYNC_REG);
+	regs.VI_LEAP          = *GET_GFX_INFO(VI_LEAP_REG);
+	regs.VI_H_START       = *GET_GFX_INFO(VI_H_START_REG);
+	regs.VI_V_START       = *GET_GFX_INFO(VI_V_START_REG);
+	regs.VI_V_BURST       = *GET_GFX_INFO(VI_V_BURST_REG);
+	regs.VI_X_SCALE       = *GET_GFX_INFO(VI_X_SCALE_REG);
+	regs.VI_Y_SCALE       = *GET_GFX_INFO(VI_Y_SCALE_REG);
 
+	processor->set_vi_register(RDP::VIRegister::Control, regs.VI_STATUS);
+	processor->set_vi_register(RDP::VIRegister::Origin, regs.VI_ORIGIN);
+	processor->set_vi_register(RDP::VIRegister::Width, regs.VI_WIDTH);
+	processor->set_vi_register(RDP::VIRegister::Intr, regs.VI_INTR);
+	processor->set_vi_register(RDP::VIRegister::VCurrentLine, regs.VI_V_CURRENT_LINE);
+	processor->set_vi_register(RDP::VIRegister::Timing, regs.VI_TIMING);
+	processor->set_vi_register(RDP::VIRegister::VSync, regs.VI_V_SYNC);
+	processor->set_vi_register(RDP::VIRegister::HSync, regs.VI_H_SYNC);
+	processor->set_vi_register(RDP::VIRegister::Leap, regs.VI_LEAP);
+	processor->set_vi_register(RDP::VIRegister::HStart, regs.VI_H_START);
+	processor->set_vi_register(RDP::VIRegister::VStart, regs.VI_V_START);
+	processor->set_vi_register(RDP::VIRegister::VBurst, regs.VI_V_BURST);
+	processor->set_vi_register(RDP::VIRegister::XScale, regs.VI_X_SCALE);
+	processor->set_vi_register(RDP::VIRegister::YScale, regs.VI_Y_SCALE);
+
+	// Update quirks every frame (ported from Luna fork).
+	// This allows configuration changes to take effect immediately
+	// without requiring a ROM restart.
 	RDP::Quirks quirks;
 	quirks.set_native_texture_lod(vk_native_texture_lod);
 	quirks.set_native_resolution_tex_rect(vk_native_tex_rect);
 	processor->set_quirks(quirks);
+
+	// Check if VI is outputting a blank frame.
+	bool is_blank = (regs.VI_STATUS & 0x3) == 0;
+	if (is_blank && skip_swap_clear)
+	{
+		// Some games (e.g. S.F. Rush) strobe blank frames; skip swap to avoid flicker.
+		return;
+	}
 
 	auto &device = wsi->get_device();
 	render_frame(device);
@@ -446,7 +504,9 @@ void vk_process_commands()
 			uint32_t height = viCalculateVerticalHeight(*GET_GFX_INFO(VI_V_START_REG), *GET_GFX_INFO(VI_Y_SCALE_REG));
 			*GET_GFX_INFO(DPC_CLOCK_REG) = width * height * 2;
 
-			processor->wait_for_timeline(processor->signal_timeline());
+			// Synchronous mode: wait for RDP to finish before CPU continues (ported from Luna fork).
+			if (vk_synchronous)
+				processor->wait_for_timeline(processor->signal_timeline());
 
 			*gfx.MI_INTR_REG |= DP_INTERRUPT;
 			*GET_GFX_INFO(DPC_STATUS_REG) &= ~(DP_STATUS_PIPE_BUSY | DP_STATUS_START_GCLK);
@@ -506,6 +566,10 @@ bool vk_init()
 		vk_destroy();
 		return false;
 	}
+
+	// Low latency mode: use 2 frame contexts instead of 3 to reduce input lag by ~1 frame.
+	// Only recommended for NVIDIA/AMD (not Intel). On Windows, also set GRANITE_EXCLUSIVE_FULL_SCREEN=1.
+	wsi->get_device().init_frame_contexts(vk_low_latency ? 2 : 3);
 
 	uintptr_t aligned_rdram = reinterpret_cast<uintptr_t>(gfx.RDRAM);
 	uintptr_t offset = 0;

@@ -195,6 +195,10 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultInt(configVideoParallel, KEY_DOWNSCALE, 0, "Downsampling factor, downscales output after VI, equivalent to SSAA. 0=disabled, 1=1/2, 2=1/4, 3=1/8");
     ConfigSetDefaultBool(configVideoParallel, KEY_NATIVETEXTLOD, 0, "Use native texture LOD computation when upscaling, effectively a LOD bias");
     ConfigSetDefaultBool(configVideoParallel, KEY_NATIVETEXTRECT, 1, "Native resolution TEX_RECT. TEX_RECT primitives should generally be rendered at native resolution to avoid seams");
+    ConfigSetDefaultBool(configVideoParallel, KEY_SYNCHRONOUS, 1, "Enable synchronizing RDP and CPU");
+    ConfigSetDefaultBool(configVideoParallel, KEY_INTEGER_SCALING, 0, "Integer (pixel-perfect) scaling. Scales the image by the largest integer factor that fits the window.");
+    ConfigSetDefaultBool(configVideoParallel, KEY_BILINEAR_FILTER, 0, "Bilinear filtering for final output. Smooths the image like Angrylion.");
+    ConfigSetDefaultBool(configVideoParallel, KEY_LOW_LATENCY, 0, "Low latency mode: reduces input lag by ~1 frame using exclusive fullscreen and 2-image swapchain. NVIDIA/AMD only, not Intel.");
     ConfigSaveSection("Video-Parallel");
 
     // set logging interface
@@ -317,6 +321,22 @@ EXPORT int CALL RomOpen(void)
     vk_overscan_bottom = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPBOTTOM);
     vk_overscan_enable = ConfigGetParamBool(configVideoParallel, KEY_OVERSCANCROPENABLE);
     vk_vertical_stretch = ConfigGetParamInt(configVideoParallel, KEY_VERTICAL_STRETCH);
+    vk_synchronous = ConfigGetParamBool(configVideoParallel, KEY_SYNCHRONOUS);
+    vk_integer_scaling = ConfigGetParamBool(configVideoParallel, KEY_INTEGER_SCALING);
+    vk_bilinear_filter = ConfigGetParamBool(configVideoParallel, KEY_BILINEAR_FILTER);
+    vk_low_latency = ConfigGetParamBool(configVideoParallel, KEY_LOW_LATENCY);
+
+    // skip_swap_clear: workaround for games (e.g. S.F. Rush) that strobe blank VI frames.
+    char romname[21];
+    for (int i = 0; i < 20; ++i)
+        romname[i] = gfx.HEADER[(32 + i) ^ 3];
+    romname[20] = 0;
+    if (strstr(romname, (const char *)"S.F. RUSH") != NULL)
+        skip_swap_clear = true;
+    else
+        skip_swap_clear = false;
+
+    warn_hle = false;
 
     m64p_error netplay_init = ConfigReceiveNetplayConfig(NULL, 0);
     if (netplay_init != M64ERR_NOT_INIT)
