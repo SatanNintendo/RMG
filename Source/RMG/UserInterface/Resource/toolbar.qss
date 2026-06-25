@@ -74,7 +74,6 @@ QToolButton:disabled {
 
 /* Text label under icon */
 QToolButton {
-    font-size: 10px;
     color: #cccccc;
     text-align: center;
 }
