@@ -1,38 +1,7 @@
-/* RMG Toolbar - Glass Buttons */
-
-/* NO background set on QToolBar - inherits from app theme (light or dark) */
-
-QToolBar::separator {
-    width: 1px;
-    background: palette(mid);
-    margin: 6px 4px;
-}
-
-QToolButton {
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    padding: 3px 4px 5px 4px;
-}
-
-QToolButton:pressed {
-    padding: 5px 3px 3px 5px;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-}
-
-QToolButton:hover:!pressed {
-    background: rgba(128, 128, 128, 0.15);
-    border: 1px solid rgba(128, 128, 128, 0.3);
-    border-radius: 6px;
-}
-
-QToolButton:checked {
-    background: rgba(255, 200, 0, 0.18);
-    border: 1px solid rgba(255, 200, 0, 0.4);
-    border-radius: 6px;
-}
-
-QToolButton:disabled {
-    opacity: 0.4;
-}
+/* RMG Toolbar */
+QToolBar::separator { width:1px; background:palette(mid); margin:6px 4px; }
+QToolButton { background:transparent; border:none; border-radius:6px; padding:3px 4px 5px 4px; }
+QToolButton:pressed { padding:5px 3px 3px 5px; background:rgba(0,0,0,0.15); border-radius:6px; }
+QToolButton:hover:!pressed { background:rgba(128,128,128,0.12); border:1px solid rgba(128,128,128,0.25); border-radius:6px; }
+QToolButton:checked { background:rgba(255,200,0,0.18); border:1px solid rgba(255,200,0,0.4); border-radius:6px; }
+QToolButton:disabled { opacity:0.4; }
