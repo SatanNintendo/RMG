@@ -218,7 +218,7 @@
   </action>
   <action name="action_System_OpenCombo">
    <property name="icon">
-    <iconset theme="file-line"/>
+    <iconset theme="file-line-combo"/>
    </property>
    <property name="text">
     <string>Start Co&amp;mbo</string>

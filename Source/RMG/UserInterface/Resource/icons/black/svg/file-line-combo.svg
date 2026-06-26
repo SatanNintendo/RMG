@@ -1,28 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <!-- Soft drop shadow under button -->
-    <filter id="ds" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/>
-      <feOffset dx="0" dy="1.8"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+    <filter id="ds" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
       <feMerge>
         <feMergeNode/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-
-    <!-- Soft blur for gloss -->
-    <filter id="gb" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.6"/>
+    <filter id="gb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5"/>
     </filter>
-
-    <!-- Sharper blur for specular spot -->
-    <filter id="sb" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="sb" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="0.6"/>
     </filter>
-
-    <!-- Symbol drop shadow -->
-    <filter id="ss" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="ss" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="0.5"/>
       <feOffset dx="0" dy="0.7"/>
       <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
@@ -31,8 +24,6 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-
-    <!-- Silver metallic rim: linear gradient bright top -> dark bottom -->
     <linearGradient id="cr" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%"  stop-color="#ffffff"/>
       <stop offset="20%" stop-color="#f4f4f4"/>
@@ -41,100 +32,77 @@
       <stop offset="80%" stop-color="#4a4a4a"/>
       <stop offset="100%" stop-color="#a8a8a8"/>
     </linearGradient>
-
-    <!-- Bright top arc reflection on rim -->
     <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%"  stop-color="#ffffff" stop-opacity="1"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
-
-    <!-- Dark bottom arc reflection on rim -->
     <linearGradient id="cb" x1="0" y1="1" x2="0" y2="0">
       <stop offset="0%"  stop-color="#1a1a1a" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0"/>
     </linearGradient>
-
-    <!-- Colored disc: vertical gradient (light top -> main -> dark bottom) -->
     <linearGradient id="cd" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%"  stop-color="#4dd5dd"/>
       <stop offset="50%" stop-color="#0a9aa2"/>
       <stop offset="100%" stop-color="#043a3e"/>
     </linearGradient>
-
-    <!-- Radial overlay for sphere-like 3D curvature -->
     <radialGradient id="cs" cx="0.35" cy="0.3" r="0.85">
       <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.3"/>
       <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0.4"/>
     </radialGradient>
-
-    <!-- Clip path so gloss stays inside the colored disc -->
     <clipPath id="dc">
       <circle cx="32" cy="32" r="26"/>
     </clipPath>
-
-    <!-- Clip path for chrome rim ring (~3.5px wide band) -->
     <clipPath id="rc">
       <path d="M32,3 A29,29 0 1,1 32,61 A29,29 0 1,1 32,3 Z M32,6.5 A25.5,25.5 0 1,0 32,57.5 A25.5,25.5 0 1,0 32,6.5 Z" fill-rule="evenodd"/>
     </clipPath>
   </defs>
 
-  <!-- 1. Drop shadow under button -->
-  <ellipse cx="32" cy="34" rx="28" ry="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
-
-  <!-- 2. Silver metallic rim (~3.5px wide band) -->
+  <circle cx="32" cy="33.5" r="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
   <circle cx="32" cy="32" r="29" fill="url(#cr)"/>
-  <!-- Chrome specular highlights on rim -->
   <g clip-path="url(#rc)">
-    <!-- Bright top arc reflection -->
     <ellipse cx="32" cy="3.5" rx="28" ry="10" fill="url(#ct)" opacity="1"/>
-    <!-- Dark bottom arc reflection -->
     <ellipse cx="32" cy="60.5" rx="28" ry="8" fill="url(#cb)" opacity="0.98"/>
-    <!-- Sharp horizontal bright streak at top of rim -->
     <ellipse cx="32" cy="4.5" rx="24" ry="1.6" fill="#ffffff" opacity="1"/>
-    <!-- Sharp horizontal dark streak at bottom of rim -->
     <ellipse cx="32" cy="59.5" rx="24" ry="1.3" fill="#000000" opacity="0.7"/>
-    <!-- Subtle horizontal highlight in middle of rim -->
     <ellipse cx="32" cy="32" rx="29" ry="0.8" fill="#ffffff" opacity="0.3"/>
   </g>
-
-  <!-- 3. Sharp dark ring between rim and disc (clear boundary) -->
   <circle cx="32" cy="32" r="26.2" fill="none" stroke="#0a0a0a" stroke-width="0.7" opacity="0.9"/>
-  <!-- Inner highlight ring (top edge of colored disc, "embossed inset" effect) -->
   <circle cx="32" cy="32" r="25.8" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
-
-  <!-- 4. Colored disc -->
   <circle cx="32" cy="32" r="26" fill="url(#cd)"/>
-  <!-- 4b. Radial sphere-like curvature overlay -->
   <circle cx="32" cy="32" r="26" fill="url(#cs)"/>
-
-  <!-- 5. Glossy highlights (clipped to disc) - TWO bright highlights per reference -->
   <g clip-path="url(#dc)">
-    <!-- MAIN highlight: large soft top-left glossy reflection -->
-    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.6" filter="url(#gb)"/>
-    <!-- MAIN sharp specular spot upper-left (bright, visible) -->
-    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.9" filter="url(#sb)"/>
-    <!-- Tiny bright dot for extra realism -->
-    <ellipse cx="19" cy="12" rx="4" ry="2" fill="#ffffff" opacity="1" filter="url(#sb)"/>
-    <!-- SECONDARY highlight bottom-right (per reference: weaker, rounder) -->
-    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.45" filter="url(#gb)"/>
-    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.7" filter="url(#sb)"/>
-    <!-- Bottom inner shadow (button looks "inset" at bottom edge) -->
-    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.55" filter="url(#gb)"/>
+    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.85" filter="url(#sb)"/>
+    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.65" filter="url(#sb)"/>
+    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.38" filter="url(#gb)"/>
   </g>
-
-  <!-- 6. Inner subtle ring (dark contour of colored disc) -->
   <circle cx="32" cy="32" r="26" fill="none" stroke="#000000" stroke-width="0.4" opacity="0.4"/>
-
-  <!-- 7. Symbol with shadow -->
   <g filter="url(#ss)">
-    <g fill="#ffffff">
-        <path d="M20,18 L34,18 L40,24 L40,40 L20,40 Z"/>
-        <path d="M34,18 L34,24 L40,24 Z" fill="#000" opacity="0.20"/>
-        <path d="M28,28 L46,28 L52,34 L52,50 L28,50 Z" fill="#ffffff"/>
-        <path d="M46,28 L46,34 L52,34 Z" fill="#000" opacity="0.20"/>
-        <rect x="33" y="40" width="14" height="2" fill="#000" opacity="0.25"/>
-        <rect x="33" y="44" width="14" height="2" fill="#000" opacity="0.25"/>
-    </g>
+    <g>
+  <!-- Secondary file (back, smaller, slightly offset to upper-right) -->
+  <path d="M 30,16 L 44,16 L 50,22 L 50,40 L 30,40 Z" fill="#ffffff"/>
+  <!-- Folded corner on back file -->
+  <path d="M 44,16 L 44,22 L 50,22 Z" fill="#000000" opacity="0.20"/>
+  <!-- Lines on back file (text indicators) -->
+  <rect x="34" y="27" width="12" height="1.5" fill="#000000" opacity="0.30"/>
+  <rect x="34" y="30.5" width="12" height="1.5" fill="#000000" opacity="0.30"/>
+  <rect x="34" y="34" width="9" height="1.5" fill="#000000" opacity="0.30"/>
+
+  <!-- Primary file (front, larger, offset to lower-left) -->
+  <path d="M 14,24 L 30,24 L 36,30 L 36,48 L 14,48 Z" fill="#ffffff"/>
+  <!-- Folded corner on front file -->
+  <path d="M 30,24 L 30,30 L 36,30 Z" fill="#000000" opacity="0.22"/>
+  <!-- Lines on front file (text indicators) -->
+  <rect x="18" y="34" width="14" height="1.7" fill="#000000" opacity="0.35"/>
+  <rect x="18" y="38" width="14" height="1.7" fill="#000000" opacity="0.35"/>
+  <rect x="18" y="42" width="10" height="1.7" fill="#000000" opacity="0.35"/>
+
+  <!-- "+" indicator in corner (clearly shows "combo" = multiple files) -->
+  <circle cx="46" cy="46" r="6.5" fill="#0a8a5a" stroke="#ffffff" stroke-width="1.2"/>
+  <rect x="44.5" y="42" width="3" height="8" rx="0.4" fill="#ffffff"/>
+  <rect x="42" y="44.5" width="8" height="3" rx="0.4" fill="#ffffff"/>
+</g>
   </g>
 </svg>
