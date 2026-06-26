@@ -2,6 +2,11 @@
 Name=White Icon Theme
 Comment=White Icon Theme
 
+[png]
+Size=64
+Type=Threshold
+Threshold=50
+
 [svg]
 Size=64
 Type=Scalable
