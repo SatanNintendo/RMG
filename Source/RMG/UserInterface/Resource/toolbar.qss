@@ -1,18 +1,10 @@
-/* =====================================================
-   RMG Toolbar - Glossy Button Style + Press Effect
-   ===================================================== */
+/* RMG Toolbar - Glass Buttons */
 
-QToolBar {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #2a2a2a, stop:1 #1a1a1a);
-    border-bottom: 1px solid #111;
-    spacing: 6px;
-    padding: 4px 6px;
-}
+/* NO background set on QToolBar - inherits from app theme (light or dark) */
 
 QToolBar::separator {
     width: 1px;
-    background: #444;
+    background: palette(mid);
     margin: 6px 4px;
 }
 
@@ -20,64 +12,27 @@ QToolButton {
     background: transparent;
     border: none;
     border-radius: 6px;
-    padding: 4px;
-    /* The press effect: shift icon down/right slightly and darken */
-    /* Qt uses QToolButton's :pressed state for this */
-}
-
-/* Normal state: slight ambient shadow under button */
-QToolButton:enabled {
-    /* padding-bottom slightly larger to simulate button sitting above surface */
     padding: 3px 4px 5px 4px;
 }
 
-/* PRESS EFFECT: button sinks into the surface */
 QToolButton:pressed {
-    /* Shift content down-right to simulate depth */
     padding: 5px 3px 3px 5px;
-    /* Darken background to simulate shadow inside the well */
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
-    /* Inset shadow illusion */
-    border: 1px solid rgba(0,0,0,0.6);
-    border-top: 1px solid rgba(0,0,0,0.8);
-    border-left: 1px solid rgba(0,0,0,0.8);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    border-right: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Hover: gentle highlight ring */
 QToolButton:hover:!pressed {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(128, 128, 128, 0.15);
+    border: 1px solid rgba(128, 128, 128, 0.3);
     border-radius: 6px;
-    padding: 3px 4px 5px 4px;
 }
 
-/* Checked state (e.g. Pause button when paused) */
 QToolButton:checked {
     background: rgba(255, 200, 0, 0.18);
     border: 1px solid rgba(255, 200, 0, 0.4);
     border-radius: 6px;
 }
 
-QToolButton:checked:pressed {
-    padding: 5px 3px 3px 5px;
-    background: rgba(255, 200, 0, 0.30);
-    border: 1px solid rgba(0,0,0,0.6);
-}
-
-/* Disabled: fade out */
 QToolButton:disabled {
-    opacity: 0.35;
-}
-
-/* Text label under icon */
-QToolButton {
-    color: #cccccc;
-    text-align: center;
-}
-
-QToolButton:pressed {
-    color: #aaaaaa;
+    opacity: 0.4;
 }
