@@ -142,7 +142,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>About RMG</source>
-            <translation>О RMG</translation>
+            <translation>О программе RMG</translation>
         </message>
     </context>
     <context>
@@ -481,7 +481,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Full Screen</source>
-            <translation>Полный экран</translation>
+            <translation>Во весь экран</translation>
         </message>
         <message>
             <source>GS Button</source>
@@ -565,7 +565,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкая перезагрузка</translation>
+            <translation>Мягкий сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -812,7 +812,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;About RMG</source>
-            <translation>&amp;О RMG</translation>
+            <translation>&amp;О программе RMG</translation>
         </message>
         <message>
             <source>&amp;Audio</source>
@@ -820,7 +820,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Check For Updates</source>
-            <translation>&amp;Проверить обновления</translation>
+            <translation>&amp;Проверять обновления</translation>
         </message>
         <message>
             <source>&amp;Clear ROM Cache</source>
@@ -840,7 +840,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Fullscreen</source>
-            <translation>&amp;Полный экран</translation>
+            <translation>&amp;Во весь экран</translation>
         </message>
         <message>
             <source>&amp;GS Button</source>
@@ -900,7 +900,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Soft Reset</source>
-            <translation>&amp;Мягкая перезагрузка</translation>
+            <translation>&amp;Мягкий сброс</translation>
         </message>
         <message>
             <source>&amp;Start ROM</source>
@@ -1746,7 +1746,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Automatically switch to fullscreen on emulation start</source>
-            <translation>Автоматический переход в полный экран при запуске эмуляции</translation>
+            <translation>Автоматический переход в полноэкранный режим при запуске эмуляции</translation>
         </message>
         <message>
             <source>Background color</source>
@@ -1786,7 +1786,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Changes will be applied on next application run</source>
-            <translation>Изменения вступят в силу при следующем запуске приложения</translation>
+            <translation>Изменения вступят в силу при следующем запуске программы</translation>
         </message>
         <message>
             <source>Changes will be applied on next emulation run</source>
@@ -1798,7 +1798,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Check for updates</source>
-            <translation>Проверить обновления</translation>
+            <translation>Проверять обновления</translation>
         </message>
         <message>
             <source>Controller pak</source>
@@ -1862,7 +1862,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Full Screen</source>
-            <translation>Полный экран</translation>
+            <translation>Во весь экран</translation>
         </message>
         <message>
             <source>Fusion</source>
@@ -1982,7 +1982,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Native</source>
-            <translation>Нативный</translation>
+            <translation>Нативная</translation>
         </message>
         <message>
             <source>Netplay</source>
@@ -2174,7 +2174,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
-            <translation>Выберите язык интерфейса. Выберите «По умолчанию системы», чтобы использовать язык операционной системы. Изменения вступят в силу при следующем запуске приложения.</translation>
+            <translation>Выберите язык интерфейса. Выберите «По умолчанию системы», чтобы использовать язык операционной системы. Изменения вступят в силу при следующем запуске программы.</translation>
         </message>
         <message>
             <source>Server list URL</source>
@@ -2234,7 +2234,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкая перезагрузка</translation>
+            <translation>Мягкий сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -2242,7 +2242,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>Старт-комбинация</translation>
+            <translation>;Запустить комбинацию</translation>
         </message>
         <message>
             <source>Start ROM</source>
@@ -2368,7 +2368,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;About RMG</source>
-            <translation>&amp;О RMG</translation>
+            <translation>&amp;О программе RMG</translation>
         </message>
         <message>
             <source>&amp;Audio</source>
@@ -2376,7 +2376,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Check For Updates</source>
-            <translation>&amp;Проверить обновления</translation>
+            <translation>&amp;Проверять обновления</translation>
         </message>
         <message>
             <source>&amp;Clear ROM Cache</source>
@@ -2396,7 +2396,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Fullscreen</source>
-            <translation>&amp;Полный экран</translation>
+            <translation>&amp;Во весь экран</translation>
         </message>
         <message>
             <source>&amp;GS Button</source>
@@ -2456,7 +2456,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Soft Reset</source>
-            <translation>&amp;Мягкая перезагрузка</translation>
+            <translation>&amp;Мягкий сброс</translation>
         </message>
         <message>
             <source>&amp;Start ROM</source>
@@ -3167,7 +3167,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Automatically switch to fullscreen on emulation start</source>
-            <translation>Автоматический переход в полный экран при запуске эмуляции</translation>
+            <translation>Автоматический переход в полноэкранный режим при запуске эмуляции</translation>
         </message>
         <message>
             <source>Background color</source>
@@ -3207,7 +3207,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Changes will be applied on next application run</source>
-            <translation>Изменения вступят в силу при следующем запуске приложения</translation>
+            <translation>Изменения вступят в силу при следующем запуске программы</translation>
         </message>
         <message>
             <source>Changes will be applied on next emulation run</source>
@@ -3219,7 +3219,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Check for updates</source>
-            <translation>Проверить обновления</translation>
+            <translation>Проверять обновления</translation>
         </message>
         <message>
             <source>Controller pak</source>
@@ -3283,7 +3283,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Full Screen</source>
-            <translation>Полный экран</translation>
+            <translation>Во весь экран</translation>
         </message>
         <message>
             <source>Fusion</source>
@@ -3403,7 +3403,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Native</source>
-            <translation>Нативный</translation>
+            <translation>Нативная</translation>
         </message>
         <message>
             <source>Netplay</source>
@@ -3595,7 +3595,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
-            <translation>Выберите язык интерфейса. Выберите «По умолчанию системы», чтобы использовать язык операционной системы. Изменения вступят в силу при следующем запуске приложения.</translation>
+            <translation>Выберите язык интерфейса. Выберите «По умолчанию системы», чтобы использовать язык операционной системы. Изменения вступят в силу при следующем запуске программы.</translation>
         </message>
         <message>
             <source>Server list URL</source>
@@ -3655,7 +3655,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкая перезагрузка</translation>
+            <translation>Мягкий сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -3663,7 +3663,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>Старт-комбинация</translation>
+            <translation>Запустить комбинацию</translation>
         </message>
         <message>
             <source>Start ROM</source>
