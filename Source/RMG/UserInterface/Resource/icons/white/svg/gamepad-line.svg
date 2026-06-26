@@ -1,28 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <!-- Soft drop shadow under button -->
-    <filter id="ds" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/>
-      <feOffset dx="0" dy="1.8"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+    <!-- Drop shadow: enlarged bbox to prevent clipping in Qt SVG renderer -->
+    <filter id="ds" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
       <feMerge>
         <feMergeNode/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <!-- Soft blur for gloss -->
-    <filter id="gb" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.6"/>
+    <!-- Soft blur for gloss (enlarged bbox) -->
+    <filter id="gb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5"/>
     </filter>
 
-    <!-- Sharper blur for specular spot -->
-    <filter id="sb" x="-30%" y="-30%" width="160%" height="160%">
+    <!-- Sharper blur for specular spot (enlarged bbox) -->
+    <filter id="sb" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="0.6"/>
     </filter>
 
-    <!-- Symbol drop shadow -->
-    <filter id="ss" x="-30%" y="-30%" width="160%" height="160%">
+    <!-- Symbol drop shadow (enlarged bbox) -->
+    <filter id="ss" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="0.5"/>
       <feOffset dx="0" dy="0.7"/>
       <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
@@ -79,65 +79,124 @@
     </clipPath>
   </defs>
 
-  <!-- 1. Drop shadow under button -->
-  <ellipse cx="32" cy="34" rx="28" ry="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
+  <!-- 1. Drop shadow under button (circular, not elliptical, for cleaner look) -->
+  <circle cx="32" cy="33.5" r="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
 
   <!-- 2. Silver metallic rim (~3.5px wide band) -->
   <circle cx="32" cy="32" r="29" fill="url(#cr)"/>
-  <!-- Chrome specular highlights on rim -->
   <g clip-path="url(#rc)">
-    <!-- Bright top arc reflection -->
     <ellipse cx="32" cy="3.5" rx="28" ry="10" fill="url(#ct)" opacity="1"/>
-    <!-- Dark bottom arc reflection -->
     <ellipse cx="32" cy="60.5" rx="28" ry="8" fill="url(#cb)" opacity="0.98"/>
-    <!-- Sharp horizontal bright streak at top of rim -->
     <ellipse cx="32" cy="4.5" rx="24" ry="1.6" fill="#ffffff" opacity="1"/>
-    <!-- Sharp horizontal dark streak at bottom of rim -->
     <ellipse cx="32" cy="59.5" rx="24" ry="1.3" fill="#000000" opacity="0.7"/>
-    <!-- Subtle horizontal highlight in middle of rim -->
     <ellipse cx="32" cy="32" rx="29" ry="0.8" fill="#ffffff" opacity="0.3"/>
   </g>
 
-  <!-- 3. Sharp dark ring between rim and disc (clear boundary) -->
+  <!-- 3. Sharp dark ring between rim and disc -->
   <circle cx="32" cy="32" r="26.2" fill="none" stroke="#0a0a0a" stroke-width="0.7" opacity="0.9"/>
-  <!-- Inner highlight ring (top edge of colored disc, "embossed inset" effect) -->
   <circle cx="32" cy="32" r="25.8" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
 
   <!-- 4. Colored disc -->
   <circle cx="32" cy="32" r="26" fill="url(#cd)"/>
-  <!-- 4b. Radial sphere-like curvature overlay -->
   <circle cx="32" cy="32" r="26" fill="url(#cs)"/>
 
-  <!-- 5. Glossy highlights (clipped to disc) - TWO bright highlights per reference -->
+  <!-- 5. Glossy highlights (clipped to disc) -->
   <g clip-path="url(#dc)">
-    <!-- MAIN highlight: large soft top-left glossy reflection -->
-    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.6" filter="url(#gb)"/>
-    <!-- MAIN sharp specular spot upper-left (bright, visible) -->
-    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.9" filter="url(#sb)"/>
-    <!-- Tiny bright dot for extra realism -->
-    <ellipse cx="19" cy="12" rx="4" ry="2" fill="#ffffff" opacity="1" filter="url(#sb)"/>
-    <!-- SECONDARY highlight bottom-right (per reference: weaker, rounder) -->
-    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.45" filter="url(#gb)"/>
-    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.7" filter="url(#sb)"/>
-    <!-- Bottom inner shadow (button looks "inset" at bottom edge) -->
-    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.55" filter="url(#gb)"/>
+    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.85" filter="url(#sb)"/>
+    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.65" filter="url(#sb)"/>
+    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.38" filter="url(#gb)"/>
   </g>
 
-  <!-- 6. Inner subtle ring (dark contour of colored disc) -->
+  <!-- 6. Inner subtle ring -->
   <circle cx="32" cy="32" r="26" fill="none" stroke="#000000" stroke-width="0.4" opacity="0.4"/>
 
   <!-- 7. Symbol with shadow -->
   <g filter="url(#ss)">
-    <g fill="#ffffff">
-        <path d="M14,30 Q14,20 24,20 L40,20 Q50,20 50,30 L50,38 Q50,46 44,46 Q41,46 39,43 L37,40 L27,40 L25,43 Q23,46 20,46 Q14,46 14,38 Z"/>
-        <g fill="#0a0a0a" opacity="0.5">
-            <rect x="20" y="29" width="3" height="8" rx="0.5"/>
-            <rect x="17.5" y="31.5" width="8" height="3" rx="0.5"/>
-        </g>
-        <circle cx="39" cy="29" r="2" fill="#0a0a0a" opacity="0.5"/>
-        <circle cx="44" cy="34" r="2" fill="#0a0a0a" opacity="0.5"/>
-        <circle cx="34" cy="34" r="2" fill="#0a0a0a" opacity="0.5"/>
-        <circle cx="39" cy="39" r="2" fill="#0a0a0a" opacity="0.5"/>
-    </g>
+    
+<g>
+  <!--
+    N64 controller as a SINGLE continuous path with deep V-cuts between handles.
+    This is the KEY N64 feature: 3 handles separated by concave V-shaped gaps.
+    Drawn BIG to fill the button. Coordinates for 64x64 viewBox, disc r=26 at (32,32).
+
+    Silhouette path:
+    - Wide rounded top body
+    - Right handle: tapers down-right, rounded bottom
+    - Deep V-cut up into body (between right and central handle)
+    - Central handle: straight down, longest, rounded bottom
+    - Deep V-cut up into body (between central and left handle)
+    - Left handle: tapers down-left, rounded bottom
+  -->
+  <path d="
+    M 8,26
+    Q 8,13 19,12
+    L 45,12
+    Q 56,13 56,26
+    L 56,30
+    Q 55,44 51,49
+    Q 48,52 44,51
+    Q 40,50 38,44
+    Q 36,32 36,27
+    L 38,27
+    L 38,52
+    Q 38,56 32,56
+    Q 26,56 26,52
+    L 26,27
+    L 28,27
+    Q 28,32 26,44
+    Q 24,50 20,51
+    Q 16,52 13,49
+    Q 9,44 8,30
+    Z
+  " fill="#e8e8e8" stroke="#5a5a5a" stroke-width="0.6"/>
+
+  <!-- Subtle top shading for 3D depth -->
+  <path d="M 8,26 Q 8,13 19,12 L 45,12 Q 56,13 56,26 L 56,18 L 8,18 Z"
+        fill="#000000" opacity="0.10"/>
+
+  <!-- D-Pad (LEFT handle, upper area) - GRAY per N64 -->
+  <g transform="translate(17, 33)">
+    <circle r="3.5" fill="#4a4a4a" stroke="#2a2a2a" stroke-width="0.3"/>
+    <rect x="-3" y="-0.8" width="6" height="1.6" rx="0.2" fill="#6a6a6a"/>
+    <rect x="-0.8" y="-3" width="1.6" height="6" rx="0.2" fill="#6a6a6a"/>
+    <circle r="0.5" fill="#1a1a1a"/>
+  </g>
+
+  <!-- Analog Stick (CENTRAL handle, upper area) - GRAY with white dot -->
+  <g transform="translate(32, 33)">
+    <circle r="3.6" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="0.3"/>
+    <circle r="2.8" fill="#5a5a5a"/>
+    <circle r="1.9" fill="#2a2a2a"/>
+    <circle r="1" fill="#ffffff" opacity="0.9"/>
+  </g>
+
+  <!-- C-Buttons: 4 yellow buttons in 2x2 grid (RIGHT handle, upper area) -->
+  <g fill="#f5c518" stroke="#a88510" stroke-width="0.2">
+    <circle cx="43.5" cy="30" r="1.5"/>
+    <circle cx="47" cy="30" r="1.5"/>
+    <circle cx="43.5" cy="33.5" r="1.5"/>
+    <circle cx="47" cy="33.5" r="1.5"/>
+  </g>
+  <g fill="#ffe680" opacity="0.85">
+    <circle cx="43.2" cy="29.7" r="0.55"/>
+    <circle cx="46.7" cy="29.7" r="0.55"/>
+    <circle cx="43.2" cy="33.2" r="0.55"/>
+    <circle cx="46.7" cy="33.2" r="0.55"/>
+  </g>
+
+  <!-- B button (green, LARGER) - on RIGHT handle, BELOW C-buttons, left -->
+  <circle cx="43" cy="39" r="2" fill="#0fa84a" stroke="#063a18" stroke-width="0.2"/>
+  <circle cx="42.6" cy="38.6" r="0.8" fill="#5be07a" opacity="0.85"/>
+
+  <!-- A button (blue, smaller) - on RIGHT handle, BELOW C-buttons, right -->
+  <circle cx="47.5" cy="40" r="1.7" fill="#1e6cd6" stroke="#06245a" stroke-width="0.2"/>
+  <circle cx="47.2" cy="39.7" r="0.65" fill="#5aa0ff" opacity="0.85"/>
+
+  <!-- Start button (red) - on CENTRAL handle, between analog stick and bottom -->
+  <ellipse cx="32" cy="43" rx="2.8" ry="1.5" fill="#d62e2e" stroke="#5a0e0e" stroke-width="0.2"/>
+  <ellipse cx="32" cy="42.6" rx="2.1" ry="0.55" fill="#ff6b6b" opacity="0.7"/>
+</g>
   </g>
 </svg>
