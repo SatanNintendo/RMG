@@ -1,28 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <!-- Soft drop shadow under button -->
-    <filter id="ds" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/>
-      <feOffset dx="0" dy="1.8"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+    <!-- Drop shadow: enlarged bbox to prevent clipping in Qt SVG renderer -->
+    <filter id="ds" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
       <feMerge>
         <feMergeNode/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <!-- Soft blur for gloss -->
-    <filter id="gb" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.6"/>
+    <!-- Soft blur for gloss (enlarged bbox) -->
+    <filter id="gb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5"/>
     </filter>
 
-    <!-- Sharper blur for specular spot -->
-    <filter id="sb" x="-30%" y="-30%" width="160%" height="160%">
+    <!-- Sharper blur for specular spot (enlarged bbox) -->
+    <filter id="sb" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="0.6"/>
     </filter>
 
-    <!-- Symbol drop shadow -->
-    <filter id="ss" x="-30%" y="-30%" width="160%" height="160%">
+    <!-- Symbol drop shadow (enlarged bbox) -->
+    <filter id="ss" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="0.5"/>
       <feOffset dx="0" dy="0.7"/>
       <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
@@ -56,9 +56,9 @@
 
     <!-- Colored disc: vertical gradient (light top -> main -> dark bottom) -->
     <linearGradient id="cd" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"  stop-color="#ff6bb5"/>
-      <stop offset="50%" stop-color="#d62e8a"/>
-      <stop offset="100%" stop-color="#5a0e3a"/>
+      <stop offset="0%"  stop-color="#b585f0"/>
+      <stop offset="50%" stop-color="#7b3fc4"/>
+      <stop offset="100%" stop-color="#2f156a"/>
     </linearGradient>
 
     <!-- Radial overlay for sphere-like 3D curvature -->
@@ -79,60 +79,55 @@
     </clipPath>
   </defs>
 
-  <!-- 1. Drop shadow under button -->
-  <ellipse cx="32" cy="34" rx="28" ry="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
+  <!-- 1. Drop shadow under button (circular, not elliptical, for cleaner look) -->
+  <circle cx="32" cy="33.5" r="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
 
   <!-- 2. Silver metallic rim (~3.5px wide band) -->
   <circle cx="32" cy="32" r="29" fill="url(#cr)"/>
-  <!-- Chrome specular highlights on rim -->
   <g clip-path="url(#rc)">
-    <!-- Bright top arc reflection -->
     <ellipse cx="32" cy="3.5" rx="28" ry="10" fill="url(#ct)" opacity="1"/>
-    <!-- Dark bottom arc reflection -->
     <ellipse cx="32" cy="60.5" rx="28" ry="8" fill="url(#cb)" opacity="0.98"/>
-    <!-- Sharp horizontal bright streak at top of rim -->
     <ellipse cx="32" cy="4.5" rx="24" ry="1.6" fill="#ffffff" opacity="1"/>
-    <!-- Sharp horizontal dark streak at bottom of rim -->
     <ellipse cx="32" cy="59.5" rx="24" ry="1.3" fill="#000000" opacity="0.7"/>
-    <!-- Subtle horizontal highlight in middle of rim -->
     <ellipse cx="32" cy="32" rx="29" ry="0.8" fill="#ffffff" opacity="0.3"/>
   </g>
 
-  <!-- 3. Sharp dark ring between rim and disc (clear boundary) -->
+  <!-- 3. Sharp dark ring between rim and disc -->
   <circle cx="32" cy="32" r="26.2" fill="none" stroke="#0a0a0a" stroke-width="0.7" opacity="0.9"/>
-  <!-- Inner highlight ring (top edge of colored disc, "embossed inset" effect) -->
   <circle cx="32" cy="32" r="25.8" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
 
   <!-- 4. Colored disc -->
   <circle cx="32" cy="32" r="26" fill="url(#cd)"/>
-  <!-- 4b. Radial sphere-like curvature overlay -->
   <circle cx="32" cy="32" r="26" fill="url(#cs)"/>
 
-  <!-- 5. Glossy highlights (clipped to disc) - TWO bright highlights per reference -->
+  <!-- 5. Glossy highlights (clipped to disc) -->
   <g clip-path="url(#dc)">
-    <!-- MAIN highlight: large soft top-left glossy reflection -->
-    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.6" filter="url(#gb)"/>
-    <!-- MAIN sharp specular spot upper-left (bright, visible) -->
-    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.9" filter="url(#sb)"/>
-    <!-- Tiny bright dot for extra realism -->
-    <ellipse cx="19" cy="12" rx="4" ry="2" fill="#ffffff" opacity="1" filter="url(#sb)"/>
-    <!-- SECONDARY highlight bottom-right (per reference: weaker, rounder) -->
-    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.45" filter="url(#gb)"/>
-    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.7" filter="url(#sb)"/>
-    <!-- Bottom inner shadow (button looks "inset" at bottom edge) -->
-    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.55" filter="url(#gb)"/>
+    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.85" filter="url(#sb)"/>
+    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.65" filter="url(#sb)"/>
+    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.38" filter="url(#gb)"/>
   </g>
 
-  <!-- 6. Inner subtle ring (dark contour of colored disc) -->
+  <!-- 6. Inner subtle ring -->
   <circle cx="32" cy="32" r="26" fill="none" stroke="#000000" stroke-width="0.4" opacity="0.4"/>
 
   <!-- 7. Symbol with shadow -->
   <g filter="url(#ss)">
-    <g fill="#ffffff">
-        <rect x="28" y="16" width="8" height="20" rx="1.5"/>
-        <path d="M26,36 L38,36 L36,44 L28,44 Z"/>
-        <path d="M22,44 L42,44 L40,50 L24,50 Z"/>
-        <rect x="30" y="19" width="4" height="14" fill="#0a0a0a" opacity="0.25"/>
-    </g>
+    <g fill="#ffffff" stroke="#ffffff" stroke-width="0.4">
+  <!-- Monitor screen (rounded rectangle) -->
+  <rect x="14" y="18" width="36" height="24" rx="2" ry="2" fill="#ffffff" stroke="none"/>
+  <!-- Inner screen (darker, gives bezel effect) -->
+  <rect x="17" y="21" width="30" height="18" rx="0.8" ry="0.8" fill="#1a1a1a" opacity="0.55" stroke="none"/>
+  <!-- Screen content: subtle waveform / scanline graphic -->
+  <path d="M 19,30 Q 22,26 25,30 T 31,30 T 37,30 T 43,30 T 45,30"
+        fill="none" stroke="#5aa0ff" stroke-width="1.2" stroke-linecap="round" opacity="0.95"/>
+  <circle cx="22" cy="34" r="0.9" fill="#5be07a" opacity="0.95"/>
+  <circle cx="42" cy="34" r="0.9" fill="#ff6b6b" opacity="0.95"/>
+  <!-- Monitor stand (neck) -->
+  <rect x="29" y="42" width="6" height="3" fill="#ffffff" stroke="none"/>
+  <!-- Monitor stand (base) -->
+  <rect x="22" y="45" width="20" height="2.5" rx="1" fill="#ffffff" stroke="none"/>
+</g>
   </g>
 </svg>
