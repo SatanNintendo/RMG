@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="ds" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="gb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+    <filter id="sb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.6"/>
+    </filter>
+    <filter id="ss" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.5"/>
+      <feOffset dx="0" dy="0.7"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="cr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ffffff"/>
+      <stop offset="20%" stop-color="#f4f4f4"/>
+      <stop offset="45%" stop-color="#bcbcbc"/>
+      <stop offset="55%" stop-color="#6e6e6e"/>
+      <stop offset="80%" stop-color="#4a4a4a"/>
+      <stop offset="100%" stop-color="#a8a8a8"/>
+    </linearGradient>
+    <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cb" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%"  stop-color="#1a1a1a" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Warm amber/gold color for combo button - visually distinct from cyan StartRom -->
+    <linearGradient id="cd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#f0c040"/>
+      <stop offset="50%" stop-color="#c07000"/>
+      <stop offset="100%" stop-color="#502800"/>
+    </linearGradient>
+    <radialGradient id="cs" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.4"/>
+    </radialGradient>
+    <clipPath id="dc">
+      <circle cx="32" cy="32" r="26"/>
+    </clipPath>
+    <clipPath id="rc">
+      <path d="M32,3 A29,29 0 1,1 32,61 A29,29 0 1,1 32,3 Z M32,6.5 A25.5,25.5 0 1,0 32,57.5 A25.5,25.5 0 1,0 32,6.5 Z" fill-rule="evenodd"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="32" cy="33.5" r="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
+  <circle cx="32" cy="32" r="29" fill="url(#cr)"/>
+  <g clip-path="url(#rc)">
+    <ellipse cx="32" cy="3.5" rx="28" ry="10" fill="url(#ct)" opacity="1"/>
+    <ellipse cx="32" cy="60.5" rx="28" ry="8" fill="url(#cb)" opacity="0.98"/>
+    <ellipse cx="32" cy="4.5" rx="24" ry="1.6" fill="#ffffff" opacity="1"/>
+    <ellipse cx="32" cy="59.5" rx="24" ry="1.3" fill="#000000" opacity="0.7"/>
+    <ellipse cx="32" cy="32" rx="29" ry="0.8" fill="#ffffff" opacity="0.3"/>
+  </g>
+  <circle cx="32" cy="32" r="26.2" fill="none" stroke="#0a0a0a" stroke-width="0.7" opacity="0.9"/>
+  <circle cx="32" cy="32" r="25.8" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
+  <circle cx="32" cy="32" r="26" fill="url(#cd)"/>
+  <circle cx="32" cy="32" r="26" fill="url(#cs)"/>
+  <g clip-path="url(#dc)">
+    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.55" filter="url(#gb)"/>
+    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.85" filter="url(#sb)"/>
+    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.4" filter="url(#gb)"/>
+    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.65" filter="url(#sb)"/>
+    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.38" filter="url(#gb)"/>
+  </g>
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#000000" stroke-width="0.4" opacity="0.4"/>
+
+  <g filter="url(#ss)">
+    <!-- Back file (upper-right, smaller, clearly offset) -->
+    <rect x="29" y="14" width="18" height="22" rx="1.5" fill="#ffffff" opacity="0.75"/>
+    <path d="M 41,14 L 47,20 L 41,20 Z" fill="#000000" opacity="0.18"/>
+    <path d="M 41,14 L 47,14 L 47,20 Z" fill="#ffffff" opacity="0.75"/>
+    <line x1="33" y1="24" x2="45" y2="24" stroke="#000000" stroke-width="1.2" opacity="0.25"/>
+    <line x1="33" y1="27" x2="45" y2="27" stroke="#000000" stroke-width="1.2" opacity="0.25"/>
+    <line x1="33" y1="30" x2="41" y2="30" stroke="#000000" stroke-width="1.2" opacity="0.25"/>
+
+    <!-- Front file (lower-left, larger, overlapping back) -->
+    <rect x="17" y="22" width="20" height="26" rx="1.5" fill="#ffffff"/>
+    <path d="M 31,22 L 37,28 L 31,28 Z" fill="#000000" opacity="0.20"/>
+    <path d="M 31,22 L 37,22 L 37,28 Z" fill="#ffffff"/>
+    <line x1="21" y1="32" x2="35" y2="32" stroke="#000000" stroke-width="1.3" opacity="0.30"/>
+    <line x1="21" y1="36" x2="35" y2="36" stroke="#000000" stroke-width="1.3" opacity="0.30"/>
+    <line x1="21" y1="40" x2="30" y2="40" stroke="#000000" stroke-width="1.3" opacity="0.30"/>
+
+    <!-- Lightning bolt overlay - makes it unmistakably "hotkey/combo" -->
+    <polygon points="36,36 30,44 34,44 28,52 40,42 35,42" fill="#ffee00" stroke="#aa7700" stroke-width="0.6" opacity="0.95"/>
+  </g>
+</svg>
