@@ -384,7 +384,7 @@ li.checked::marker { content: "\2612"; }
         <name>CreateNetplaySessionEmptyWidget</name>
         <message>
             <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;No ROMs were found.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can configure the ROM browser directory or refresh the ROM browser.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROM не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Вы можете настроить папку браузера ROM или обновить браузер ROM.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROMы не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Вы можете настроить папку браузера ROMов или обновить браузер ROMов.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Form</source>
@@ -824,7 +824,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Clear ROM Cache</source>
-            <translation>О&amp;чистить кэш ROM</translation>
+            <translation>О&amp;чистить кэш ROMа</translation>
         </message>
         <message>
             <source>&amp;Create Session</source>
@@ -884,7 +884,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Refresh ROMs</source>
-            <translation>&amp;Обновить ROM</translation>
+            <translation>&amp;Обновить ROMы</translation>
         </message>
         <message>
             <source>&amp;Reset</source>
@@ -976,11 +976,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
-            <translation>ROM N64 и диски (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+            <translation>ROMы N64 и диски (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+            <translation>ROMы N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
@@ -1048,7 +1048,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select ROM Directory</source>
-            <translation>Выбрать папку с ROM</translation>
+            <translation>Выбрать папку с ROMами</translation>
         </message>
         <message>
             <source>Setti&amp;ngs</source>
@@ -1100,7 +1100,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Co&amp;mbo</source>
-            <translation>Старт-ко&amp;мбинация</translation>
+            <translation>Запустить-ко&amp;мбинацию</translation>
         </message>
         <message>
             <source>View</source>
@@ -1127,7 +1127,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+            <translation>ROMы N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>Netplay Session Browser</source>
@@ -1371,7 +1371,7 @@ li.checked::marker { content: "\2612"; }
         <name>RomBrowserEmptyWidget</name>
         <message>
             <source>.n64/.z64/.v64 (N64 Roms)</source>
-            <translation>.n64/.z64/.v64 (ROM N64)</translation>
+            <translation>.n64/.z64/.v64 (ROMы N64)</translation>
         </message>
         <message>
             <source>.ndd/.d64 (64DD Disks)</source>
@@ -1383,7 +1383,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;No ROMs in supported formats were found.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Please select a directory with ROMs to begin.&lt;/p&gt;&lt;p&gt;ROMs in the following formats will be scanned and listed: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROM в поддерживаемых форматах не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Пожалуйста, выберите папку с ROM для начала.&lt;/p&gt;&lt;p&gt;ROM в следующих форматах будут просканированы и добавлены в список: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROMы в поддерживаемых форматах не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Пожалуйста, выберите папку с ROMами для начала.&lt;/p&gt;&lt;p&gt;ROMы в следующих форматах будут просканированы и добавлены в список: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Form</source>
@@ -1395,7 +1395,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select ROM Directory...</source>
-            <translation>Выбрать папку с ROM...</translation>
+            <translation>Выбрать папку с ROMами...</translation>
         </message>
     </context>
     <context>
@@ -1436,7 +1436,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Change ROM Directory...</source>
-            <translation>Сменить папку с ROM...</translation>
+            <translation>Сменить папку с ROMами...</translation>
         </message>
         <message>
             <source>Cover Image (*.png *.jpeg *.jpg)</source>
@@ -1512,7 +1512,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Open ROM Directory</source>
-            <translation>Открыть папку с ROM</translation>
+            <translation>Открыть папку с ROMами</translation>
         </message>
         <message>
             <source>Play Game</source>
@@ -1536,11 +1536,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>ROM Information</source>
-            <translation>Информация о ROM</translation>
+            <translation>Информация о ROMе</translation>
         </message>
         <message>
             <source>Refresh ROM List</source>
-            <translation>Обновить список ROM</translation>
+            <translation>Обновить список ROMов</translation>
         </message>
         <message>
             <source>Region</source>
@@ -1615,7 +1615,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>ROM Information</source>
-            <translation>Информация о ROM</translation>
+            <translation>Информация о ROMе</translation>
         </message>
         <message>
             <source>System Region</source>
@@ -1938,7 +1938,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal ROM Name</source>
-            <translation>Внутреннее имя ROM</translation>
+            <translation>Внутреннее имя ROMа</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>
@@ -2078,11 +2078,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>ROM Browser</source>
-            <translation>Браузер ROM</translation>
+            <translation>Браузер ROMов</translation>
         </message>
         <message>
             <source>ROM search limit</source>
-            <translation>Лимит поиска ROM</translation>
+            <translation>Лимит поиска ROMов</translation>
         </message>
         <message>
             <source>RSP</source>
@@ -2102,7 +2102,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Refresh ROM List</source>
-            <translation>Обновить список ROM</translation>
+            <translation>Обновить список ROMов</translation>
         </message>
         <message>
             <source>Remove duplicate keybindings</source>
@@ -2380,7 +2380,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Clear ROM Cache</source>
-            <translation>О&amp;чистить кэш ROM</translation>
+            <translation>О&amp;чистить кэш ROMа</translation>
         </message>
         <message>
             <source>&amp;Create Session</source>
@@ -2440,7 +2440,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Refresh ROMs</source>
-            <translation>&amp;Обновить ROM</translation>
+            <translation>&amp;Обновить ROMы</translation>
         </message>
         <message>
             <source>&amp;Reset</source>
@@ -2532,11 +2532,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
-            <translation>ROM N64 и диски (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+            <translation>ROMы N64 и диски (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+            <translation>ROMы N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
@@ -2604,7 +2604,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select ROM Directory</source>
-            <translation>Выбрать папку с ROM</translation>
+            <translation>Выбрать папку с ROMами</translation>
         </message>
         <message>
             <source>Setti&amp;ngs</source>
@@ -2656,7 +2656,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Co&amp;mbo</source>
-            <translation>Старт-ко&amp;мбинация</translation>
+            <translation>Запустить-ко&amp;мбинацию</translation>
         </message>
         <message>
             <source>View</source>
@@ -2693,7 +2693,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Change ROM Directory...</source>
-            <translation>Сменить папку с ROM...</translation>
+            <translation>Сменить папку с ROMами...</translation>
         </message>
         <message>
             <source>Cover Image (*.png *.jpeg *.jpg)</source>
@@ -2769,7 +2769,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Open ROM Directory</source>
-            <translation>Открыть папку с ROM</translation>
+            <translation>Открыть папку с ROMами</translation>
         </message>
         <message>
             <source>Play Game</source>
@@ -2793,11 +2793,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>ROM Information</source>
-            <translation>Информация о ROM</translation>
+            <translation>Информация о ROMе</translation>
         </message>
         <message>
             <source>Refresh ROM List</source>
-            <translation>Обновить список ROM</translation>
+            <translation>Обновить список ROMов</translation>
         </message>
         <message>
             <source>Region</source>
@@ -2847,7 +2847,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+            <translation>ROMы N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
         </message>
         <message>
             <source>Netplay Session Browser</source>
@@ -3359,7 +3359,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal ROM Name</source>
-            <translation>Внутреннее имя ROM</translation>
+            <translation>Внутреннее имя ROMа</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>
@@ -3499,11 +3499,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>ROM Browser</source>
-            <translation>Браузер ROM</translation>
+            <translation>Браузер ROMов</translation>
         </message>
         <message>
             <source>ROM search limit</source>
-            <translation>Лимит поиска ROM</translation>
+            <translation>Лимит поиска ROMов</translation>
         </message>
         <message>
             <source>RSP</source>
@@ -3523,7 +3523,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Refresh ROM List</source>
-            <translation>Обновить список ROM</translation>
+            <translation>Обновить список ROMов</translation>
         </message>
         <message>
             <source>Remove duplicate keybindings</source>
