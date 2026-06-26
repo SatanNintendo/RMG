@@ -173,7 +173,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>Notes:</source>
@@ -377,7 +377,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Session name</source>
-            <translation>Имя сессии</translation>
+            <translation>Название сессии</translation>
         </message>
     </context>
     <context>
@@ -1184,7 +1184,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>No</source>
@@ -1215,7 +1215,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Game name</source>
-            <translation>Имя игры</translation>
+            <translation>Название игры</translation>
         </message>
         <message>
             <source>Netplay Session</source>
@@ -1231,7 +1231,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Session name</source>
-            <translation>Имя сессии</translation>
+            <translation>Название сессии</translation>
         </message>
         <message>
             <source>Start</source>
@@ -1468,7 +1468,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>File Name</source>
-            <translation>Имя файла</translation>
+            <translation>Название файла</translation>
         </message>
         <message>
             <source>File Size</source>
@@ -1496,7 +1496,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal Name</source>
-            <translation>Внутреннее имя</translation>
+            <translation>Внутреннее название</translation>
         </message>
         <message>
             <source>MD5</source>
@@ -1504,7 +1504,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>Open Cover Image</source>
@@ -1587,7 +1587,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>File Name</source>
-            <translation>Имя файла</translation>
+            <translation>Название файла</translation>
         </message>
         <message>
             <source>Game I.D.</source>
@@ -1611,7 +1611,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>ROM Information</source>
@@ -1886,7 +1886,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Good Name</source>
-            <translation>Имя GoodN64</translation>
+            <translation>Название GoodN64</translation>
         </message>
         <message>
             <source>Graphics</source>
@@ -1938,7 +1938,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal ROM Name</source>
-            <translation>Внутреннее имя ROMа</translation>
+            <translation>Внутреннее название ROMа</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>
@@ -2725,7 +2725,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>File Name</source>
-            <translation>Имя файла</translation>
+            <translation>Название файла</translation>
         </message>
         <message>
             <source>File Size</source>
@@ -2753,7 +2753,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal Name</source>
-            <translation>Внутреннее имя</translation>
+            <translation>Внутреннее название</translation>
         </message>
         <message>
             <source>MD5</source>
@@ -2761,7 +2761,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>Open Cover Image</source>
@@ -2888,7 +2888,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Name</source>
-            <translation>Имя</translation>
+            <translation>Название</translation>
         </message>
         <message>
             <source>No</source>
@@ -3307,7 +3307,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Good Name</source>
-            <translation>Имя GoodN64</translation>
+            <translation>Название GoodN64</translation>
         </message>
         <message>
             <source>Graphics</source>
@@ -3359,7 +3359,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal ROM Name</source>
-            <translation>Внутреннее имя ROMа</translation>
+            <translation>Внутреннее название ROMа</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>
