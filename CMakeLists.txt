@@ -35,7 +35,7 @@ option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GP
 #   without any git tags will not show a commit hash in the window
 #   title / About dialog. Override at configure time with
 #   -DRMG_VERSION="..." if a different version is needed.
-set(RMG_VERSION "0.9.1 RC1" CACHE STRING "Explicit RMG version string (overrides git describe / VERSION file)")
+set(RMG_VERSION "0.9.1 RC1" CACHE STRING "Explicit RMG version string (overrides git describe / VERSION file)" FORCE)
 
 project(RMG)
 
