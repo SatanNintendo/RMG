@@ -30,7 +30,12 @@ option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GP
 #
 # Usage:
 #   cmake -DRMG_VERSION="0.9.0.1" ...
-set(RMG_VERSION "" CACHE STRING "Explicit RMG version string (overrides git describe / VERSION file)")
+#
+# NOTE: A default version string is set below so that fresh clones
+#   without any git tags will not show a commit hash in the window
+#   title / About dialog. Override at configure time with
+#   -DRMG_VERSION="..." if a different version is needed.
+set(RMG_VERSION "0.9.1 RC1" CACHE STRING "Explicit RMG version string (overrides git describe / VERSION file)")
 
 project(RMG)
 
