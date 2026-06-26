@@ -1,3 +1,136 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" width="64" height="64">
-  <image x="0" y="0" width="64" height="64" xlink:href="data:image/png;base64,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"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Soft drop shadow under button -->
+    <filter id="ds" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/>
+      <feOffset dx="0" dy="1.8"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Soft blur for gloss -->
+    <filter id="gb" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+
+    <!-- Sharper blur for specular spot -->
+    <filter id="sb" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="0.6"/>
+    </filter>
+
+    <!-- Symbol drop shadow -->
+    <filter id="ss" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.5"/>
+      <feOffset dx="0" dy="0.7"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Silver metallic rim: linear gradient bright top -> dark bottom -->
+    <linearGradient id="cr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ffffff"/>
+      <stop offset="20%" stop-color="#f4f4f4"/>
+      <stop offset="45%" stop-color="#bcbcbc"/>
+      <stop offset="55%" stop-color="#6e6e6e"/>
+      <stop offset="80%" stop-color="#4a4a4a"/>
+      <stop offset="100%" stop-color="#a8a8a8"/>
+    </linearGradient>
+
+    <!-- Bright top arc reflection on rim -->
+    <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Dark bottom arc reflection on rim -->
+    <linearGradient id="cb" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%"  stop-color="#1a1a1a" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Colored disc: vertical gradient (light top -> main -> dark bottom) -->
+    <linearGradient id="cd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ff6b6b"/>
+      <stop offset="50%" stop-color="#d62e2e"/>
+      <stop offset="100%" stop-color="#5a0e0e"/>
+    </linearGradient>
+
+    <!-- Radial overlay for sphere-like 3D curvature -->
+    <radialGradient id="cs" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.4"/>
+    </radialGradient>
+
+    <!-- Clip path so gloss stays inside the colored disc -->
+    <clipPath id="dc">
+      <circle cx="32" cy="32" r="26"/>
+    </clipPath>
+
+    <!-- Clip path for chrome rim ring (~3.5px wide band) -->
+    <clipPath id="rc">
+      <path d="M32,3 A29,29 0 1,1 32,61 A29,29 0 1,1 32,3 Z M32,6.5 A25.5,25.5 0 1,0 32,57.5 A25.5,25.5 0 1,0 32,6.5 Z" fill-rule="evenodd"/>
+    </clipPath>
+  </defs>
+
+  <!-- 1. Drop shadow under button -->
+  <ellipse cx="32" cy="34" rx="28" ry="28" fill="#000000" opacity="0.42" filter="url(#ds)"/>
+
+  <!-- 2. Silver metallic rim (~3.5px wide band) -->
+  <circle cx="32" cy="32" r="29" fill="url(#cr)"/>
+  <!-- Chrome specular highlights on rim -->
+  <g clip-path="url(#rc)">
+    <!-- Bright top arc reflection -->
+    <ellipse cx="32" cy="3.5" rx="28" ry="10" fill="url(#ct)" opacity="1"/>
+    <!-- Dark bottom arc reflection -->
+    <ellipse cx="32" cy="60.5" rx="28" ry="8" fill="url(#cb)" opacity="0.98"/>
+    <!-- Sharp horizontal bright streak at top of rim -->
+    <ellipse cx="32" cy="4.5" rx="24" ry="1.6" fill="#ffffff" opacity="1"/>
+    <!-- Sharp horizontal dark streak at bottom of rim -->
+    <ellipse cx="32" cy="59.5" rx="24" ry="1.3" fill="#000000" opacity="0.7"/>
+    <!-- Subtle horizontal highlight in middle of rim -->
+    <ellipse cx="32" cy="32" rx="29" ry="0.8" fill="#ffffff" opacity="0.3"/>
+  </g>
+
+  <!-- 3. Sharp dark ring between rim and disc (clear boundary) -->
+  <circle cx="32" cy="32" r="26.2" fill="none" stroke="#0a0a0a" stroke-width="0.7" opacity="0.9"/>
+  <!-- Inner highlight ring (top edge of colored disc, "embossed inset" effect) -->
+  <circle cx="32" cy="32" r="25.8" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- 4. Colored disc -->
+  <circle cx="32" cy="32" r="26" fill="url(#cd)"/>
+  <!-- 4b. Radial sphere-like curvature overlay -->
+  <circle cx="32" cy="32" r="26" fill="url(#cs)"/>
+
+  <!-- 5. Glossy highlights (clipped to disc) - TWO bright highlights per reference -->
+  <g clip-path="url(#dc)">
+    <!-- MAIN highlight: large soft top-left glossy reflection -->
+    <ellipse cx="24" cy="15" rx="22" ry="12" fill="#ffffff" opacity="0.6" filter="url(#gb)"/>
+    <!-- MAIN sharp specular spot upper-left (bright, visible) -->
+    <ellipse cx="21" cy="13" rx="11" ry="6" fill="#ffffff" opacity="0.9" filter="url(#sb)"/>
+    <!-- Tiny bright dot for extra realism -->
+    <ellipse cx="19" cy="12" rx="4" ry="2" fill="#ffffff" opacity="1" filter="url(#sb)"/>
+    <!-- SECONDARY highlight bottom-right (per reference: weaker, rounder) -->
+    <ellipse cx="42" cy="46" rx="8" ry="5" fill="#ffffff" opacity="0.45" filter="url(#gb)"/>
+    <ellipse cx="44" cy="45" rx="3" ry="1.5" fill="#ffffff" opacity="0.7" filter="url(#sb)"/>
+    <!-- Bottom inner shadow (button looks "inset" at bottom edge) -->
+    <ellipse cx="32" cy="51" rx="25" ry="10" fill="#000000" opacity="0.4" filter="url(#gb)"/>
+  </g>
+
+  <!-- 6. Inner subtle ring (dark contour of colored disc) -->
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#000000" stroke-width="0.4" opacity="0.4"/>
+
+  <!-- 7. Symbol with shadow -->
+  <g filter="url(#ss)">
+    <g fill="#ffffff">
+        <path d="M28,20 L48,20 L48,44 L28,44 L16,32 Z"/>
+        <path d="M35,26 L42,33 L35,40 M42,26 L42,40" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.55"/>
+    </g>
+  </g>
 </svg>
