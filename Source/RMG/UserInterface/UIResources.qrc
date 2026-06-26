@@ -15,6 +15,7 @@
   <file alias="icons/black/svg/download-line.svg">Resource/icons/black/svg/download-line.svg</file>
   <file alias="icons/black/svg/eye-line.svg">Resource/icons/black/svg/eye-line.svg</file>
   <file alias="icons/black/svg/file-line.svg">Resource/icons/black/svg/file-line.svg</file>
+  <file alias="icons/black/svg/file-line-combo.svg">Resource/icons/black/svg/file-line-combo.svg</file>
   <file alias="icons/black/svg/file-list-line.svg">Resource/icons/black/svg/file-list-line.svg</file>
   <file alias="icons/black/svg/folder-open-line.svg">Resource/icons/black/svg/folder-open-line.svg</file>
   <file alias="icons/black/svg/fullscreen-line.svg">Resource/icons/black/svg/fullscreen-line.svg</file>
@@ -52,6 +53,7 @@
   <file alias="icons/white/svg/download-line.svg">Resource/icons/white/svg/download-line.svg</file>
   <file alias="icons/white/svg/eye-line.svg">Resource/icons/white/svg/eye-line.svg</file>
   <file alias="icons/white/svg/file-line.svg">Resource/icons/white/svg/file-line.svg</file>
+  <file alias="icons/white/svg/file-line-combo.svg">Resource/icons/white/svg/file-line-combo.svg</file>
   <file alias="icons/white/svg/file-list-line.svg">Resource/icons/white/svg/file-list-line.svg</file>
   <file alias="icons/white/svg/folder-open-line.svg">Resource/icons/white/svg/folder-open-line.svg</file>
   <file alias="icons/white/svg/fullscreen-line.svg">Resource/icons/white/svg/fullscreen-line.svg</file>
