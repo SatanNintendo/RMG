@@ -368,7 +368,7 @@ void SettingsDialog::loadGamePluginSettings(void)
     for (QComboBox *comboBox : comboBoxArray)
     {
         comboBox->clear();
-        comboBox->addItem("**Use Core Plugin Settings**");
+        comboBox->addItem(tr("**Use Core Plugin Settings**"));
     }
 
     for (const auto &p : this->pluginList)
@@ -396,7 +396,7 @@ void SettingsDialog::loadGamePluginSettings(void)
 
         if (!pluginFound[i])
         {
-            pluginName = pluginFileNames[i] + " (not found)";
+            pluginName = pluginFileNames[i] + tr(" (not found)");
 
             comboBox->addItem(pluginName, pluginFileNames[i]);
             comboBox->setCurrentText(pluginName);
@@ -1292,7 +1292,7 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         comboBox = comboBoxArray[i];
         if (!pluginFound[i])
         {
-            pluginName = pluginFileNames[i] + " (not found)";
+            pluginName = pluginFileNames[i] + tr(" (not found)");
 
             comboBox->addItem(pluginName, pluginFileNames[i]);
             comboBox->setCurrentText(pluginName);
@@ -1386,14 +1386,14 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString fi
         QFile qFile(file);
         if (!qFile.open(QFile::ReadOnly))
         {
-            QtMessageBox::Error(this, "Failed to open file", "QFile::open() Failed");
+            QtMessageBox::Error(this, tr("Failed to open file"), tr("QFile::open() Failed"));
             return;
         }
 
         QCryptographicHash hash(QCryptographicHash::Algorithm::Md5);
         if (!hash.addData(&qFile))
         {
-            QtMessageBox::Error(this, "MD5 hashing failed", "QCryptographicHash::addData() Failed");
+            QtMessageBox::Error(this, tr("MD5 hashing failed"), tr("QCryptographicHash::addData() Failed"));
             return;
         }
 
@@ -1411,7 +1411,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString fi
 
         if (!hashFound)
         {
-            QtMessageBox::Error(this, "MD5 mismatch", "Expected file with MD5: \"" + md5List.first() + "\"");
+            QtMessageBox::Error(this, tr("MD5 mismatch"), tr("Expected file with MD5: \"%1\"").arg(md5List.first()));
             return;
         }
     }
@@ -1450,7 +1450,7 @@ bool SettingsDialog::applyPluginSettings(void)
     {
         if (!CoreApplyPluginSettings())
         {
-            QtMessageBox::Error(this, "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
+            QtMessageBox::Error(this, tr("CoreApplyPluginSettings() Failed"), QString::fromStdString(CoreGetError()));
             return false;
         }
     }

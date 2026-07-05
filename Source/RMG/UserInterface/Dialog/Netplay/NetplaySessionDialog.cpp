@@ -99,8 +99,8 @@ bool NetplaySessionDialog::getCheats(std::vector<CoreCheat>& cheats, QJsonArray&
 
     if (!CheatsCommon::ParseCheatJson(cheatsArray, cheats))
     {
-        QString error = "Failed to parse cheats json: " + QString(cheatDocument.toJson());
-        QtMessageBox::Error(this, "CheatsCommon::ParseCheatJson() Failed", error);
+        QString error = tr("Failed to parse cheats json: %1").arg(QString(cheatDocument.toJson()));
+        QtMessageBox::Error(this, tr("CheatsCommon::ParseCheatJson() Failed"), error);
         return false;
     }
 
@@ -119,7 +119,7 @@ bool NetplaySessionDialog::applyCheats(void)
 
     if (!CoreSetNetplayCheats(cheats))
     {
-        QtMessageBox::Error(this, "CoreSetNetplayCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreSetNetplayCheats() Failed"), QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -202,7 +202,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(const QString& messa
             startButton->setEnabled(true);
             cheatsButton->setEnabled(true);
 
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
         }
     }
     else if (type == "reply_motd")
@@ -220,7 +220,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(const QString& messa
         }
         else
         {
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
         }
     }
 }

@@ -561,6 +561,108 @@ TRANSLATIONS = {
     "PIF ROMs (*.rom)": "ROM PIF (*.rom)",
     # NetplaySessionBrowserDialog.cpp
     "Open %1": "Открыть %1",
+
+    # === Newly wrapped strings (tr() added to previously-hardcoded user-visible text) ===
+    # These strings were hardcoded in C++ source and are now wrapped in tr() so they
+    # can be translated. Each entry below mirrors the new tr() call added to the code.
+
+    # --- SettingsDialog.cpp ---
+    "**Use Core Plugin Settings**": "**Использовать настройки плагина ядра**",
+    " (not found)": " (не найден)",
+    "Failed to open file": "Не удалось открыть файл",
+    "QFile::open() Failed": "Сбой QFile::open()",
+    "MD5 hashing failed": "Не удалось вычислить MD5-хеш",
+    "QCryptographicHash::addData() Failed": "Сбой QCryptographicHash::addData()",
+    "MD5 mismatch": "Несовпадение MD5",
+    "Expected file with MD5: \"%1\"": "Ожидаемый MD5 файла: «%1»",
+    "CoreApplyPluginSettings() Failed": "Сбой CoreApplyPluginSettings()",
+
+    # --- ControllerWidget.cpp (RMG-Input) ---
+    "Create New Profile": "Создать новый профиль",
+    "New profile name:": "Имя нового профиля:",
+    "Profile name cannot contain ';', '[' or ']'!": "Имя профиля не может содержать «;», «[» или «]»!",
+    "Profile with the same name already exists!": "Профиль с таким именем уже существует!",
+
+    # --- MainWindow.cpp ---
+    "CoreInit() Failed": "Сбой CoreInit()",
+    "SetupVidExt() Failed": "Сбой SetupVidExt()",
+    "CoreCallbacks::Init() Failed": "Сбой CoreCallbacks::Init()",
+    "Are you sure you want to exit RMG?": "Вы уверены, что хотите выйти из RMG?",
+    "Don't ask for confirmation again": "Больше не запрашивать подтверждение",
+    "Are you sure you want to launch the drag & dropped ROM?": "Вы уверены, что хотите запустить перетащенный ROM?",
+    "You're already on the latest version": "У вас уже установлена последняя версия",
+    "Failed to check for updates": "Не удалось проверить обновления",
+    "EmulationThread::run Failed": "Сбой EmulationThread::run",
+    "Cannot start emulation when netplay session is active": "Невозможно запустить эмуляцию во время активной сессии сетевой игры",
+    "Cannot start emulation when emulation is already running or being started": "Невозможно запустить эмуляцию, когда эмуляция уже запущена или запускается",
+    "CoreArePluginsReady() Failed": "Сбой CoreArePluginsReady()",
+    "CoreStopEmulation() Failed": "Сбой CoreStopEmulation()",
+    "CoreResetEmulation() Failed": "Сбой CoreResetEmulation()",
+    "CoreTakeScreenshot() Failed": "Сбой CoreTakeScreenshot()",
+    "CoreSetSpeedLimiterState() Failed": "Сбой CoreSetSpeedLimiterState()",
+    "CoreSetSpeedFactor() Failed": "Сбой CoreSetSpeedFactor()",
+    "CoreSaveState() Failed": "Сбой CoreSaveState()",
+    "CoreLoadSaveState() Failed": "Сбой CoreLoadSaveState()",
+    "CoreSetSaveStateSlot() Failed": "Сбой CoreSetSaveStateSlot()",
+    "CorePressGamesharkButton() Failed": "Сбой CorePressGamesharkButton()",
+    "CoreToggleFullscreen() Failed": "Сбой CoreToggleFullscreen()",
+    "CoreClearRomHeaderAndSettingsCache() Failed": "Сбой CoreClearRomHeaderAndSettingsCache()",
+    "CoreToggleMuteVolume() Failed": "Сбой CoreToggleMuteVolume()",
+    "CoreGetCachedRomHeaderAndSettings() Failed": "Сбой CoreGetCachedRomHeaderAndSettings()",
+    "CorePluginsOpenROMConfig() Failed": "Сбой CorePluginsOpenROMConfig()",
+    "Core Error": "Ошибка ядра",
+    "Failed to load save state": "Не удалось загрузить сохранение состояния",
+    "OpenGL": "OpenGL",
+    "OpenGL ES": "OpenGL ES",
+    "Vulkan": "Vulkan",
+
+    # --- DownloadUpdateDialog.cpp ---
+    "Downloading %1...": "Загрузка %1...",
+    "Failed to download update file": "Не удалось загрузить файл обновления",
+    "Failed to create temporary directory": "Не удалось создать временный каталог",
+    "APPIMAGE variable is empty or invalid": "Переменная APPIMAGE пуста или недействительна",
+    "std::rename() Failed": "Сбой std::rename()",
+
+    # --- InstallUpdateDialog.cpp ---
+    "Executing %1...": "Выполнение %1...",
+    "Extracting %1...": "Распаковка %1...",
+    "Executing update script...": "Выполнение скрипта обновления...",
+    "QDir::mkdir() Failed": "Сбой QDir::mkdir()",
+    "CoreUnzip() Failed": "Сбой CoreUnzip()",
+
+    # --- UpdateDialog.cpp ---
+    "Failed to find update file": "Не удалось найти файл обновления",
+
+    # --- NetplaySessionBrowserDialog.cpp ---
+    "Server Error": "Ошибка сервера",
+    "Failed to open server list json: %1": "Не удалось открыть JSON списка серверов: %1",
+    "Failed to retrieve server list json: %1": "Не удалось получить JSON списка серверов: %1",
+    "Connection Failed": "Сбой подключения",
+    "Incorrect ROM Selected": "Выбран некорректный ROM",
+    "Expected MD5: %1\n": "Ожидаемый MD5: %1\n",
+    "Received MD5: %1": "Полученный MD5: %1",
+    "RSP Plugin Mismatch": "Несовпадение плагина RSP",
+    "Expected RSP Plugin: %1\n": "Ожидаемый плагин RSP: %1\n",
+    "Current  RSP Plugin: %1": "Текущий    плагин RSP: %1",
+    "GFX Plugin Mismatch": "Несовпадение плагина видео",
+    "Expected GFX Plugin: %1\n": "Ожидаемый плагин видео: %1\n",
+    "Current  GFX Plugin: %1": "Текущий    плагин видео: %1",
+
+    # --- NetplaySessionDialog.cpp ---
+    "Failed to parse cheats json: %1": "Не удалось разобрать JSON чит-кодов: %1",
+    "CheatsCommon::ParseCheatJson() Failed": "Сбой CheatsCommon::ParseCheatJson()",
+    "CoreSetNetplayCheats() Failed": "Сбой CoreSetNetplayCheats()",
+
+    # --- AddCheatDialog.cpp ---
+    "CoreParseCheat() Failed": "Сбой CoreParseCheat()",
+    "CoreAddCheat() Failed": "Сбой CoreAddCheat()",
+    "CoreUpdateCheat() Failed": "Сбой CoreUpdateCheat()",
+    "Validating Cheat Failed": "Сбой проверки чит-кода",
+
+    # --- CheatsDialog.cpp ---
+    "CoreGetCurrentCheats() Failed": "Сбой CoreGetCurrentCheats()",
+    "CoreRemoveCheat() Failed": "Сбой CoreRemoveCheat()",
+    "CoreApplyCheats() Failed": "Сбой CoreApplyCheats()",
 }
 
 

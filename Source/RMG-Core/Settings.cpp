@@ -159,7 +159,10 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_GUI, "Language", std::string("")};
         break;
     case SettingsID::GUI_CheckForUpdates:
-        setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
+        // Disabled by default — the user can opt in via the Settings dialog.
+        // (Previous default was `true`, which caused RMG to phone home on every
+        // launch. Per the fork's policy, automatic update checks are opt-in.)
+        setting = {SETTING_SECTION_GUI, "CheckForUpdates", false};
         break;
     case SettingsID::GUI_LastUpdateCheck:
         setting = {SETTING_SECTION_GUI, "LastUpdateCheck", std::string("")};

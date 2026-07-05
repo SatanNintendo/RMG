@@ -63,7 +63,7 @@ void InstallUpdateDialog::install(void)
 
     if (this->filename.endsWith(".exe"))
     {
-        this->label->setText("Executing " + this->filename + "...");
+        this->label->setText(tr("Executing %1...").arg(this->filename));
         QStringList scriptLines =
         {
             "@echo off",
@@ -84,13 +84,13 @@ void InstallUpdateDialog::install(void)
         return;
     }
 
-    this->label->setText("Extracting " + this->filename + "...");
+    this->label->setText(tr("Extracting %1...").arg(this->filename));
     this->progressBar->setValue(50);
 
     QDir dir(this->temporaryDirectory);
     if (!dir.mkdir("extract"))
     {
-        QtMessageBox::Error(this, "QDir::mkdir() Failed", "");
+        QtMessageBox::Error(this, tr("QDir::mkdir() Failed"), "");
         this->reject();
         return;
     }
@@ -101,12 +101,12 @@ void InstallUpdateDialog::install(void)
 
     if (!CoreUnzip(fullFilePath.toStdU32String(), extractDirectory.toStdU32String()))
     {
-        QtMessageBox::Error(this, "CoreUnzip() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreUnzip() Failed"), QString::fromStdString(CoreGetError()));
         this->reject();
         return;
     }
 
-    this->label->setText("Executing update script...");
+    this->label->setText(tr("Executing update script..."));
     this->progressBar->setValue(100);
 
     extractDirectory = QDir::toNativeSeparators(extractDirectory);
@@ -142,7 +142,7 @@ void InstallUpdateDialog::writeAndRunScript(QStringList stringList)
     QFile scriptFile(scriptPath);
     if (!scriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QtMessageBox::Error(this, "QFile::open() Failed", "");
+        QtMessageBox::Error(this, tr("QFile::open() Failed"), "");
         return;
     }
 

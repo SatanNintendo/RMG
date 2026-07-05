@@ -704,7 +704,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     else
     { // no match
         QString title = QString::fromStdString(deviceName);
-        title += " (not found)";
+        title += tr(" (not found)");
         this->inputDeviceComboBox->addItem(title, QVariant::fromValue<inputDeviceData>({ device, {} }));
         this->inputDeviceComboBox->setCurrentIndex(this->inputDeviceComboBox->count() - 1);
     }
@@ -823,8 +823,8 @@ void ControllerWidget::on_addProfileButton_clicked()
 
     // ask user for a new profile name
     QString newProfile = QInputDialog::getText(this,
-            "Create New Profile", "New profile name:", 
-            QLineEdit::Normal, "", 
+            tr("Create New Profile"), tr("New profile name:"),
+            QLineEdit::Normal, "",
             nullptr,
             Qt::WindowCloseButtonHint | Qt::WindowTitleHint);
     if (newProfile.isEmpty())
@@ -837,7 +837,7 @@ void ControllerWidget::on_addProfileButton_clicked()
         newProfile.contains('[') ||
         newProfile.contains(']'))
     {
-        this->showErrorMessage("Profile name cannot contain ';','[' or ']'!");
+        this->showErrorMessage(tr("Profile name cannot contain ';', '[' or ']'!"));
         return;
     }
 
@@ -845,7 +845,7 @@ void ControllerWidget::on_addProfileButton_clicked()
     profilesIter = std::find(profiles.begin(), profiles.end(), newProfile.toStdString());
     if (profilesIter != profiles.end())
     {
-        this->showErrorMessage("Profile with the same name already exists!");
+        this->showErrorMessage(tr("Profile with the same name already exists!"));
         return;
     }
 

@@ -92,7 +92,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
             }
             else
             {
-                QtMessageBox::Error(this, "Server Error", "Failed to open server list json: " + qFile.errorString());
+                QtMessageBox::Error(this, tr("Server Error"), tr("Failed to open server list json: %1").arg(qFile.errorString()));
             }
         }
         else if (QUrl(serverUrl).isValid())
@@ -233,7 +233,7 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
         }
         else
         {
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
             this->toggleUI(true, this->validate());
         }
     }
@@ -261,7 +261,7 @@ void CreateNetplaySessionDialog::on_jsonServerListDownload_Finished(QNetworkRepl
 {
     if (reply->error())
     {
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve server list json: " + reply->errorString());
+        QtMessageBox::Error(this, tr("Server Error"), tr("Failed to retrieve server list json: %1").arg(reply->errorString()));
         reply->deleteLater();
         return;
     }
@@ -317,7 +317,7 @@ void CreateNetplaySessionDialog::accept()
 {
     if (!this->webSocket->isValid())
     {
-        QtMessageBox::Error(this, "Server Error", "Connection Failed");
+        QtMessageBox::Error(this, tr("Server Error"), tr("Connection Failed"));
         return;
     }
 
