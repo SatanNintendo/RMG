@@ -93,6 +93,10 @@ def main():
         repo_root / "Source" / "RMG",
         repo_root / "Source" / "RMG-Input",
         repo_root / "Source" / "RMG-Audio",
+        # 3rd-party plugins with Qt UIs (share the MainDialog context
+        # with RMG-Input/RMG-Audio; string overlap analysis showed 0 conflicts)
+        repo_root / "Source" / "3rdParty" / "mupen64plus-video-parallel",
+        repo_root / "Source" / "3rdParty" / "mupen64plus-video-angrylion-plus",
     ]
 
     # context -> set of source strings
