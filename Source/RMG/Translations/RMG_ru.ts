@@ -630,7 +630,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -1261,7 +1261,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Soft Reset</source>
-            <translation>&amp;Мягкий сброс</translation>
+            <translation>&amp;Сброс</translation>
         </message>
         <message>
             <source>&amp;Start ROM</source>
@@ -2903,7 +2903,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -4233,7 +4233,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -4499,7 +4499,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -5081,7 +5081,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Soft Reset</source>
-            <translation>&amp;Мягкий сброс</translation>
+            <translation>&amp;Сброс</translation>
         </message>
         <message>
             <source>&amp;Start ROM</source>
