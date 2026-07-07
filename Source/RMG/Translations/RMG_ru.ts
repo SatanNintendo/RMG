@@ -2664,7 +2664,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>;Запустить комбинацию</translation>
+            <translation>;Запуск комбо</translation>
         </message>
         <message>
             <source>Start ROM</source>
@@ -4385,7 +4385,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>Запустить комбинацию</translation>
+            <translation>Запуск комбо</translation>
         </message>
         <message>
             <source>Start ROM</source>
