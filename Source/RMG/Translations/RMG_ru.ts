@@ -1621,7 +1621,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Co&amp;mbo</source>
-            <translation>Запустить-ко&amp;мбинацию</translation>
+            <translation>Запуск-ко&amp;мбо</translation>
         </message>
         <message>
             <source>State loaded from slot: %1</source>
@@ -2915,7 +2915,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>;Запустить комбинацию</translation>
+            <translation>;Запуск комбо</translation>
         </message>
         <message>
             <source>Start ROM</source>
@@ -4245,7 +4245,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Combo</source>
-            <translation>Запустить комбинацию</translation>
+            <translation>Запуск комбо</translation>
         </message>
         <message>
             <source>Start ROM</source>
@@ -5441,7 +5441,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Start Co&amp;mbo</source>
-            <translation>Запустить-ко&amp;мбинацию</translation>
+            <translation>Запуск-ко&amp;мбо</translation>
         </message>
         <message>
             <source>State loaded from slot: %1</source>
