@@ -1908,7 +1908,7 @@ void MainWindow::on_Action_System_SaveState(void)
     }
     else
     {
-        OnScreenDisplaySetMessage("Saved state to slot: " + std::to_string(CoreGetSaveStateSlot()));
+        OnScreenDisplaySetMessage(tr("Saved state to slot: %1").arg(CoreGetSaveStateSlot()).toStdString());
     }
 }
 
@@ -1938,7 +1938,7 @@ void MainWindow::on_Action_System_SaveAs(void)
         }
         else
         {
-            OnScreenDisplaySetMessage("Saved state to: " + QDir::toNativeSeparators(fileName).toStdString());
+            OnScreenDisplaySetMessage(tr("Saved state to: %1").arg(QDir::toNativeSeparators(fileName)).toStdString());
         }
     }
 
@@ -1959,7 +1959,7 @@ void MainWindow::on_Action_System_LoadState(void)
     }
     else
     {
-        OnScreenDisplaySetMessage("State loaded from slot: " + std::to_string(CoreGetSaveStateSlot()));
+        OnScreenDisplaySetMessage(tr("State loaded from slot: %1").arg(CoreGetSaveStateSlot()).toStdString());
     }
 }
 
@@ -1987,7 +1987,7 @@ void MainWindow::on_Action_System_Load(void)
         }
         else
         {
-            OnScreenDisplaySetMessage("State loaded from: " + QDir::toNativeSeparators(fileName).toStdString());
+            OnScreenDisplaySetMessage(tr("State loaded from: %1").arg(QDir::toNativeSeparators(fileName)).toStdString());
         }
     }
 
@@ -2856,7 +2856,7 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             QAction* slotAction  = this->ui_SlotActions[value];
             QString dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
-            std::string message  = "Selected save slot: " + std::to_string(value);
+            std::string message  = tr("Selected save slot: %1").arg(value).toStdString();
 
             if (this->ui_LoadSaveStateSlotTimerId != -1)
             {
@@ -2872,7 +2872,7 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             }
             else
             {
-                message += " [N/A]";
+                message += tr(" [N/A]").toStdString();
             }
 
             // display message
@@ -2883,21 +2883,21 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         } break;
         case CoreStateCallbackType::SpeedFactor:
         {
-            OnScreenDisplaySetMessage("Playback speed: " + std::to_string(value) + "%");
+            OnScreenDisplaySetMessage(tr("Playback speed: %1%").arg(value).toStdString());
         } break;
         case CoreStateCallbackType::AudioVolume:
         {
-            OnScreenDisplaySetMessage("Volume: " + std::to_string(value) + "%");
+            OnScreenDisplaySetMessage(tr("Volume: %1%").arg(value).toStdString());
         } break;
         case CoreStateCallbackType::AudioMute:
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Volume unmuted");
+                OnScreenDisplaySetMessage(tr("Volume unmuted").toStdString());
             }
             else
             {
-                OnScreenDisplaySetMessage("Volume muted");
+                OnScreenDisplaySetMessage(tr("Volume muted").toStdString());
             }
         } break;
         case CoreStateCallbackType::SaveStateLoaded:
@@ -2925,11 +2925,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             }
             else if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to load save state.");
+                OnScreenDisplaySetMessage(tr("Failed to load save state.").toStdString());
             }
             else if (!this->ui_ManuallyLoadedState)
             {
-                OnScreenDisplaySetMessage("Loaded save state.");
+                OnScreenDisplaySetMessage(tr("Loaded save state.").toStdString());
             }
 
             this->ui_ManuallyLoadedState = false;
@@ -2938,11 +2938,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to save state.");
+                OnScreenDisplaySetMessage(tr("Failed to save state.").toStdString());
             }
             else if (!this->ui_ManuallySavedState)
             {
-                OnScreenDisplaySetMessage("Saved state.");
+                OnScreenDisplaySetMessage(tr("Saved state.").toStdString());
             }
 
             // refresh savestate slot times in 1 second,
@@ -2960,11 +2960,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to capture screenshot.");
+                OnScreenDisplaySetMessage(tr("Failed to capture screenshot.").toStdString());
             }
             else
             {
-                OnScreenDisplaySetMessage("Captured screenshot.");
+                OnScreenDisplaySetMessage(tr("Captured screenshot.").toStdString());
             }
         } break;
     }

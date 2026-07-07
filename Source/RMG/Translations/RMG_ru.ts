@@ -168,6 +168,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Код:</translation>
         </message>
         <message>
+            <source>CoreAddCheat() Failed</source>
+            <translation>Сбой CoreAddCheat()</translation>
+        </message>
+        <message>
+            <source>CoreParseCheat() Failed</source>
+            <translation>Сбой CoreParseCheat()</translation>
+        </message>
+        <message>
+            <source>CoreUpdateCheat() Failed</source>
+            <translation>Сбой CoreUpdateCheat()</translation>
+        </message>
+        <message>
             <source>Edit Cheat</source>
             <translation>Изменить чит</translation>
         </message>
@@ -183,6 +195,10 @@ li.checked::marker { content: "\2612"; }
             <source>Options:</source>
             <translation>Опции:</translation>
         </message>
+        <message>
+            <source>Validating Cheat Failed</source>
+            <translation>Сбой проверки чит-кода</translation>
+        </message>
     </context>
     <context>
         <name>CheatsDialog</name>
@@ -193,6 +209,18 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Cheats</source>
             <translation>Читы</translation>
+        </message>
+        <message>
+            <source>CoreApplyCheats() Failed</source>
+            <translation>Сбой CoreApplyCheats()</translation>
+        </message>
+        <message>
+            <source>CoreGetCurrentCheats() Failed</source>
+            <translation>Сбой CoreGetCurrentCheats()</translation>
+        </message>
+        <message>
+            <source>CoreRemoveCheat() Failed</source>
+            <translation>Сбой CoreRemoveCheat()</translation>
         </message>
         <message>
             <source>Edit</source>
@@ -220,6 +248,10 @@ li.checked::marker { content: "\2612"; }
     </context>
     <context>
         <name>ControllerWidget</name>
+        <message>
+            <source> (not found)</source>
+            <translation> (не найден)</translation>
+        </message>
         <message>
             <source>+</source>
             <translation>+</translation>
@@ -269,6 +301,10 @@ li.checked::marker { content: "\2612"; }
             <translation>ControllerWidget</translation>
         </message>
         <message>
+            <source>Create New Profile</source>
+            <translation>Создать новый профиль</translation>
+        </message>
+        <message>
             <source>Deadzone: %1%</source>
             <translation>Мёртвая зона: %1%</translation>
         </message>
@@ -305,12 +341,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Влево:</translation>
         </message>
         <message>
+            <source>New profile name:</source>
+            <translation>Имя нового профиля:</translation>
+        </message>
+        <message>
             <source>Options</source>
             <translation>Опции</translation>
         </message>
         <message>
             <source>Profile</source>
             <translation>Профиль</translation>
+        </message>
+        <message>
+            <source>Profile name cannot contain ';', '[' or ']'!</source>
+            <translation>Имя профиля не может содержать «;», «[» или «]»!</translation>
+        </message>
+        <message>
+            <source>Profile with the same name already exists!</source>
+            <translation>Профиль с таким именем уже существует!</translation>
         </message>
         <message>
             <source>R-Shoulder:</source>
@@ -352,12 +400,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Вычисление...</translation>
         </message>
         <message>
+            <source>Connection Failed</source>
+            <translation>Сбой подключения</translation>
+        </message>
+        <message>
             <source>Create</source>
             <translation>Создать</translation>
         </message>
         <message>
             <source>Create Netplay Session</source>
             <translation>Создать сетевую сессию</translation>
+        </message>
+        <message>
+            <source>Failed to open server list json: %1</source>
+            <translation>Не удалось открыть JSON списка серверов: %1</translation>
+        </message>
+        <message>
+            <source>Failed to retrieve server list json: %1</source>
+            <translation>Не удалось получить JSON списка серверов: %1</translation>
         </message>
         <message>
             <source>Nickname</source>
@@ -370,6 +430,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Server</source>
             <translation>Сервер</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Ошибка сервера</translation>
         </message>
         <message>
             <source>Server ping</source>
@@ -401,12 +465,36 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>DownloadUpdateDialog</name>
         <message>
+            <source>APPIMAGE variable is empty or invalid</source>
+            <translation>Переменная APPIMAGE пуста или недействительна</translation>
+        </message>
+        <message>
+            <source>Downloading %1...</source>
+            <translation>Загрузка %1...</translation>
+        </message>
+        <message>
             <source>Downloading ...</source>
             <translation>Загрузка ...</translation>
         </message>
         <message>
             <source>Downloading Update</source>
             <translation>Загрузка обновления</translation>
+        </message>
+        <message>
+            <source>Failed to create temporary directory</source>
+            <translation>Не удалось создать временный каталог</translation>
+        </message>
+        <message>
+            <source>Failed to download update file</source>
+            <translation>Не удалось загрузить файл обновления</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>Сбой QFile::open()</translation>
+        </message>
+        <message>
+            <source>std::rename() Failed</source>
+            <translation>Сбой std::rename()</translation>
         </message>
     </context>
     <context>
@@ -595,12 +683,36 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>InstallUpdateDialog</name>
         <message>
+            <source>CoreUnzip() Failed</source>
+            <translation>Сбой CoreUnzip()</translation>
+        </message>
+        <message>
+            <source>Executing %1...</source>
+            <translation>Выполнение %1...</translation>
+        </message>
+        <message>
+            <source>Executing update script...</source>
+            <translation>Выполнение скрипта обновления...</translation>
+        </message>
+        <message>
+            <source>Extracting %1...</source>
+            <translation>Распаковка %1...</translation>
+        </message>
+        <message>
             <source>Installing Update</source>
             <translation>Установка обновления</translation>
         </message>
         <message>
             <source>Installing...</source>
             <translation>Установка...</translation>
+        </message>
+        <message>
+            <source>QDir::mkdir() Failed</source>
+            <translation>Сбой QDir::mkdir()</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>Сбой QFile::open()</translation>
         </message>
     </context>
     <context>
@@ -791,6 +903,10 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>MainWindow</name>
         <message>
+            <source> [N/A]</source>
+            <translation> [н/д]</translation>
+        </message>
+        <message>
             <source>&amp;100%</source>
             <translation>&amp;100%</translation>
         </message>
@@ -843,10 +959,6 @@ li.checked::marker { content: "\2612"; }
             <translation>&amp;Во весь экран</translation>
         </message>
         <message>
-            <source>&amp;GS Button</source>
-            <translation>Кнопка &amp;GS</translation>
-        </message>
-        <message>
             <source>&amp;Game List</source>
             <translation>&amp;Список игр</translation>
         </message>
@@ -857,6 +969,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>&amp;Graphics</source>
             <translation>&amp;Графика</translation>
+        </message>
+        <message>
+            <source>&amp;GS Button</source>
+            <translation>Кнопка &amp;GS</translation>
         </message>
         <message>
             <source>&amp;Hard Reset</source>
@@ -879,16 +995,16 @@ li.checked::marker { content: "\2612"; }
             <translation>&amp;Пауза</translation>
         </message>
         <message>
-            <source>&amp;RSP</source>
-            <translation>&amp;RSP</translation>
-        </message>
-        <message>
             <source>&amp;Refresh ROMs</source>
             <translation>&amp;Обновить ROMы</translation>
         </message>
         <message>
             <source>&amp;Reset</source>
             <translation>&amp;Сброс</translation>
+        </message>
+        <message>
+            <source>&amp;RSP</source>
+            <translation>&amp;RSP</translation>
         </message>
         <message>
             <source>&amp;Settings</source>
@@ -947,16 +1063,140 @@ li.checked::marker { content: "\2612"; }
             <translation>275%</translation>
         </message>
         <message>
+            <source>Are you sure you want to exit RMG?</source>
+            <translation>Вы уверены, что хотите выйти из RMG?</translation>
+        </message>
+        <message>
+            <source>Are you sure you want to launch the drag &amp; dropped ROM?</source>
+            <translation>Are you sure you want to launch the drag &amp; dropped ROM?</translation>
+        </message>
+        <message>
             <source>Browse Sessions</source>
             <translation>Просмотр сессий</translation>
+        </message>
+        <message>
+            <source>Cannot start emulation when emulation is already running or being started</source>
+            <translation>Невозможно запустить эмуляцию, когда эмуляция уже запущена или запускается</translation>
+        </message>
+        <message>
+            <source>Cannot start emulation when netplay session is active</source>
+            <translation>Невозможно запустить эмуляцию во время активной сессии сетевой игры</translation>
+        </message>
+        <message>
+            <source>Captured screenshot.</source>
+            <translation>Снимок экрана сделан.</translation>
         </message>
         <message>
             <source>Cheats...</source>
             <translation>Читы...</translation>
         </message>
         <message>
+            <source>Core Error</source>
+            <translation>Ошибка ядра</translation>
+        </message>
+        <message>
+            <source>CoreApplyPluginSettings() Failed</source>
+            <translation>Сбой CoreApplyPluginSettings()</translation>
+        </message>
+        <message>
+            <source>CoreArePluginsReady() Failed</source>
+            <translation>Сбой CoreArePluginsReady()</translation>
+        </message>
+        <message>
+            <source>CoreCallbacks::Init() Failed</source>
+            <translation>Сбой CoreCallbacks::Init()</translation>
+        </message>
+        <message>
+            <source>CoreClearRomHeaderAndSettingsCache() Failed</source>
+            <translation>Сбой CoreClearRomHeaderAndSettingsCache()</translation>
+        </message>
+        <message>
+            <source>CoreGetCachedRomHeaderAndSettings() Failed</source>
+            <translation>Сбой CoreGetCachedRomHeaderAndSettings()</translation>
+        </message>
+        <message>
+            <source>CoreInit() Failed</source>
+            <translation>Сбой CoreInit()</translation>
+        </message>
+        <message>
+            <source>CoreLoadSaveState() Failed</source>
+            <translation>Сбой CoreLoadSaveState()</translation>
+        </message>
+        <message>
+            <source>CorePluginsOpenROMConfig() Failed</source>
+            <translation>Сбой CorePluginsOpenROMConfig()</translation>
+        </message>
+        <message>
+            <source>CorePressGamesharkButton() Failed</source>
+            <translation>Сбой CorePressGamesharkButton()</translation>
+        </message>
+        <message>
+            <source>CoreResetEmulation() Failed</source>
+            <translation>Сбой CoreResetEmulation()</translation>
+        </message>
+        <message>
+            <source>CoreSaveState() Failed</source>
+            <translation>Сбой CoreSaveState()</translation>
+        </message>
+        <message>
+            <source>CoreSetSaveStateSlot() Failed</source>
+            <translation>Сбой CoreSetSaveStateSlot()</translation>
+        </message>
+        <message>
+            <source>CoreSetSpeedFactor() Failed</source>
+            <translation>Сбой CoreSetSpeedFactor()</translation>
+        </message>
+        <message>
+            <source>CoreSetSpeedLimiterState() Failed</source>
+            <translation>Сбой CoreSetSpeedLimiterState()</translation>
+        </message>
+        <message>
+            <source>CoreStopEmulation() Failed</source>
+            <translation>Сбой CoreStopEmulation()</translation>
+        </message>
+        <message>
+            <source>CoreTakeScreenshot() Failed</source>
+            <translation>Сбой CoreTakeScreenshot()</translation>
+        </message>
+        <message>
+            <source>CoreToggleFullscreen() Failed</source>
+            <translation>Сбой CoreToggleFullscreen()</translation>
+        </message>
+        <message>
+            <source>CoreToggleMuteVolume() Failed</source>
+            <translation>Сбой CoreToggleMuteVolume()</translation>
+        </message>
+        <message>
+            <source>Don't ask for confirmation again</source>
+            <translation>Больше не запрашивать подтверждение</translation>
+        </message>
+        <message>
+            <source>EmulationThread::run Failed</source>
+            <translation>Сбой EmulationThread::run</translation>
+        </message>
+        <message>
             <source>Error</source>
             <translation>Ошибка</translation>
+        </message>
+        <message>
+            <source>Failed to capture screenshot.</source>
+            <translation>Не удалось сделать снимок экрана.</translation>
+        </message>
+        <message>
+            <source>Failed to check for updates</source>
+            <translation>Не удалось проверить обновления</translation>
+        </message>
+        <message>
+            <source>Failed to load save state</source>
+            <translation>Не удалось загрузить сохранение состояния</translation>
+        </message>
+        <message>
+            <source>Failed to load save state.</source>
+            <translation>Не удалось загрузить сохранение состояния.</translation>
+        </message>
+        <message>
+            <source>Failed to save state.</source>
+            <translation>Не удалось сохранить состояние.</translation>
         </message>
         <message>
             <source>Ga&amp;me Grid</source>
@@ -973,6 +1213,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Loa&amp;d...</source>
             <translation>Загрузи&amp;ть...</translation>
+        </message>
+        <message>
+            <source>Loaded save state.</source>
+            <translation>Сохранение состояния загружено.</translation>
         </message>
         <message>
             <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
@@ -1007,6 +1251,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Открыть сохранение состояния</translation>
         </message>
         <message>
+            <source>OpenGL</source>
+            <translation>OpenGL</translation>
+        </message>
+        <message>
+            <source>OpenGL ES</source>
+            <translation>OpenGL ES</translation>
+        </message>
+        <message>
+            <source>Playback speed: %1%</source>
+            <translation>Скорость воспроизведения: %1%</translation>
+        </message>
+        <message>
             <source>Rosalie's Mupen GUI (VERSION)</source>
             <translation>Rosalie's Mupen GUI (VERSION)</translation>
         </message>
@@ -1039,6 +1295,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Сохранение состояния (*.state);;Сохранение Project64 (*.pj);;Все файлы (*)</translation>
         </message>
         <message>
+            <source>Saved state to slot: %1</source>
+            <translation>Сохранено состояние в слот: %1</translation>
+        </message>
+        <message>
+            <source>Saved state to: %1</source>
+            <translation>Сохранено состояние в: %1</translation>
+        </message>
+        <message>
+            <source>Saved state.</source>
+            <translation>Состояние сохранено.</translation>
+        </message>
+        <message>
             <source>Scree&amp;nshot</source>
             <translation>Скри&amp;ншот</translation>
         </message>
@@ -1051,8 +1319,16 @@ li.checked::marker { content: "\2612"; }
             <translation>Выбрать папку с ROMами</translation>
         </message>
         <message>
+            <source>Selected save slot: %1</source>
+            <translation>Выбран слот сохранения: %1</translation>
+        </message>
+        <message>
             <source>Setti&amp;ngs</source>
             <translation>Настр&amp;ойки</translation>
+        </message>
+        <message>
+            <source>SetupVidExt() Failed</source>
+            <translation>Сбой SetupVidExt()</translation>
         </message>
         <message>
             <source>Slot %1</source>
@@ -1103,6 +1379,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Запустить-ко&amp;мбинацию</translation>
         </message>
         <message>
+            <source>State loaded from slot: %1</source>
+            <translation>Состояние загружено из слота: %1</translation>
+        </message>
+        <message>
+            <source>State loaded from: %1</source>
+            <translation>Состояние загружено из: %1</translation>
+        </message>
+        <message>
+            <source>toolBar</source>
+            <translation>toolBar</translation>
+        </message>
+        <message>
             <source>View</source>
             <translation>Вид</translation>
         </message>
@@ -1111,8 +1399,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Просмотреть сессию</translation>
         </message>
         <message>
-            <source>toolBar</source>
-            <translation>toolBar</translation>
+            <source>Volume muted</source>
+            <translation>Звук выключен</translation>
+        </message>
+        <message>
+            <source>Volume unmuted</source>
+            <translation>Звук включён</translation>
+        </message>
+        <message>
+            <source>Volume: %1%</source>
+            <translation>Громкость: %1%</translation>
+        </message>
+        <message>
+            <source>Vulkan</source>
+            <translation>Vulkan</translation>
+        </message>
+        <message>
+            <source>You're already on the latest version</source>
+            <translation>У вас уже установлена последняя версия</translation>
         </message>
     </context>
     <context>
@@ -1120,6 +1424,52 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Calculating...</source>
             <translation>Вычисление...</translation>
+        </message>
+        <message>
+            <source>Connection Failed</source>
+            <translation>Сбой подключения</translation>
+        </message>
+        <message>
+            <source>Current  GFX Plugin: %1</source>
+            <translation>Текущий    плагин видео: %1</translation>
+        </message>
+        <message>
+            <source>Current  RSP Plugin: %1</source>
+            <translation>Текущий    плагин RSP: %1</translation>
+        </message>
+        <message>
+            <source>Expected GFX Plugin: %1
+</source>
+            <translation>Ожидаемый плагин видео: %1
+</translation>
+        </message>
+        <message>
+            <source>Expected MD5: %1
+</source>
+            <translation>Ожидаемый MD5: %1
+</translation>
+        </message>
+        <message>
+            <source>Expected RSP Plugin: %1
+</source>
+            <translation>Ожидаемый плагин RSP: %1
+</translation>
+        </message>
+        <message>
+            <source>Failed to open server list json: %1</source>
+            <translation>Не удалось открыть JSON списка серверов: %1</translation>
+        </message>
+        <message>
+            <source>Failed to retrieve server list json: %1</source>
+            <translation>Не удалось получить JSON списка серверов: %1</translation>
+        </message>
+        <message>
+            <source>GFX Plugin Mismatch</source>
+            <translation>Несовпадение плагина видео</translation>
+        </message>
+        <message>
+            <source>Incorrect ROM Selected</source>
+            <translation>Выбран некорректный ROM</translation>
         </message>
         <message>
             <source>Join</source>
@@ -1142,12 +1492,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Открыть %1</translation>
         </message>
         <message>
+            <source>Received MD5: %1</source>
+            <translation>Полученный MD5: %1</translation>
+        </message>
+        <message>
             <source>Refresh</source>
             <translation>Обновить</translation>
         </message>
         <message>
+            <source>RSP Plugin Mismatch</source>
+            <translation>Несовпадение плагина RSP</translation>
+        </message>
+        <message>
             <source>Server</source>
             <translation>Сервер</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Ошибка сервера</translation>
         </message>
         <message>
             <source>Server ping</source>
@@ -1214,6 +1576,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Читы</translation>
         </message>
         <message>
+            <source>CheatsCommon::ParseCheatJson() Failed</source>
+            <translation>Сбой CheatsCommon::ParseCheatJson()</translation>
+        </message>
+        <message>
+            <source>CoreSetNetplayCheats() Failed</source>
+            <translation>Сбой CoreSetNetplayCheats()</translation>
+        </message>
+        <message>
+            <source>Failed to parse cheats json: %1</source>
+            <translation>Не удалось разобрать JSON чит-кодов: %1</translation>
+        </message>
+        <message>
             <source>Game name</source>
             <translation>Название игры</translation>
         </message>
@@ -1228,6 +1602,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Send</source>
             <translation>Отправить</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Ошибка сервера</translation>
         </message>
         <message>
             <source>Session name</source>
@@ -1625,8 +2003,16 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>SettingsDialog</name>
         <message>
+            <source> (not found)</source>
+            <translation> (не найден)</translation>
+        </message>
+        <message>
             <source>&amp;Use PIF ROM</source>
             <translation>&amp;Использовать PIF ROM</translation>
+        </message>
+        <message>
+            <source>**Use Core Plugin Settings**</source>
+            <translation>**Использовать настройки плагина ядра**</translation>
         </message>
         <message>
             <source>1</source>
@@ -1765,14 +2151,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Нижний правый</translation>
         </message>
         <message>
-            <source>CPU Emulator</source>
-            <translation>Эмулятор CPU</translation>
-        </message>
-        <message>
-            <source>CPU emulator</source>
-            <translation>Эмулятор CPU</translation>
-        </message>
-        <message>
             <source>Cached Interpreter</source>
             <translation>Кэширующий интерпретатор</translation>
         </message>
@@ -1809,8 +2187,20 @@ li.checked::marker { content: "\2612"; }
             <translation>Ядро</translation>
         </message>
         <message>
+            <source>CoreApplyPluginSettings() Failed</source>
+            <translation>Сбой CoreApplyPluginSettings()</translation>
+        </message>
+        <message>
             <source>Counter Factor</source>
             <translation>Коэффициент счётчика</translation>
+        </message>
+        <message>
+            <source>CPU Emulator</source>
+            <translation>Эмулятор CPU</translation>
+        </message>
+        <message>
+            <source>CPU emulator</source>
+            <translation>Эмулятор CPU</translation>
         </message>
         <message>
             <source>Current Save State</source>
@@ -1853,6 +2243,14 @@ li.checked::marker { content: "\2612"; }
             <translation>Выход</translation>
         </message>
         <message>
+            <source>Expected file with MD5: "%1"</source>
+            <translation>Ожидаемый MD5 файла: «%1»</translation>
+        </message>
+        <message>
+            <source>Failed to open file</source>
+            <translation>Не удалось открыть файл</translation>
+        </message>
+        <message>
             <source>Flash RAM</source>
             <translation>Flash RAM</translation>
         </message>
@@ -1873,10 +2271,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Fusion Dark</translation>
         </message>
         <message>
-            <source>GS Button</source>
-            <translation>Кнопка GS</translation>
-        </message>
-        <message>
             <source>Game</source>
             <translation>Игра</translation>
         </message>
@@ -1891,6 +2285,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Graphics</source>
             <translation>Графика</translation>
+        </message>
+        <message>
+            <source>GS Button</source>
+            <translation>Кнопка GS</translation>
         </message>
         <message>
             <source>Hard Reset</source>
@@ -1911,10 +2309,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Hotkeys</source>
             <translation>Горячие клавиши</translation>
-        </message>
-        <message>
-            <source>IPL ROMs (*.n64)</source>
-            <translation>IPL ROM (*.n64)</translation>
         </message>
         <message>
             <source>Icon theme</source>
@@ -1939,6 +2333,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Internal ROM Name</source>
             <translation>Внутреннее название ROMа</translation>
+        </message>
+        <message>
+            <source>IPL ROMs (*.n64)</source>
+            <translation>IPL ROM (*.n64)</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>
@@ -1973,12 +2371,16 @@ li.checked::marker { content: "\2612"; }
             <translation>При использовании видеоплагина LLE (например paraLLEl) обязательно используйте плагин RSP LLE (например paraLLEl RSP)</translation>
         </message>
         <message>
-            <source>Memory Size</source>
-            <translation>Размер памяти</translation>
+            <source>MD5 hashing failed</source>
+            <translation>Не удалось вычислить MD5-хеш</translation>
         </message>
         <message>
-            <source>NTSC PIF ROM</source>
-            <translation>NTSC PIF ROM</translation>
+            <source>MD5 mismatch</source>
+            <translation>Несовпадение MD5</translation>
+        </message>
+        <message>
+            <source>Memory Size</source>
+            <translation>Размер памяти</translation>
         </message>
         <message>
             <source>Native</source>
@@ -2001,8 +2403,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Нет</translation>
         </message>
         <message>
-            <source>OSD</source>
-            <translation>OSD</translation>
+            <source>NTSC PIF ROM</source>
+            <translation>NTSC PIF ROM</translation>
         </message>
         <message>
             <source>Open American Retail 64DD IPL</source>
@@ -2037,6 +2439,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Тип OpenGL</translation>
         </message>
         <message>
+            <source>OSD</source>
+            <translation>OSD</translation>
+        </message>
+        <message>
             <source>Overclocking Factor</source>
             <translation>Коэффициент разгона</translation>
         </message>
@@ -2053,16 +2459,16 @@ li.checked::marker { content: "\2612"; }
             <translation>PAL PIF ROM</translation>
         </message>
         <message>
-            <source>PIF ROMs (*.rom)</source>
-            <translation>PIF ROM (*.rom)</translation>
-        </message>
-        <message>
             <source>Pause</source>
             <translation>Пауза</translation>
         </message>
         <message>
             <source>Pause emulation on focus loss</source>
             <translation>Пауза эмуляции при потере фокуса</translation>
+        </message>
+        <message>
+            <source>PIF ROMs (*.rom)</source>
+            <translation>PIF ROM (*.rom)</translation>
         </message>
         <message>
             <source>Plugins</source>
@@ -2073,20 +2479,20 @@ li.checked::marker { content: "\2612"; }
             <translation>Чистый интерпретатор</translation>
         </message>
         <message>
+            <source>px</source>
+            <translation>px</translation>
+        </message>
+        <message>
+            <source>QCryptographicHash::addData() Failed</source>
+            <translation>Сбой QCryptographicHash::addData()</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>Сбой QFile::open()</translation>
+        </message>
+        <message>
             <source>RAM Area Only</source>
             <translation>Только область RAM</translation>
-        </message>
-        <message>
-            <source>ROM Browser</source>
-            <translation>Браузер ROMов</translation>
-        </message>
-        <message>
-            <source>ROM search limit</source>
-            <translation>Лимит поиска ROMов</translation>
-        </message>
-        <message>
-            <source>RSP</source>
-            <translation>RSP</translation>
         </message>
         <message>
             <source>Randomize PI/SI Interrupt Timing</source>
@@ -2113,16 +2519,16 @@ li.checked::marker { content: "\2612"; }
             <translation>Продолжить эмуляцию при возврате фокуса</translation>
         </message>
         <message>
-            <source>SDL3</source>
-            <translation>SDL3</translation>
+            <source>ROM Browser</source>
+            <translation>Браузер ROMов</translation>
         </message>
         <message>
-            <source>SI DMA Duration</source>
-            <translation>Длительность SI DMA</translation>
+            <source>ROM search limit</source>
+            <translation>Лимит поиска ROMов</translation>
         </message>
         <message>
-            <source>SRAM</source>
-            <translation>SRAM</translation>
+            <source>RSP</source>
+            <translation>RSP</translation>
         </message>
         <message>
             <source>Save (SRAM) Directory</source>
@@ -2137,6 +2543,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Сохранить как</translation>
         </message>
         <message>
+            <source>Save filename format</source>
+            <translation>Формат имени файла сохранения</translation>
+        </message>
+        <message>
             <source>Save State</source>
             <translation>Сохранить состояние</translation>
         </message>
@@ -2145,12 +2555,12 @@ li.checked::marker { content: "\2612"; }
             <translation>Тип сохранения</translation>
         </message>
         <message>
-            <source>Save filename format</source>
-            <translation>Формат имени файла сохранения</translation>
-        </message>
-        <message>
             <source>Screenshot Directory</source>
             <translation>Папка для скриншотов</translation>
+        </message>
+        <message>
+            <source>SDL3</source>
+            <translation>SDL3</translation>
         </message>
         <message>
             <source>Search</source>
@@ -2159,6 +2569,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Search sub-directories</source>
             <translation>Искать во вложенных папках</translation>
+        </message>
+        <message>
+            <source>seconds</source>
+            <translation>сек</translation>
         </message>
         <message>
             <source>Select Save (SRAM) Directory</source>
@@ -2191,6 +2605,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Shutdown</source>
             <translation>Завершить</translation>
+        </message>
+        <message>
+            <source>SI DMA Duration</source>
+            <translation>Длительность SI DMA</translation>
         </message>
         <message>
             <source>Slot 0</source>
@@ -2239,6 +2657,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Speed Factor</source>
             <translation>Коэффициент скорости</translation>
+        </message>
+        <message>
+            <source>SRAM</source>
+            <translation>SRAM</translation>
         </message>
         <message>
             <source>Start Combo</source>
@@ -2293,12 +2715,12 @@ li.checked::marker { content: "\2612"; }
             <translation>Вертикальный отступ</translation>
         </message>
         <message>
-            <source>Video Plugin</source>
-            <translation>Видеоплагин</translation>
-        </message>
-        <message>
             <source>Video capture backend</source>
             <translation>Бэкенд захвата видео</translation>
+        </message>
+        <message>
+            <source>Video Plugin</source>
+            <translation>Видеоплагин</translation>
         </message>
         <message>
             <source>View</source>
@@ -2311,14 +2733,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Yes</source>
             <translation>Да</translation>
-        </message>
-        <message>
-            <source>px</source>
-            <translation>px</translation>
-        </message>
-        <message>
-            <source>seconds</source>
-            <translation>сек</translation>
         </message>
     </context>
     <context>
@@ -2336,6 +2750,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Больше не проверять обновления</translation>
         </message>
         <message>
+            <source>Failed to find update file</source>
+            <translation>Не удалось найти файл обновления</translation>
+        </message>
+        <message>
             <source>Update</source>
             <translation>Обновить</translation>
         </message>
@@ -2346,6 +2764,10 @@ li.checked::marker { content: "\2612"; }
     </context>
     <context>
         <name>UserInterface::MainWindow</name>
+        <message>
+            <source> [N/A]</source>
+            <translation> [н/д]</translation>
+        </message>
         <message>
             <source>&amp;100%</source>
             <translation>&amp;100%</translation>
@@ -2523,6 +2945,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Невозможно запустить эмуляцию во время активной сессии сетевой игры</translation>
         </message>
         <message>
+            <source>Captured screenshot.</source>
+            <translation>Снимок экрана сделан.</translation>
+        </message>
+        <message>
             <source>Cheats...</source>
             <translation>Читы...</translation>
         </message>
@@ -2615,12 +3041,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Ошибка</translation>
         </message>
         <message>
+            <source>Failed to capture screenshot.</source>
+            <translation>Не удалось сделать снимок экрана.</translation>
+        </message>
+        <message>
             <source>Failed to check for updates</source>
             <translation>Не удалось проверить обновления</translation>
         </message>
         <message>
             <source>Failed to load save state</source>
             <translation>Не удалось загрузить сохранение состояния</translation>
+        </message>
+        <message>
+            <source>Failed to load save state.</source>
+            <translation>Не удалось загрузить сохранение состояния.</translation>
+        </message>
+        <message>
+            <source>Failed to save state.</source>
+            <translation>Не удалось сохранить состояние.</translation>
         </message>
         <message>
             <source>Ga&amp;me Grid</source>
@@ -2637,6 +3075,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Loa&amp;d...</source>
             <translation>Загрузи&amp;ть...</translation>
+        </message>
+        <message>
+            <source>Loaded save state.</source>
+            <translation>Сохранение состояния загружено.</translation>
         </message>
         <message>
             <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
@@ -2679,6 +3121,10 @@ li.checked::marker { content: "\2612"; }
             <translation>OpenGL ES</translation>
         </message>
         <message>
+            <source>Playback speed: %1%</source>
+            <translation>Скорость воспроизведения: %1%</translation>
+        </message>
+        <message>
             <source>Rosalie's Mupen GUI (VERSION)</source>
             <translation>Rosalie's Mupen GUI (VERSION)</translation>
         </message>
@@ -2711,6 +3157,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Сохранение состояния (*.state);;Сохранение Project64 (*.pj);;Все файлы (*)</translation>
         </message>
         <message>
+            <source>Saved state to slot: %1</source>
+            <translation>Сохранено состояние в слот: %1</translation>
+        </message>
+        <message>
+            <source>Saved state to: %1</source>
+            <translation>Сохранено состояние в: %1</translation>
+        </message>
+        <message>
+            <source>Saved state.</source>
+            <translation>Состояние сохранено.</translation>
+        </message>
+        <message>
             <source>Scree&amp;nshot</source>
             <translation>Скри&amp;ншот</translation>
         </message>
@@ -2721,6 +3179,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Select ROM Directory</source>
             <translation>Выбрать папку с ROMами</translation>
+        </message>
+        <message>
+            <source>Selected save slot: %1</source>
+            <translation>Выбран слот сохранения: %1</translation>
         </message>
         <message>
             <source>Setti&amp;ngs</source>
@@ -2779,6 +3241,14 @@ li.checked::marker { content: "\2612"; }
             <translation>Запустить-ко&amp;мбинацию</translation>
         </message>
         <message>
+            <source>State loaded from slot: %1</source>
+            <translation>Состояние загружено из слота: %1</translation>
+        </message>
+        <message>
+            <source>State loaded from: %1</source>
+            <translation>Состояние загружено из: %1</translation>
+        </message>
+        <message>
             <source>toolBar</source>
             <translation>toolBar</translation>
         </message>
@@ -2789,6 +3259,18 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>View Session</source>
             <translation>Просмотреть сессию</translation>
+        </message>
+        <message>
+            <source>Volume muted</source>
+            <translation>Звук выключен</translation>
+        </message>
+        <message>
+            <source>Volume unmuted</source>
+            <translation>Звук включён</translation>
+        </message>
+        <message>
+            <source>Volume: %1%</source>
+            <translation>Громкость: %1%</translation>
         </message>
         <message>
             <source>Vulkan</source>
@@ -3977,20 +4459,28 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>UserInterface::Dialog::DownloadUpdateDialog</name>
         <message>
+            <source>APPIMAGE variable is empty or invalid</source>
+            <translation>Переменная APPIMAGE пуста или недействительна</translation>
+        </message>
+        <message>
             <source>Downloading %1...</source>
             <translation>Загрузка %1...</translation>
         </message>
         <message>
-            <source>Failed to download update file</source>
-            <translation>Не удалось загрузить файл обновления</translation>
+            <source>Downloading ...</source>
+            <translation>Загрузка...</translation>
+        </message>
+        <message>
+            <source>Downloading Update</source>
+            <translation>Загрузка обновления</translation>
         </message>
         <message>
             <source>Failed to create temporary directory</source>
             <translation>Не удалось создать временный каталог</translation>
         </message>
         <message>
-            <source>APPIMAGE variable is empty or invalid</source>
-            <translation>Переменная APPIMAGE пуста или недействительна</translation>
+            <source>Failed to download update file</source>
+            <translation>Не удалось загрузить файл обновления</translation>
         </message>
         <message>
             <source>QFile::open() Failed</source>
@@ -4004,24 +4494,32 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>UserInterface::Dialog::InstallUpdateDialog</name>
         <message>
-            <source>Executing %1...</source>
-            <translation>Выполнение %1...</translation>
+            <source>CoreUnzip() Failed</source>
+            <translation>Сбой CoreUnzip()</translation>
         </message>
         <message>
-            <source>Extracting %1...</source>
-            <translation>Распаковка %1...</translation>
+            <source>Executing %1...</source>
+            <translation>Выполнение %1...</translation>
         </message>
         <message>
             <source>Executing update script...</source>
             <translation>Выполнение скрипта обновления...</translation>
         </message>
         <message>
-            <source>QDir::mkdir() Failed</source>
-            <translation>Сбой QDir::mkdir()</translation>
+            <source>Extracting %1...</source>
+            <translation>Распаковка %1...</translation>
         </message>
         <message>
-            <source>CoreUnzip() Failed</source>
-            <translation>Сбой CoreUnzip()</translation>
+            <source>Installing Update</source>
+            <translation>Установка обновления</translation>
+        </message>
+        <message>
+            <source>Installing...</source>
+            <translation>Установка...</translation>
+        </message>
+        <message>
+            <source>QDir::mkdir() Failed</source>
+            <translation>Сбой QDir::mkdir()</translation>
         </message>
         <message>
             <source>QFile::open() Failed</source>
@@ -4031,19 +4529,43 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>UserInterface::Dialog::UpdateDialog</name>
         <message>
+            <source>%1 Available</source>
+            <translation>%1 доступна</translation>
+        </message>
+        <message>
+            <source>A new version is available</source>
+            <translation>Доступна новая версия</translation>
+        </message>
+        <message>
+            <source>Don't check for updates again</source>
+            <translation>Больше не проверять обновления</translation>
+        </message>
+        <message>
             <source>Failed to find update file</source>
             <translation>Не удалось найти файл обновления</translation>
+        </message>
+        <message>
+            <source>Update</source>
+            <translation>Обновить</translation>
+        </message>
+        <message>
+            <source>v0.2.2 Available</source>
+            <translation>v0.2.2 доступна</translation>
         </message>
     </context>
     <context>
         <name>UserInterface::Dialog::NetplaySessionDialog</name>
         <message>
-            <source>Server Error</source>
-            <translation>Ошибка сервера</translation>
+            <source>1</source>
+            <translation>1</translation>
         </message>
         <message>
-            <source>Failed to parse cheats json: %1</source>
-            <translation>Не удалось разобрать JSON чит-кодов: %1</translation>
+            <source>Chat</source>
+            <translation>Чат</translation>
+        </message>
+        <message>
+            <source>Cheats</source>
+            <translation>Чит-коды</translation>
         </message>
         <message>
             <source>CheatsCommon::ParseCheatJson() Failed</source>
@@ -4053,12 +4575,56 @@ li.checked::marker { content: "\2612"; }
             <source>CoreSetNetplayCheats() Failed</source>
             <translation>Сбой CoreSetNetplayCheats()</translation>
         </message>
+        <message>
+            <source>Failed to parse cheats json: %1</source>
+            <translation>Не удалось разобрать JSON чит-кодов: %1</translation>
+        </message>
+        <message>
+            <source>Game name</source>
+            <translation>Название игры</translation>
+        </message>
+        <message>
+            <source>Netplay Session</source>
+            <translation>Сессия сетевой игры</translation>
+        </message>
+        <message>
+            <source>Players</source>
+            <translation>Игроки</translation>
+        </message>
+        <message>
+            <source>Send</source>
+            <translation>Отправить</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Ошибка сервера</translation>
+        </message>
+        <message>
+            <source>Session name</source>
+            <translation>Название сессии</translation>
+        </message>
+        <message>
+            <source>Start</source>
+            <translation>Начать</translation>
+        </message>
     </context>
     <context>
         <name>UserInterface::Dialog::CreateNetplaySessionDialog</name>
         <message>
-            <source>Server Error</source>
-            <translation>Ошибка сервера</translation>
+            <source>Calculating...</source>
+            <translation>Вычисление...</translation>
+        </message>
+        <message>
+            <source>Connection Failed</source>
+            <translation>Сбой подключения</translation>
+        </message>
+        <message>
+            <source>Create</source>
+            <translation>Создать</translation>
+        </message>
+        <message>
+            <source>Create Netplay Session</source>
+            <translation>Создать сессию сетевой игры</translation>
         </message>
         <message>
             <source>Failed to open server list json: %1</source>
@@ -4069,23 +4635,79 @@ li.checked::marker { content: "\2612"; }
             <translation>Не удалось получить JSON списка серверов: %1</translation>
         </message>
         <message>
-            <source>Connection Failed</source>
-            <translation>Сбой подключения</translation>
+            <source>Nickname</source>
+            <translation>Никнейм</translation>
+        </message>
+        <message>
+            <source>Password</source>
+            <translation>Пароль</translation>
+        </message>
+        <message>
+            <source>Server</source>
+            <translation>Сервер</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Ошибка сервера</translation>
+        </message>
+        <message>
+            <source>Server ping</source>
+            <translation>Пинг сервера</translation>
+        </message>
+        <message>
+            <source>Session name</source>
+            <translation>Название сессии</translation>
         </message>
     </context>
     <context>
         <name>UserInterface::Dialog::AddCheatDialog</name>
         <message>
-            <source>CoreParseCheat() Failed</source>
-            <translation>Сбой CoreParseCheat()</translation>
+            <source>&amp;lt;address&amp;gt; &amp;lt;value&amp;gt;</source>
+            <translation>&amp;lt;address&amp;gt; &amp;lt;value&amp;gt;</translation>
+        </message>
+        <message>
+            <source>&amp;lt;value&amp;gt; &amp;lt;label&amp;gt;</source>
+            <translation>&amp;lt;value&amp;gt; &amp;lt;label&amp;gt;</translation>
+        </message>
+        <message>
+            <source>Add Cheat</source>
+            <translation>Добавить чит</translation>
+        </message>
+        <message>
+            <source>Author</source>
+            <translation>Автор</translation>
+        </message>
+        <message>
+            <source>Code:</source>
+            <translation>Код:</translation>
         </message>
         <message>
             <source>CoreAddCheat() Failed</source>
             <translation>Сбой CoreAddCheat()</translation>
         </message>
         <message>
+            <source>CoreParseCheat() Failed</source>
+            <translation>Сбой CoreParseCheat()</translation>
+        </message>
+        <message>
             <source>CoreUpdateCheat() Failed</source>
             <translation>Сбой CoreUpdateCheat()</translation>
+        </message>
+        <message>
+            <source>Edit Cheat</source>
+            <translation>Изменить чит-код</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Название</translation>
+        </message>
+        <message>
+            <source>Notes:</source>
+            <translation>Заметки:</translation>
+        </message>
+        <message>
+            <source>Options:</source>
+            <translation>Опции:</translation>
         </message>
         <message>
             <source>Validating Cheat Failed</source>
@@ -4095,6 +4717,18 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>UserInterface::Dialog::CheatsDialog</name>
         <message>
+            <source>Add</source>
+            <translation>Добавить</translation>
+        </message>
+        <message>
+            <source>Cheats</source>
+            <translation>Чит-коды</translation>
+        </message>
+        <message>
+            <source>CoreApplyCheats() Failed</source>
+            <translation>Сбой CoreApplyCheats()</translation>
+        </message>
+        <message>
             <source>CoreGetCurrentCheats() Failed</source>
             <translation>Сбой CoreGetCurrentCheats()</translation>
         </message>
@@ -4103,8 +4737,16 @@ li.checked::marker { content: "\2612"; }
             <translation>Сбой CoreRemoveCheat()</translation>
         </message>
         <message>
-            <source>CoreApplyCheats() Failed</source>
-            <translation>Сбой CoreApplyCheats()</translation>
+            <source>Edit</source>
+            <translation>Изменить</translation>
+        </message>
+        <message>
+            <source>Notes</source>
+            <translation>Заметки</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Удалить</translation>
         </message>
     </context>
 </TS>

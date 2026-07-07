@@ -663,6 +663,25 @@ TRANSLATIONS = {
     "CoreGetCurrentCheats() Failed": "Сбой CoreGetCurrentCheats()",
     "CoreRemoveCheat() Failed": "Сбой CoreRemoveCheat()",
     "CoreApplyCheats() Failed": "Сбой CoreApplyCheats()",
+
+    # --- MainWindow.cpp — On-Screen Display (OSD) messages ---
+    # These are shown as overlay text during emulation via ImGui.
+    "Saved state to slot: %1": "Сохранено состояние в слот: %1",
+    "Saved state to: %1": "Сохранено состояние в: %1",
+    "State loaded from slot: %1": "Состояние загружено из слота: %1",
+    "State loaded from: %1": "Состояние загружено из: %1",
+    "Selected save slot: %1": "Выбран слот сохранения: %1",
+    " [N/A]": " [н/д]",
+    "Playback speed: %1%": "Скорость воспроизведения: %1%",
+    "Volume: %1%": "Громкость: %1%",
+    "Volume unmuted": "Звук включён",
+    "Volume muted": "Звук выключен",
+    "Failed to load save state.": "Не удалось загрузить сохранение состояния.",
+    "Loaded save state.": "Сохранение состояния загружено.",
+    "Failed to save state.": "Не удалось сохранить состояние.",
+    "Saved state.": "Состояние сохранено.",
+    "Failed to capture screenshot.": "Не удалось сделать снимок экрана.",
+    "Captured screenshot.": "Снимок экрана сделан.",
 }
 
 
