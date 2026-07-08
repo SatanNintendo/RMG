@@ -15,6 +15,7 @@
 #include <QDialog>
 #include <QWidget>
 #include <QList>
+#include <QEvent>
 
 #include <RMG-Core/Callback.hpp>
 
@@ -29,6 +30,18 @@ class LogDialog : public QDialog, private Ui::LogDialog
     Q_OBJECT
 
   private:
+
+  protected:
+    // Re-applies the UI translations (window title etc.) when the application
+    // language changes. This is required because LogDialog is instantiated as
+    // a member of MainWindow BEFORE MainWindow::loadTranslator() runs, so the
+    // initial setupUi() call happens with no translator installed and the
+    // window title is left as the English source "Log". When loadTranslator()
+    // later calls QCoreApplication::installTranslator(), Qt posts a
+    // LanguageChange event to all top-level widgets; without this override the
+    // default QWidget::changeEvent() ignores the event and the title is never
+    // refreshed, leaving it stuck on "Log" instead of "Журнал".
+    void changeEvent(QEvent *event) override;
 
   public:
     LogDialog(QWidget* parent = nullptr);

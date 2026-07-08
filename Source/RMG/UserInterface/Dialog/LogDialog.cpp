@@ -34,6 +34,22 @@ LogDialog::~LogDialog(void)
 {
 }
 
+void LogDialog::changeEvent(QEvent *event)
+{
+    // When the application translator is installed (or the user changes the
+    // language at runtime), Qt posts a LanguageChange event to all top-level
+    // widgets. Because LogDialog is constructed as a MainWindow member before
+    // the translator is loaded, its initial setupUi() runs without a
+    // translator and the window title stays "Log". Re-running retranslateUi()
+    // here picks up the now-installed translator and refreshes the title to
+    // the localized form (e.g. "Журнал" in Russian).
+    if (event->type() == QEvent::LanguageChange)
+    {
+        this->retranslateUi(this);
+    }
+    QDialog::changeEvent(event);
+}
+
 int LogDialog::GetLineCount(void)
 {
     return this->plainTextEdit->document()->lineCount();

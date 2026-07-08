@@ -185,11 +185,13 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_GFX_Plugin:
+        // Default video plugin is ParaLLEl RDP (Vulkan-based, accuracy-focused).
+        // GLideN64 is still bundled and can be selected in Settings → Plugins.
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
 #ifdef _WIN32
-                    std::string("mupen64plus-video-GLideN64.dll"),
+                    std::string("mupen64plus-video-parallel.dll"),
 #else
-                    std::string("mupen64plus-video-GLideN64.so"),
+                    std::string("mupen64plus-video-parallel.so"),
 #endif // _WIN32
                   };
         break;
@@ -212,11 +214,14 @@ static l_Setting get_setting(SettingsID settingId)
                   };
         break;
     case SettingsID::Core_RSP_Plugin:
+        // Default RSP plugin is ParaLLEl RSP (paired with ParaLLEl RDP for
+        // cycle-accurate RSP emulation). mupen64plus-rsp-hle is still bundled
+        // and can be selected in Settings → Plugins.
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
 #ifdef _WIN32
-                    std::string("mupen64plus-rsp-hle.dll"),
+                    std::string("mupen64plus-rsp-parallel.dll"),
 #else
-                    std::string("mupen64plus-rsp-hle.so"),
+                    std::string("mupen64plus-rsp-parallel.so"),
 #endif // _WIN32
                   };
         break;
