@@ -175,8 +175,8 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigOpenSection("Video-Parallel", &configVideoParallel);
     ConfigSetDefaultInt(configVideoParallel, KEY_UPSCALING, 1, "Amount of rescaling: 1=None, 2=2x, 4=4x, 8=8x");
     ConfigSetDefaultBool(configVideoParallel, KEY_VSYNC, 0, "Enable VSync");
-    ConfigSetDefaultInt(configVideoParallel, KEY_SCREEN_WIDTH, 640, "Screen width");
-    ConfigSetDefaultInt(configVideoParallel, KEY_SCREEN_HEIGHT, 480, "Screen height");
+    ConfigSetDefaultInt(configVideoParallel, KEY_SCREEN_WIDTH, 960, "Screen width");
+    ConfigSetDefaultInt(configVideoParallel, KEY_SCREEN_HEIGHT, 720, "Screen height");
     ConfigSetDefaultBool(configVideoParallel, KEY_WIDESCREEN, 0, "Widescreen mode (stretched)");
     ConfigSetDefaultBool(configVideoParallel, KEY_DEINTERLACE, 0, "Deinterlacing method. False=Bob, True=Weave");
     ConfigSetDefaultBool(configVideoParallel, KEY_SSREADBACKS, 0, "Enable superscaling of readbacks when upsampling");

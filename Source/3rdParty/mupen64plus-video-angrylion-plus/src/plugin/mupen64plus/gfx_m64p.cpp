@@ -91,8 +91,8 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
 
     ConfigOpenSection("Video-AngrylionPlus", &configVideoAngrylionPlus);
 
-    ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_SCREEN_WIDTH, 640, "Width of output window or fullscreen width");
-    ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_SCREEN_HEIGHT, 480, "Height of output window or fullscreen height");
+    ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_SCREEN_WIDTH, 960, "Width of output window or fullscreen width");
+    ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_SCREEN_HEIGHT, 720, "Height of output window or fullscreen height");
 
     CoreGetVersion = (ptr_PluginGetVersion)DLSYM(CoreLibHandle, "PluginGetVersion");
 

@@ -117,7 +117,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         n64video_config config;
         n64video_config_init(&config);
 
-        this->screenSizeComboBox->setCurrentText("640 x 480");
+        this->screenSizeComboBox->setCurrentText("960 x 720");
         this->numWorkersSpinBox->setValue(config.num_workers);
         this->viModeComboBox->setCurrentIndex(config.vi.mode);
         this->viInterpolationComboBox->setCurrentIndex(config.vi.interp);

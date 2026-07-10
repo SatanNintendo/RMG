@@ -19,10 +19,12 @@ void Config::resetToDefaults()
 	video.fullscreenWidth = video.windowedWidth = 800;
 #else
 	video.fullscreen = 0;
-	video.fullscreenWidth = video.windowedWidth = 640;
+	video.fullscreenWidth = 640;
+	video.windowedWidth = 960;
 #endif
 	video.borderless = 0u;
-	video.fullscreenHeight = video.windowedHeight = 480;
+	video.fullscreenHeight = 480;
+	video.windowedHeight = 720;
 	video.fullscreenRefresh = 60;
 	video.fxaa = 0;
 	video.multisampling = 0;

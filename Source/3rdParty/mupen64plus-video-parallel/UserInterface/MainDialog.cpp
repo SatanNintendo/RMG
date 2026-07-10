@@ -178,7 +178,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
     }
     else if (pushButton == defaultButton)
     {
-        this->screenSizeComboBox->setCurrentText("640 x 480");
+        this->screenSizeComboBox->setCurrentText("960 x 720");
         this->resolutionUpscaleComboBox->setCurrentText("None");
         this->deinterlacerComboBox->setCurrentIndex(0);
         this->downscalerComboBox->setCurrentIndex(0);
