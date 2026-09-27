@@ -243,14 +243,8 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
 	ui->threadedVideoCheckBox->setChecked(config.video.threadedVideo != 0);
 
-	switch (config.texture.bilinearMode) {
-	case BILINEAR_3POINT:
-		ui->blnr3PointRadioButton->setChecked(true);
-		break;
-	case BILINEAR_STANDARD:
-		ui->blnrStandardRadioButton->setChecked(true);
-		break;
-	}
+	ui->bilinearCheckBox->setChecked(config.texture.bilinearMode != BILINEAR_3POINT);
+	ui->integerPixelScalingCheckBox->setChecked(config.generalEmulation.enableHybridFilter != 0);
 
 	ui->ditheringModeComboBox->setCurrentIndex(config.generalEmulation.rdramImageDitheringMode);
 	ui->ditheringQuantizationCheckBox->setChecked(config.generalEmulation.enableDitheringQuantization);
@@ -597,10 +591,8 @@ void ConfigDialog::accept(bool justSave) {
 		: pow2(ui->aliasingSlider->value());
 	config.texture.anisotropy = ui->anisotropicSlider->value();
 
-	if (ui->blnrStandardRadioButton->isChecked())
-		config.texture.bilinearMode = BILINEAR_STANDARD;
-	else if (ui->blnr3PointRadioButton->isChecked())
-		config.texture.bilinearMode = BILINEAR_3POINT;
+	config.texture.bilinearMode = ui->bilinearCheckBox->isChecked() ? BILINEAR_STANDARD : BILINEAR_3POINT;
+	config.generalEmulation.enableHybridFilter = ui->integerPixelScalingCheckBox->isChecked() ? 1 : 0;
 
 	config.generalEmulation.rdramImageDitheringMode = ui->ditheringModeComboBox->currentIndex();
 	config.generalEmulation.enableDitheringQuantization = ui->ditheringQuantizationCheckBox->isChecked() ? 1 : 0;
