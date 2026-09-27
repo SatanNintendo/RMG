@@ -34,8 +34,10 @@ void Config::resetToDefaults()
 
 #if defined(OS_ANDROID)
 	video.threadedVideo = 1;
+	video.asyncShaderCompilation = 1;
 #else
 	video.threadedVideo = 0;
+	video.asyncShaderCompilation = 0;
 #endif
 
 	texture.anisotropy = 0;
