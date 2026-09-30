@@ -110,7 +110,7 @@ jobs:
           sudo apt-get -y upgrade
           sudo apt-get -y install cmake libusb-1.0-0-dev libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
             libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
-            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers \
+            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers libzstd-dev \
             qt6-l10n-tools
 
           # SDL3 build dependencies
@@ -141,6 +141,26 @@ jobs:
 
           cmake --build "$sdl_dir/build" --parallel "$(nproc)"
           sudo cmake --install "$sdl_dir/build" --prefix /usr/
+
+      - name: Build SDL3_net
+        # 3rdParty uses the system SDL3_net through pkg-config
+        # (sdl3-net), which ubuntu-24.04 does not ship, so build and
+        # install it the same way upstream's build.yml does.
+        run: |
+          export sdlnet_dir="$(pwd)/../SDL3_net"
+
+          git clone https://github.com/libsdl-org/SDL_net.git "$sdlnet_dir" -b release-3.2.0 --depth=1
+
+          mkdir -p "$sdlnet_dir/build"
+          cmake -S "$sdlnet_dir" -B "$sdlnet_dir/build" \
+                -DCMAKE_BUILD_TYPE="Release" \
+                -DCMAKE_INSTALL_LIBDIR="lib/x86_64-linux-gnu" \
+                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/x86_64-linux-gnu" \
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+          cmake --build "$sdlnet_dir/build" --parallel "$(nproc)"
+          sudo cmake --install "$sdlnet_dir/build" --prefix /usr/
 
       - name: Build RMG (Linux, install for AppImage)
         run: |
@@ -218,6 +238,7 @@ jobs:
             mingw-w64-ucrt-x86_64-freetype
             mingw-w64-ucrt-x86_64-libpng
             mingw-w64-ucrt-x86_64-sdl3
+            mingw-w64-ucrt-x86_64-sdl3-net
             mingw-w64-ucrt-x86_64-qt6
             mingw-w64-ucrt-x86_64-qt6-translations
             mingw-w64-ucrt-x86_64-libusb
@@ -227,6 +248,7 @@ jobs:
             mingw-w64-ucrt-x86_64-nasm
             mingw-w64-ucrt-x86_64-minizip
             mingw-w64-ucrt-x86_64-vulkan-headers
+            mingw-w64-ucrt-x86_64-zstd
             git
 
       - name: Prepare Environment
