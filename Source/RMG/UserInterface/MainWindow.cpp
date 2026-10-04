@@ -2175,6 +2175,11 @@ void MainWindow::on_Action_Netplay_CreateSession(void)
     static QWebSocket webSocket;
 
     Dialog::CreateNetplaySessionDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    if (!dialog.HasValidServerConfig())
+    {
+        return;
+    }
+
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {
@@ -2189,6 +2194,11 @@ void MainWindow::on_Action_Netplay_BrowseSessions(void)
     static QWebSocket webSocket;
 
     Dialog::NetplaySessionBrowserDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    if (!dialog.HasValidServerConfig())
+    {
+        return;
+    }
+
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {

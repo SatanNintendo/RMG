@@ -13,6 +13,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QComboBox>
+#include <QWidget>
 #include <QString>
 #ifdef NETPLAY
 #include <QNetworkRequest>
@@ -26,6 +27,9 @@ namespace NetplayCommon
     #define NETPLAYCOMMON_NICKNAME_REGEX "[a-zA-Z0-9]+"
     #define NETPLAYCOMMON_PASSWORD_REGEX "[a-zA-Z0-9,.\\/<>?;:[\\]{}\\-=_+`~!@#$%^&*()]+"
 
+    // Shows unconfigured server list error
+    void ShowServerConfigError(QWidget* parent);
+
     // Adds common json emulator and auth info
     void AddCommonJson(QJsonObject& json);
 
@@ -38,10 +42,10 @@ namespace NetplayCommon
     // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
 
-    // Returns server data from comboBox
-    QString GetServerData(QComboBox* comboBox, int index = -1);
-
 #ifdef NETPLAY
+    // Returns server URL from comboBox
+    QUrl GetServerUrl(QComboBox* comboBox, int index = -1);
+
     // Returns network request from url with emulator id
     QNetworkRequest GetNetworkRequest(QUrl url);
 #endif // NETPLAY
