@@ -1,0 +1,897 @@
+﻿// N-Rage Input V2 (x64 port) -- Russian (ru-RU) satellite resource script.
+//
+// Satellite DLL name:  NRage-Language-1049.dll     (1049 = LANGID ru-RU)
+// Encoding:            UTF-8 (with BOM); "#pragma code_page(65001)" below
+//                      makes it work with both GNU windres and MSVC rc.exe.
+//
+// Build (see regional/build-language-dll.sh):
+//      windres "Russian 1049.rc" -O coff -o res.o  ...  -> NRage-Language-1049.dll
+//
+// Notes for translators of OTHER languages: copy "Modify this file.rc",
+// translate the quoted strings, keep %i/%s/%lu/%%/\n markers in order,
+// never translate "PLACEHOLDER", "MS Shell Dlg", "Button", "SysListView32"
+// and other control class names. Rename the file to "<Language> <LANGID>.rc"
+// and adjust the LANGUAGE line + the satellite DLL name accordingly.
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(65001)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAINCFGDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 389
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 279
+    END
+
+    IDD_CONTROLLER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 371
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    IDD_SHORTCUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 369
+        VERTGUIDE, 83
+        VERTGUIDE, 146
+        VERTGUIDE, 157
+        VERTGUIDE, 219
+        VERTGUIDE, 229
+        VERTGUIDE, 292
+        VERTGUIDE, 303
+        VERTGUIDE, 365
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 228
+        HORZGUIDE, 25
+        HORZGUIDE, 124
+        HORZGUIDE, 131
+        HORZGUIDE, 195
+    END
+
+    IDD_CONTROLS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 363
+        VERTGUIDE, 13
+        VERTGUIDE, 39
+        VERTGUIDE, 193
+        VERTGUIDE, 219
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+        HORZGUIDE, 27
+        HORZGUIDE, 41
+        HORZGUIDE, 53
+        HORZGUIDE, 71
+        HORZGUIDE, 82
+        HORZGUIDE, 93
+        HORZGUIDE, 107
+        HORZGUIDE, 112
+        HORZGUIDE, 130
+        HORZGUIDE, 142
+    END
+
+    IDD_CONTROLLERPAK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 363
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_MODIFIER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 363
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+        HORZGUIDE, 27
+    END
+
+    IDD_PAK_MEMPAK, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 348
+        VERTGUIDE, 166
+        TOPMARGIN, 11
+        BOTTOMMARGIN, 137
+    END
+
+    IDD_PAK_TRANSFER, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 347
+        TOPMARGIN, 11
+        BOTTOMMARGIN, 141
+    END
+
+    IDD_PAK_ADAPTOID, DIALOG
+    BEGIN
+    END
+
+    IDD_DEVICES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 363
+        VERTGUIDE, 16
+        VERTGUIDE, 169
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_PAK_TEXT, DIALOG
+    BEGIN
+    END
+
+    IDD_MOD_MOVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 145
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+
+    IDD_SHORTCUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 365
+    END
+
+    IDD_MOD_MACRO, DIALOG
+    BEGIN
+    END
+
+    IDD_MOD_CONFIG, DIALOG
+    BEGIN
+    END
+
+    IDD_PAK_RUMBLE, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 137
+    END
+
+    IDD_MOD_LUNA, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 29
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+#if defined(APSTUDIO_INVOKED) || !defined(_DEBUG)
+IDD_MAINCFGDIALOG DIALOGEX 0, 0, 396, 286
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "N-Rage Input V2 — Настройка"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "PLACEHOLDER",IDC_UPPERTAB,"SysTabControl32",WS_GROUP | WS_TABSTOP,7,7,382,251
+    LTEXT           "VERSION PLACEHOLDER",IDC_VERSIONSTRING,7,265,82,14,SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX        IDC_LANGUAGE,103,265,112,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Сохранить",IDSAVE,223,265,50,14,WS_GROUP
+    PUSHBUTTON      "Применить",IDUSE,281,265,50,14
+    PUSHBUTTON      "Отмена",IDCANCEL,339,265,50,14
+END
+#endif
+
+IDD_CONTROLLER DIALOGEX 0, 0, 378, 234
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "Подключён",IDC_PLUGGED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,55,13
+    PUSHBUTTON      "Очистить",IDC_CLEARCONTROLLER,63,7,67,13
+    PUSHBUTTON      "По умолчанию",IDC_SETDEFAULT,63,21,67,13
+    PUSHBUTTON      "Загрузить профиль",IDC_LOADPROFILE,181,7,77,13
+    PUSHBUTTON      "Сохранить профиль",IDC_SAVEPROFILE,262,7,77,13
+    CONTROL         "PLACEHOLDER",IDC_CONTROLLERTAB,"SysTabControl32",WS_GROUP | WS_TABSTOP,0,38,375,196
+    CONTROL         "XInput",IDC_XINPUT_ENABLER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,37,10
+END
+
+IDD_SHORTCUT DIALOGEX 0, 0, 376, 235
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Загрузить набор",IDC_LOADSHORTCUTS,142,7,67,13
+    PUSHBUTTON      "Сохранить набор",IDC_SAVESHORTCUTS,221,7,67,13
+    PUSHBUTTON      "По умолчанию",IDC_SETDEFAULTSC,301,7,67,13
+    LTEXT           "Отключить пак",IDC_STATIC,7,38,68,18
+    LTEXT           "Вставить мемпак",IDC_STATIC,7,59,68,18
+    LTEXT           "Вставить вибропак",IDC_STATIC,7,80,68,18
+    LTEXT           "Вставить трансфер-пак",IDC_STATIC,7,101,68,18
+    LTEXT           "Адаптоид-пак напрямую",IDC_STATIC,7,122,68,18
+    LTEXT           "Мемпак <-> Вибропак",IDC_STATIC,7,143,68,18
+    LTEXT           "Мемпак <-> Адаптоид-пак",IDC_STATIC,7,164,68,18
+    GROUPBOX        "Игрок 1",IDC_STATIC,80,25,70,160
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETNOPAK_P1,83,38,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETMEMPAK_P1,83,59,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETRUMBLEPAK_P1,83,80,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETTRANSFERPAK_P1,83,101,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETADAPTOIDPAK_P1,83,122,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMRUMBLE_P1,83,143,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMADAPTOID_P1,83,164,63,18,BS_MULTILINE
+    GROUPBOX        "Игрок 2",IDC_STATIC,153,25,70,160
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETNOPAK_P2,157,38,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETMEMPAK_P2,157,59,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETRUMBLEPAK_P2,157,80,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETTRANSFERPAK_P2,157,101,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETADAPTOIDPAK_P2,157,122,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMRUMBLE_P2,157,143,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMADAPTOID_P2,157,164,62,18,BS_MULTILINE
+    GROUPBOX        "Игрок 3",IDC_STATIC,226,25,70,160
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETNOPAK_P3,229,38,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETMEMPAK_P3,229,59,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETRUMBLEPAK_P3,229,80,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETTRANSFERPAK_P3,229,101,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETADAPTOIDPAK_P3,229,122,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMRUMBLE_P3,229,143,63,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMADAPTOID_P3,229,164,63,18,BS_MULTILINE
+    GROUPBOX        "Игрок 4",IDC_STATIC,299,25,70,160
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETNOPAK_P4,303,38,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETMEMPAK_P4,303,59,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETRUMBLEPAK_P4,303,80,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETTRANSFERPAK_P4,303,101,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SETADAPTOIDPAK_P4,303,122,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMRUMBLE_P4,303,143,62,18,BS_MULTILINE
+    PUSHBUTTON      "PLACEHOLDER",IDC_SWMEMADAPTOID_P4,303,164,62,18,BS_MULTILINE
+    LTEXT           "Блокировка мыши",IDC_STATIC,7,195,68,18,NOT WS_GROUP
+    PUSHBUTTON      "PLACEHOLDER",IDC_LOCKMOUSE,83,195,63,18,BS_MULTILINE
+    CONTROL         "Показывать сообщения",IDC_SHOWMESSAGES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,256,195,109,11
+END
+
+IDD_CONTROLS DIALOGEX 0, 0, 370, 180
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Крестовина",IDC_STATIC,7,7,175,62
+    PUSHBUTTON      "Вверх",IDC_DUP,13,21,34,10,BS_NOTIFY | WS_GROUP
+    PUSHBUTTON      "Влево",IDC_DLEFT,13,32,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вправо",IDC_DRIGHT,13,43,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вниз",IDC_DDOWN,13,54,34,10,BS_NOTIFY
+    CTEXT           "PLACEHOLDER",IDT_DUP,49,21,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_DLEFT,49,32,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_DRIGHT,49,43,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_DDOWN,49,54,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    GROUPBOX        "Кнопки",IDC_STATIC,7,70,175,97
+    PUSHBUTTON      "Start",IDC_SBUTTON,14,82,34,10,BS_NOTIFY | WS_GROUP
+    PUSHBUTTON      "A",IDC_ABUTTON,14,93,34,10,BS_NOTIFY
+    PUSHBUTTON      "B",IDC_BBUTTON,14,104,34,10,BS_NOTIFY
+    PUSHBUTTON      "L-Trigger",IDC_LEFTTRIGGER,14,115,34,10,BS_NOTIFY
+    PUSHBUTTON      "R-Trigger",IDC_RIGHTTRIGGER,14,126,34,10,BS_NOTIFY
+    PUSHBUTTON      "Z-Trigger",IDC_ZTRIGGER,14,137,34,10,BS_NOTIFY
+    CTEXT           "PLACEHOLDER",IDT_SBUTTON,49,82,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_ABUTTON,49,93,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_BBUTTON,49,104,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_LEFTTRIGGER,49,115,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_RIGHTTRIGGER,49,126,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_ZTRIGGER,49,137,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CONTROL         "Турбо",IDC_RAPIDFIREENABLE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,14,150,47,12
+    CONTROL         "PLACEHOLDER",IDC_RAPIDFIRERATE,"msctls_trackbar32",TBS_AUTOTICKS | WS_GROUP | WS_TABSTOP,61,150,115,12
+    GROUPBOX        "Кнопки C",IDC_STATIC,188,7,175,62
+    PUSHBUTTON      "Вверх",IDC_CUP,193,21,34,10,BS_NOTIFY | WS_GROUP
+    PUSHBUTTON      "Влево",IDC_CLEFT,193,32,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вправо",IDC_CRIGHT,193,43,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вниз",IDC_CDOWN,193,54,34,10,BS_NOTIFY
+    CTEXT           "PLACEHOLDER",IDT_CUP,229,21,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_CLEFT,229,32,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_CRIGHT,229,43,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_CDOWN,229,54,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    GROUPBOX        "Аналоговый стик",IDC_STATIC,188,70,175,97
+    CTEXT           "R PLACEHOLDER",IDT_RANGE,198,81,71,8
+    CONTROL         "PLACEHOLDER",IDC_CTRRANGE,"msctls_trackbar32",TBS_AUTOTICKS | WS_GROUP | WS_TABSTOP,198,89,73,11
+    CONTROL         "Конфиг 1",IDC_CONFIG1,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,194,103,42,10
+    CONTROL         "Конфиг 2",IDC_CONFIG2,"Button",BS_AUTORADIOBUTTON,254,103,42,10
+    PUSHBUTTON      "Вверх",IDC_AUP,194,119,34,10,BS_NOTIFY | WS_GROUP
+    PUSHBUTTON      "Влево",IDC_ALEFT,194,130,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вправо",IDC_ARIGHT,194,141,34,10,BS_NOTIFY
+    PUSHBUTTON      "Вниз",IDC_ADOWN,194,152,34,10,BS_NOTIFY
+    CTEXT           "PLACEHOLDER",IDT_AUP,229,119,127,10,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_ALEFT,229,130,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_ARIGHT,229,141,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    CTEXT           "PLACEHOLDER",IDT_ADOWN,229,152,127,10,SS_CENTERIMAGE | NOT WS_GROUP,WS_EX_STATICEDGE
+    CONTROL         "",IDC_CTRRANGE_DIAG,"msctls_trackbar32",TBS_AUTOTICKS | WS_GROUP | WS_TABSTOP,275,89,73,11
+    CTEXT           "R PLACEHOLDER",IDT_RANGE_DIAG,278,81,71,8
+END
+
+IDD_CONTROLLERPAK DIALOGEX 0, 0, 370, 180
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "Raw-режим",IDC_RAWMODE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,6,52,12
+    COMBOBOX        IDC_PAKTYPE,70,6,109,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "PLACEHOLDER",IDC_PAKAREA,7,25,356,148
+END
+
+IDD_MODIFIER DIALOGEX 0, 0, 370, 180
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Создать",IDC_NEWMODIFIER,7,7,54,14,WS_GROUP
+    PUSHBUTTON      "Удалить",IDC_KILLMODIFIER,69,7,54,14
+    CONTROL         "PLACEHOLDER",IDC_MODIFIERLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,27,183,146
+    GROUPBOX        "Настройка модификатора",IDC_STATIC,197,7,166,166
+    PUSHBUTTON      "Назначить",IDC_ASSIGNMOD,203,20,42,11
+    LTEXT           "B",IDT_ASSIGNMOD,245,20,111,11,SS_SUNKEN
+    CTEXT           "Тип модиф.",IDT_MODTYP,203,35,42,12,SS_CENTERIMAGE
+    COMBOBOX        IDC_MODTYP,245,35,57,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Переключ.",IDC_TOGGLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,305,35,36,12
+    CONTROL         "",IDC_STATE,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,345,35,10,12
+    LTEXT           "Prop modifier PLACEHOLDER",IDC_PROPWINDOW,203,52,153,99,NOT WS_VISIBLE | WS_TABSTOP
+    PUSHBUTTON      "Применить",IDC_APPCHANGES,205,157,73,11
+    PUSHBUTTON      "Сброс",IDC_RESET,311,157,45,11
+END
+
+IDD_PAK_MEMPAK DIALOGEX 0, 0, 356, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Текущий каталог мемпаков",IDC_STATIC,0,0,151,148
+    PUSHBUTTON      "Сменить каталог мемпаков",IDC_CHGDIR,8,12,135,11,WS_GROUP
+    LISTBOX         IDC_MEMPAKLIST,8,29,135,91,LBS_SORT | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_GROUP | WS_TABSTOP,WS_EX_CLIENTEDGE
+    PUSHBUTTON      "Новый мемпак / Обзор",IDC_BROWSE,8,123,54,20,BS_MULTILINE | WS_GROUP
+    PUSHBUTTON      "Удалить мемпак",IDC_DELMEMPAK,99,123,44,20,BS_MULTILINE
+    GROUPBOX        "Содержимое мемпака",IDC_STATIC,158,0,198,148
+    PUSHBUTTON      "Формат",IDC_FORMATMEMPAK,167,11,35,18,BS_MULTILINE | WS_GROUP
+    PUSHBUTTON      "Сохр. запись",IDC_SAVENOTE,215,11,35,18,BS_MULTILINE
+    PUSHBUTTON      "Вставить запись",IDC_INSERTNOTE,263,11,35,18,BS_MULTILINE
+    PUSHBUTTON      "Удалить запись",IDC_DELETENOTE,311,11,35,18,BS_MULTILINE
+    CONTROL         "PLACEHOLDER",IDC_MEMPAKBROWSER,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | LVS_NOLABELWRAP | LVS_NOSORTHEADER | WS_GROUP | WS_TABSTOP,166,29,181,91,WS_EX_CLIENTEDGE
+    CTEXT           "Static",IDT_MEMPAKSTATE,166,120,181,20,NOT WS_GROUP,WS_EX_CLIENTEDGE
+END
+
+IDD_PAK_TRANSFER DIALOGEX 0, 0, 356, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Сменить каталоги GB",IDC_CHGDIR,0,0,94,11,WS_GROUP
+    GROUPBOX        "ROM-файл GameBoy",IDC_STATIC,0,18,355,63
+    EDITTEXT        IDC_GBROM_EDIT,8,44,291,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Обзор",IDC_GBROM_BROWSE,309,43,39,14,BS_MULTILINE
+    GROUPBOX        "Сохранение GameBoy",IDC_STATIC,0,86,355,62
+    EDITTEXT        IDC_GBSAVE_EDIT,8,111,291,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Обзор",IDC_GBSAVE_BROWSE,309,110,39,14,BS_MULTILINE
+END
+
+IDD_PAK_ADAPTOID DIALOGEX 0, 0, 356, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CTEXT           "Пак Adaptoid взаимодействует напрямую с любым картриджем, вставленным в контроллер.",IDT_PAKDESC,95,34,165,19
+    LTEXT           "Если нужна обычная вибрация через DirectInput, выберите вместо этого «Вибропак».",IDC_STATIC,95,90,165,22
+END
+
+IDD_DEVICES DIALOGEX 0, 0, 370, 180
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    GROUPBOX        "Мышь",IDC_STATIC,7,7,171,85
+    LTEXT           "MSX PLACEHOLDER",IDT_MSSENSITIVITY_X,16,18,153,8,NOT WS_GROUP
+    CONTROL         "Slider3",IDC_MSSENSITIVITY_X,"msctls_trackbar32",WS_GROUP | WS_TABSTOP,16,26,153,11
+    CONTROL         "Не двигать",IDC_DEADPANMOUSEX,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,12,39,50,10
+    CONTROL         "Буферный",IDC_BUFFEREDMOUSEX,"Button",BS_AUTORADIOBUTTON,70,39,50,10
+    CONTROL         "Абсолют",IDC_ABSOLUTEMOUSEX,"Button",BS_AUTORADIOBUTTON,126,39,50,10
+    LTEXT           "MSY PLACEHOLDER",IDT_MSSENSITIVITY_Y,16,56,153,8,NOT WS_GROUP
+    CONTROL         "",IDC_MSSENSITIVITY_Y,"msctls_trackbar32",WS_TABSTOP,16,65,153,11
+    CONTROL         "Не двигать",IDC_DEADPANMOUSEY,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,12,78,50,10
+    CONTROL         "Буферный",IDC_BUFFEREDMOUSEY,"Button",BS_AUTORADIOBUTTON,70,78,50,10
+    CONTROL         "Абсолют",IDC_ABSOLUTEMOUSEY,"Button",BS_AUTORADIOBUTTON,126,78,50,10
+    GROUPBOX        "Клавиатура",IDC_STATIC,7,96,171,27
+    CONTROL         "Абсолют X",IDC_ACCELERATEX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,107,50,10
+    CONTROL         "Абсолют Y",IDC_ACCELERATEY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,92,107,50,10
+    GROUPBOX        "Геймпад",IDC_STATIC,7,124,341,38
+    CTEXT           "Deadzone PLACEHOLDER",IDT_DEADZONE,16,134,153,8
+    CONTROL         "PLACEHOLDER",IDC_DEADZONE,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,16,144,153,11
+    CTEXT           "Analog to Digital Threshold PLACEHOLDER",IDT_THRESHOLD,187,134,153,8
+    CONTROL         "PLACEHOLDER",IDC_THRESHOLD,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,187,144,153,11
+END
+
+IDD_PAK_TEXT DIALOGEX 0, 0, 356, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CTEXT           "PLACEHOLDER",IDT_PAKDESC,56,45,243,57
+END
+
+IDD_MOD_MOVE DIALOGEX 0, 0, 153, 99
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Ось X",IDC_STATIC,0,4,153,40
+    LTEXT           "MOV_PLACEHOLDER",IDT_XMODIFIER,8,15,89,8
+    CONTROL         "Инверсия",IDC_XNEGATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,100,15,44,10
+    CONTROL         "PLACEHOLDER",IDC_XMODIFIER,"msctls_trackbar32",WS_TABSTOP,8,26,136,12
+    GROUPBOX        "Ось Y",IDC_STATIC,0,53,153,40
+    LTEXT           "MOV_PLACEHOLDER",IDT_YMODIFIER,8,64,89,8
+    CONTROL         "Инверсия",IDC_YNEGATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,100,64,44,10
+    CONTROL         "PLACEHOLDER",IDC_YMODIFIER,"msctls_trackbar32",WS_TABSTOP,8,75,136,12
+END
+
+IDD_FOLDERS DIALOGEX 50, 50, 295, 206
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Каталог мемпаков",IDC_MEMPAKPANEL,7,7,281,49
+    CONTROL         "$AppPath\\",IDC_MEMPAK_REL,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,13,19,54,12
+    CONTROL         "",IDC_MEMPAK_ABS,"Button",BS_AUTORADIOBUTTON,13,36,16,12
+    EDITTEXT        IDC_MEMPAK_REL_EDIT,67,19,199,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_MEMPAK_BROWSE_REL,269,19,11,12
+    EDITTEXT        IDC_MEMPAK_ABS_EDIT,30,36,236,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_MEMPAK_BROWSE_ABS,269,36,11,12
+    GROUPBOX        "Каталог ROM GameBoy",IDC_GBROMPANEL,7,60,281,49
+    CONTROL         "$AppPath\\",IDC_GBROM_REL,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,13,73,54,12
+    CONTROL         "",IDC_GBROM_ABS,"Button",BS_AUTORADIOBUTTON,13,90,16,12
+    EDITTEXT        IDC_GBROM_REL_EDIT,67,73,199,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_GBROM_BROWSE_REL,269,73,11,12
+    EDITTEXT        IDC_GBROM_ABS_EDIT,30,90,236,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_GBROM_BROWSE_ABS,269,90,11,12
+    GROUPBOX        "Каталог сохранений GameBoy",IDC_GBSAVEPANEL,7,114,281,67
+    CONTROL         "Как каталог ROM GameBoy",IDC_GBSAVE_SAME,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,13,127,128,12
+    CONTROL         "$AppPath\\",IDC_GBSAVE_REL,"Button",BS_AUTORADIOBUTTON,13,144,54,12
+    CONTROL         "",IDC_GBSAVE_ABS,"Button",BS_AUTORADIOBUTTON,13,161,16,12
+    EDITTEXT        IDC_GBSAVE_REL_EDIT,67,144,199,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_GBSAVE_BROWSE_REL,269,144,11,12
+    EDITTEXT        IDC_GBSAVE_ABS_EDIT,30,161,236,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDC_GBSAVE_BROWSE_ABS,269,161,11,12
+    DEFPUSHBUTTON   "ОК",IDOK,181,185,50,14
+    PUSHBUTTON      "Отмена",IDCANCEL,238,185,50,14
+END
+
+IDD_MOD_MACRO DIALOGEX 0, 0, 153, 98
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "L-курок",IDC_LTRIG,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,15,3,45,10
+    CONTROL         "",IDC_ZTRIG,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,71,5,16,8
+    CONTROL         "R-курок",IDC_RTRIG,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_FLAT | WS_TABSTOP,91,3,45,10
+    GROUPBOX        "Крестов.",IDC_STATIC,15,14,40,41
+    CONTROL         "",IDC_DUP,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,31,27,9,8
+    CONTROL         "",IDC_DLEFT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,21,35,9,8
+    CONTROL         "",IDC_DRIGHT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,41,35,9,8
+    CONTROL         "",IDC_DDOWN,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,31,43,9,8
+    CTEXT           "Z-курок",IDC_STATIC,56,14,38,10
+    CONTROL         "Старт",IDC_SBUTTON,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,60,28,31,10
+    GROUPBOX        "Аналог",IDC_STATIC,55,38,40,41
+    CONTROL         "",IDC_AUP,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,71,51,9,8
+    CONTROL         "",IDC_ALEFT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,61,59,9,8
+    CONTROL         "",IDC_ARIGHT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,81,59,9,8
+    CONTROL         "",IDC_ADOWN,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,71,67,9,8
+    GROUPBOX        "Кнопки C",IDC_STATIC,95,14,40,41
+    CONTROL         "",IDC_CUP,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,111,27,9,8
+    CONTROL         "",IDC_CLEFT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,101,35,9,8
+    CONTROL         "",IDC_CRIGHT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,121,35,9,8
+    CONTROL         "",IDC_CDOWN,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,111,43,9,8
+    CONTROL         "B",IDC_BBUTTON,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,101,59,21,10
+    CONTROL         "A",IDC_ABUTTON,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_FLAT | WS_TABSTOP,101,70,21,10
+    CONTROL         "Турбо",IDC_RAPIDFIREMODE,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE | WS_TABSTOP,15,57,38,22
+    CONTROL         "Медл. турбо (Paper Mario и т.д.)",IDC_RAPIDFIREMODERATE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,82,120,11
+END
+
+IDD_MOD_CONFIG DIALOGEX 0, 0, 153, 99
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Аналоговый стик",IDC_STATIC,0,0,153,37
+    RADIOBUTTON     "Конфиг 1",IDC_CONFIG1,7,10,42,10,WS_GROUP | WS_TABSTOP
+    RADIOBUTTON     "Конфиг 2",IDC_CONFIG2,55,10,42,10
+    RADIOBUTTON     "Переключать конфигурации",IDC_CONFIGCYCLE,7,22,110,10
+    GROUPBOX        "Мышь",IDC_STATIC,0,39,153,28
+    CONTROL         "Режим X",IDC_MOUSEX,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,50,64,10
+    CONTROL         "Режим Y",IDC_MOUSEY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,81,50,64,10
+    GROUPBOX        "Клавиатура",IDC_STATIC,0,71,153,28
+    CONTROL         "Режим X",IDC_KEYX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,64,10
+    CONTROL         "Режим Y",IDC_KEYY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,81,82,64,10
+END
+
+#if defined(APSTUDIO_INVOKED) || defined(_DEBUG)
+#if defined(APSTUDIO_INVOKED)
+IDD_MAINCFGDIALOG$(_DEBUG) DIALOGEX 0, 0, 396, 351
+#else
+IDD_MAINCFGDIALOG DIALOGEX 0, 0, 396, 351
+#endif
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "N-Rage Input V2 — Настройка"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "ID ROM:",IDC_ROMID,6,7,66,8,NOT WS_GROUP
+    LTEXT           "Описание:",-1,82,7,38,8,NOT WS_GROUP
+    EDITTEXT        IDC_ROMDESC,138,7,121,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    RTEXT           "VERSION PLACEHOLDER",IDC_VERSIONSTRING,274,7,115,10,SS_CENTERIMAGE
+    COMBOBOX        IDC_LANGUAGE,6,25,125,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "PLACEHOLDER",IDC_UPPERTAB,"SysTabControl32",WS_GROUP | WS_TABSTOP,6,93,383,251
+    PUSHBUTTON      "Сохранить",IDSAVE,339,36,50,14,WS_GROUP
+    PUSHBUTTON      "Применить",IDUSE,339,55,50,14
+    PUSHBUTTON      "Отмена",IDCANCEL,339,73,50,14
+END
+#endif
+
+IDD_PAK_RUMBLE DIALOGEX 0, 0, 356, 148
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Устройство обратной связи",IDC_STATIC,22,18,124,8,NOT WS_GROUP
+    COMBOBOX        IDC_CTRDEVICE,27,29,127,119,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "Постоянная",IDC_RUMBLE1,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,29,58,64,10
+    CONTROL         "Нарастающая",IDC_RUMBLE2,"Button",BS_AUTORADIOBUTTON,29,70,65,10
+    CONTROL         "Прямая вибрация",IDC_RUMBLE3,"Button",BS_AUTORADIOBUTTON,29,82,72,10
+    CONTROL         "Вспышка экрана",IDC_VISUALRUMBLE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,99,58,68,10
+    CTEXT           "Rumble Strength PLACEHOLDER",IDT_RUMBLESTRENGTH,29,100,127,8,NOT WS_GROUP
+    CONTROL         "",IDC_RUMBLESTRENGTH,"msctls_trackbar32",TBS_AUTOTICKS | WS_GROUP | WS_TABSTOP,29,112,127,11
+    PUSHBUTTON      "Тест вибрации",IDC_RUMBLETEST,221,59,73,28,WS_DISABLED | WS_GROUP
+END
+
+IDD_MOD_LUNA DIALOGEX 0, 0, 153, 99
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    COMBOBOX        IDC_COMBO_LUNA,0,6,153,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,4,7,0
+ PRODUCTVERSION 2,4,7,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041904b0"
+        BEGIN
+            VALUE "Comments", "Русская локализация (Russian translation)"
+            VALUE "FileDescription", "N-Rage Input V2 — русские ресурсы (Russian language DLL)"
+            VALUE "FileVersion", "2.4.7+"
+            VALUE "InternalName", "NRage-Language-1049"
+            VALUE "LegalCopyright", "Copyright (C) 2001-2011 N-Rage, GPL. Перевод: N-Rage Input x64 port"
+            VALUE "OriginalFilename", "NRage-Language-1049.dll"
+            VALUE "ProductName", "NRage_Input_V2"
+            VALUE "ProductVersion", "2.4.7+"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x419, 1200
+    END
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DEVICES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MOD_LUNA AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ERR_DINOTFOUND      "Не удалось найти dinput8.dll.\nПереустановите последнюю версию DirectX."
+    IDS_ERR_DICREATE        "Не удалось создать объект DirectInput."
+    IDS_DLG_MPCHOOSE        "Выберите мемпак или введите новое имя, чтобы создать его."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERR_MPREAD          "Не удалось прочитать мемпак."
+    IDS_ERR_GBROM           "Не удалось открыть файл ROM GameBoy!"
+    IDS_ERR_GBSRAMERR       "Не удалось открыть файл SRAM!\nПродолжаем без данных сохранений."
+    IDS_VERSTRING           "Версия %s"
+    IDS_TAB_CONTROLLER      "Контроллер %i"
+    IDS_TAB_SHORTCUTS       "Горячие клавиши"
+    IDS_TAB_CONTROLS        "Управление"
+    IDS_TAB_DEVICES         "Устройства"
+    IDS_TAB_MODIFIERS       "Модификаторы"
+    IDS_TAB_CONTROLLERPAK   "Пак контроллера"
+    IDS_DLG_CLEAR           "Текущая конфигурация контроллера будет отброшена.\nВы уверены?"
+    IDS_DLG_CLEAR_TITLE     "Очистка контроллера"
+    IDS_DLG_CONTROLRESTORE  "Будет восстановлена конфигурация контроллера по умолчанию.\nВы уверены?"
+    IDS_DLG_CONTROLRESTORE_TITLE "Восстановление по умолчанию"
+    IDS_ERR_PROFWRITE       "Не удалось записать профиль."
+    IDS_ERR_PROFREAD        "Не удалось прочитать профиль."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_C_POLLING           "...Ожидание ввода %i..."
+    IDS_C_RANGE             "Диапазон: %i%%"
+    IDS_C_DIAGSTRETCH       "Диагональ: %i%%"
+    IDS_D_MSX               "Чувствительность мыши X: %i%%"
+    IDS_D_MSY               "Чувствительность мыши Y: %i%%"
+    IDS_D_DEADZONE          "Мёртвая зона: %i%%"
+    IDS_D_THRESHOLD         "Порог преобразования: %i%%"
+    IDS_D_RUMBLESTR         "Сила вибрации: %i%%"
+    IDS_M_MOVEVALUE         "Значение движения: %i%%"
+    IDS_M_TAB_NONE          "Нет"
+    IDS_M_TAB_MOVE          "Движение"
+    IDS_M_TAB_LUNA          "Эмулятор"
+    IDS_M_TAB_MACRO         "Макрос"
+    IDS_M_TAB_CONFIG        "Конфигурация"
+    IDS_M_MOUSE_PREFIX      "Мышь-"
+    IDS_M_KB_PREFIX         "Клав-"
+    IDS_M_NONE              "Нет"
+    IDS_M_MOVE              "Движение"
+    IDS_M_MACRO             "Макрос"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_M_CONFIG            "Конфигурация"
+    IDS_M_LUNA_LOADSTATE    "Загрузить состояние"
+    IDS_M_LUNA_SAVESTATE    "Сохранить состояние"
+    IDS_M_LUNA_TOGGLEFPS    "Счётчик FPS"
+    IDS_M_LUNA_UNKNOWN      "Неизвестно"
+    IDS_M_ASSIGNED          "Назначено на"
+    IDS_M_TYPE              "Тип"
+    IDS_M_PARAM             "Параметр"
+    IDS_P_NONE              "Нет"
+    IDS_P_MEMPAK            "Мемпак"
+    IDS_P_RUMBLEPAK         "Вибропак"
+    IDS_P_TRANSFERPAK       "Трансфер-пак"
+    IDS_P_VOICEPAK          "Голосовой пак"
+    IDS_P_ADAPTOIDPAK       "Пак Adaptoid"
+    IDS_P_MEM_NORAW         "Мемпак будет обрабатываться эмулятором."
+    IDS_P_RUMBLE_NORAW      "Вибропак будет обрабатываться эмулятором.\n\nВибрации не будет:\nэмулятор может использовать свой метод (например, визуальный) или ничего не делать."
+    IDS_P_RUMBLE_RAW        "Можно выбрать разные типы вибрации\nи настроить её силу на вкладке «Устройства»."
+    IDS_P_TRANSFER_NORAW    "Трансфер-пак будет обрабатываться эмулятором.\n\nСкорее всего, ничего не произойдёт (пока ни один эмулятор этого не умеет)."
+    IDS_P_VOICE_RAW         "Не эмулируется этим плагином\nи, вероятно, никогда не будет."
+    IDS_P_ADAPTOID_NORAW    "Для пака Adaptoid необходимо включить Raw-режим."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_P_NONE_RAWNORAW     "Пак не вставлен."
+    IDS_P_MEM_NOCHANGE      "Нельзя сменить каталог во время игры."
+    IDS_P_MEM_NAME          "Название"
+    IDS_P_MEM_REGION        "Регион"
+    IDS_P_MEM_BLOCKS        "Блоки"
+    IDS_DLG_DELETEPAK       "Вы действительно хотите удалить этот мемпак?"
+    IDS_DLG_FORMATPAK       "Вы действительно хотите отформатировать мемпак?"
+    IDS_DLG_DELETENOTE      "Вы действительно хотите удалить эту запись?"
+    IDS_P_MEM_BLOCKSFREE    "Свободно блоков: %i."
+    IDS_P_MEM_INUSE         "Свободно блоков: %i.\nМемпак сейчас используется эмулятором."
+    IDS_P_MEM_WRONGSIZE     "Свободно блоков: %i.\nУ мемпака неверный размер файла; возможно, он повреждён."
+    IDS_P_MEM_NONESELECTED  "Мемпак не выбран."
+    IDS_P_MEM_DAMAGED       "Мемпак повреждён.\nТребуется форматирование."
+    IDS_BUTTON_UNASSIGNED   "Не назначено"
+    IDS_ERR_SHORTREAD       "Не удалось прочитать файл горячих клавиш."
+    IDS_DLG_SHORTCUTRESTORE "Конфигурация горячих клавиш будет восстановлена.\nВы уверены?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DLG_SHORTCUTRESTORE_TITLE "Восстановление по умолчанию"
+    IDS_C_GAMEPAD           "Геймпад: "
+    IDS_C_KEYBOARD          "Клавиатура: "
+    IDS_C_MOUSE             "Мышь: "
+    IDS_C_XAXIS             "Ось X"
+    IDS_C_YAXIS             "Ось Y"
+    IDS_C_ZAXIS             "Ось Z"
+    IDS_C_XROT              "Вращение X"
+    IDS_C_YROT              "Вращение Y"
+    IDS_C_ZROT              "Вращение Z"
+    IDS_C_SLIDER            "Слайдер %i"
+    IDS_C_POV               "PoV %i"
+    IDS_C_BUTTON            "Кнопка "
+    IDS_C_WHEEL             "Колесо"
+    IDS_C_UNKNOWN           "???"
+    IDS_DLG_ABOUT           "Помогите перевести N-Rage Input V2 на ваш язык!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DLG_ABOUT_TITLE     "О плагине N-Rage Input V2"
+    IDS_ERR_NOINIT          "Плагин не был инициализирован!"
+    IDS_POP_MOUSEUNLOCKED   "Мышь разблокирована"
+    IDS_POP_MOUSELOCKED     "Мышь заблокирована"
+    IDS_POP_CHANGEPAK       "Игрок %i:\nПак изменён на %s"
+    IDS_ERR_MAPVIEW         "Не удалось выполнить MapViewOfFile"
+    IDS_DLG_CPF             "Профиль контроллера (*.cpf)"
+    IDS_DLG_MPKN64          "Мемпак (*.mpk)"
+    IDS_DLG_A64             "Запись мемпака (*.a64)"
+    IDS_DLG_GBGBC           "ROM GameBoy (*.gb;*.gbc)"
+    IDS_DLG_SVSAV           "Сохранение GameBoy (*.sv;*.sav)"
+    IDS_ERR_HANDLER         "%s\n\n Описание ошибки: "
+    IDS_ERR_MEM_NOSPEC      "Мемпак не указан; настройте плагин."
+    IDS_DLG_MEM_READONLY    "Мемпак %s открыт только для чтения.\nПосле выхода из игры мемпак НЕ будет сохранён."
+    IDS_ERR_MEMOPEN         "Не удалось прочитать или создать файл мемпака %s ; настройте плагин."
+    IDS_DLG_MEM_BADADDRESSCRC
+                            "Обнаружена ошибка AddressCRC!\nОбычно это указывает на повреждённый ROM.\n\nПроигнорировать и продолжить?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_P_MEM_NOREGION      "Нет"
+    IDS_P_MEM_BETA          "Бета"
+    IDS_P_MEM_NTSC          "NTSC"
+    IDS_P_MEM_GERMANY       "Германия"
+    IDS_P_MEM_USA           "США"
+    IDS_P_MEM_FRANCE        "Франция"
+    IDS_P_MEM_ITALY         "Италия"
+    IDS_P_MEM_JAPAN         "Япония"
+    IDS_P_MEM_EUROPE        "Европа"
+    IDS_P_MEM_SPAIN         "Испания"
+    IDS_P_MEM_AUSTRALIA     "Австралия"
+    IDS_P_MEM_PAL           "PAL"
+    IDS_P_MEM_UNKNOWNREGION "Неизвестный(%02X)"
+    IDS_ERR_NOTEWRITE       "Не удалось записать файл записи."
+    IDS_ERR_MEMPAK_SPACE    "Недостаточно места на мемпаке."
+    IDS_ERR_MEMPAK_NONOTES  "Нет свободных записей на мемпаке (доступно только 16 записей на pak)."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERR_NOTEEOF         "Ошибка чтения файла записи: неожиданный конец файла или ошибка чтения."
+    IDS_ERR_NOTEREAD        "Не удалось прочитать файл записи."
+    IDS_ERR_TITLE           "Ошибка N-Rage Input V2"
+    IDS_DLG_MSG_TITLE       "Сообщение N-Rage Input V2"
+    IDS_DLG_WARN_TITLE      "Предупреждение N-Rage Input V2"
+    IDS_PLUGIN_TITLE        "N-Rage Input V2"
+    IDS_ERR_MPCREATE        "Не удалось создать мемпак."
+    IDS_DLG_SC              "Файл горячих клавиш (*.sc)"
+    IDS_P_MEM_ERROR         "Код ошибки %lu: "
+    IDS_P_R_NODEVICE        "Нет"
+    IDS_P_TRANS_NOCHANGE    "Нельзя менять паки во время игры"
+    IDS_DLG_TPAK_READONLY   "SRAM открыт только для чтения.\nПосле выхода из игры SRAM НЕ будет сохранён."
+    IDS_P_SWITCHING         "Смена пака..."
+END
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// XInput controls dialog (Russian resources as well)
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(65001)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_XCONTROLS DIALOGEX 0, 0, 370, 180
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Настройка контроллера XInput (Xbox 360)",IDC_XINPUT_TITLE,7,7,160,8
+    CTEXT           "N64",IDC_STATIC,56,27,39,8
+    CTEXT           "A",IDC_STATIC,14,41,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_A,56,41,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "B",IDC_STATIC,14,59,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_B,56,59,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "X",IDC_STATIC,14,77,36,11,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_X,56,77,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Y",IDC_STATIC,14,95,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_Y,56,95,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Back",IDC_STATIC,14,112,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_BACK,56,112,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Start",IDC_STATIC,14,130,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_START,56,130,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "LB",IDC_STATIC,101,41,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_LB,143,41,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "RB",IDC_STATIC,101,59,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_RB,143,59,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "XControl",IDC_STATIC,101,27,36,8
+    CTEXT           "N64",IDC_STATIC,143,27,39,8
+    CTEXT           "LThSB",IDC_STATIC,101,76,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_LTSB,143,77,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "RThSB",IDC_STATIC,101,94,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_RTSB,143,95,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "LT",IDC_STATIC,101,112,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_LT,143,112,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "RT",IDC_STATIC,101,130,36,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_RT,143,130,39,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Настройка крестовины и стиков",IDC_STATIC,188,27,175,115
+    CTEXT           "Левый стик",IDC_STATIC,194,65,62,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    CTEXT           "Правый стик",IDC_STATIC,194,89,62,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    CTEXT           "Крестовина",IDC_STATIC,194,112,62,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_XC_LTS,262,65,94,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_XC_RTS,262,88,94,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_XC_DPAD,262,112,94,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "XControl",IDC_STATIC,194,45,62,8
+    CTEXT           "N64",IDC_STATIC,262,45,94,8
+    LTEXT           "Примечание: LThSB и RThSB — кнопки левого/правого стика.",IDC_STATIC,14,155,349,18
+    CTEXT           "XControl",IDC_STATIC,14,27,36,8
+    PUSHBUTTON      "Сохранить",IDC_XC_USE,306,159,50,14
+END
+
+#endif    // XInput controls dialog (Russian)
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
+
