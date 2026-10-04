@@ -12,6 +12,7 @@
 m64p_error softRdpConfigGui(
     void *parent,
     m64p_handle section,
+    ptr_ConfigOpenSection open_section,
     ptr_ConfigGetParamInt get_int,
     ptr_ConfigGetParamBool get_bool,
     ptr_ConfigSetParameter set_parameter,
@@ -19,6 +20,7 @@ m64p_error softRdpConfigGui(
 {
     (void)parent;
     (void)section;
+    (void)open_section;
     (void)get_int;
     (void)get_bool;
     (void)set_parameter;
@@ -45,12 +47,15 @@ m64p_error softRdpConfigGui(
 #define IDC_DEFAULTS           1009
 #define IDC_OK                 1010
 #define IDC_CANCEL             1011
+#define IDC_WINDOW_SIZE        1012
+#define IDC_VSYNC              1013
 
 #define IDC_LABEL_BASE         1100
 
 struct softrdp_config_gui_state
 {
     m64p_handle section;
+    ptr_ConfigOpenSection open_section;
     ptr_ConfigGetParamInt get_int;
     ptr_ConfigGetParamBool get_bool;
     ptr_ConfigSetParameter set_parameter;
@@ -59,12 +64,14 @@ struct softrdp_config_gui_state
     HWND hwnd;
     HWND scale;
     HWND workers;
+    HWND window_size;
     HWND integer_scale;
     HWND bilinear;
     HWND disable_dither;
     HWND disable_divot;
     HWND disable_gamma;
     HWND disable_aa;
+    HWND vsync;
     HWND defaults;
     HWND ok;
     HWND cancel;
@@ -109,10 +116,53 @@ static int combo_workers_value(HWND combo)
     return index;
 }
 
+static void combo_window_size_value(HWND combo, int *width, int *height)
+{
+    static const int sizes[][2] = {
+        {640, 480},
+        {720, 540},
+        {800, 600},
+        {960, 720},
+        {1024, 768},
+        {1280, 960},
+        {1440, 1080},
+        {1600, 1200}
+    };
+    const int count = (int)(sizeof(sizes) / sizeof(sizes[0]));
+    int index = (int)SendMessageW(combo, CB_GETCURSEL, 0, 0);
+    if (index < 0 || index >= count)
+        index = 3;
+    *width = sizes[index][0];
+    *height = sizes[index][1];
+}
+
+static int find_window_size_index(int width, int height)
+{
+    static const int sizes[][2] = {
+        {640, 480},
+        {720, 540},
+        {800, 600},
+        {960, 720},
+        {1024, 768},
+        {1280, 960},
+        {1440, 1080},
+        {1600, 1200}
+    };
+    const int count = (int)(sizeof(sizes) / sizeof(sizes[0]));
+    for (int i = 0; i < count; i++) {
+        if (sizes[i][0] == width && sizes[i][1] == height)
+            return i;
+    }
+    return 3;
+}
+
 static void set_defaults(struct softrdp_config_gui_state *state)
 {
     SendMessageW(state->scale, CB_SETCURSEL, SR_CONFIG_DEFAULT_SCALE - 1, 0);
     SendMessageW(state->workers, CB_SETCURSEL, 0, 0);
+    SendMessageW(state->window_size, CB_SETCURSEL,
+                 find_window_size_index(SR_CONFIG_DEFAULT_WINDOW_WIDTH,
+                                        SR_CONFIG_DEFAULT_WINDOW_HEIGHT), 0);
 
     set_checkbox(state->integer_scale, SR_CONFIG_DEFAULT_INTEGER_PIXEL_SCALE);
     set_checkbox(state->bilinear, SR_CONFIG_DEFAULT_BILINEAR_FILTER);
@@ -120,6 +170,7 @@ static void set_defaults(struct softrdp_config_gui_state *state)
     set_checkbox(state->disable_divot, SR_CONFIG_DEFAULT_DISABLE_VI_DIVOT_FILTER);
     set_checkbox(state->disable_gamma, SR_CONFIG_DEFAULT_DISABLE_VI_GAMMA_DITHER);
     set_checkbox(state->disable_aa, SR_CONFIG_DEFAULT_DISABLE_VI_AA);
+    set_checkbox(state->vsync, SR_CONFIG_DEFAULT_VSYNC);
 }
 
 static bool save_settings(struct softrdp_config_gui_state *state)
@@ -129,16 +180,22 @@ static bool save_settings(struct softrdp_config_gui_state *state)
 
     int scale = combo_scale_value(state->scale);
     int workers = combo_workers_value(state->workers);
+    int window_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+    int window_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
+    combo_window_size_value(state->window_size, &window_width, &window_height);
     int integer_scale = get_checkbox(state->integer_scale) ? 1 : 0;
     int bilinear = get_checkbox(state->bilinear) ? 1 : 0;
     int disable_dither = get_checkbox(state->disable_dither) ? 1 : 0;
     int disable_divot = get_checkbox(state->disable_divot) ? 1 : 0;
     int disable_gamma = get_checkbox(state->disable_gamma) ? 1 : 0;
     int disable_aa = get_checkbox(state->disable_aa) ? 1 : 0;
+    int vsync = get_checkbox(state->vsync) ? 1 : 0;
 
     if (state->set_parameter(state->section, SR_CONFIG_KEY_SCALE, M64TYPE_INT, &scale) != M64ERR_SUCCESS)
         return false;
     if (state->set_parameter(state->section, SR_CONFIG_KEY_WORKERS, M64TYPE_INT, &workers) != M64ERR_SUCCESS)
+        return false;
+    if (state->set_parameter(state->section, SR_CONFIG_KEY_VSYNC, M64TYPE_BOOL, &vsync) != M64ERR_SUCCESS)
         return false;
     if (state->set_parameter(state->section, SR_CONFIG_KEY_INTEGER_PIXEL_SCALE, M64TYPE_BOOL, &integer_scale) != M64ERR_SUCCESS)
         return false;
@@ -153,7 +210,20 @@ static bool save_settings(struct softrdp_config_gui_state *state)
     if (state->set_parameter(state->section, SR_CONFIG_KEY_DISABLE_VI_AA, M64TYPE_BOOL, &disable_aa) != M64ERR_SUCCESS)
         return false;
 
-    return state->save_section(SR_CONFIG_M64P_SECTION) == M64ERR_SUCCESS;
+    m64p_handle general_section = NULL;
+    if (state->open_section == NULL ||
+        state->open_section("Video-General", &general_section) != M64ERR_SUCCESS ||
+        general_section == NULL)
+        return false;
+
+    if (state->set_parameter(general_section, "ScreenWidth", M64TYPE_INT, &window_width) != M64ERR_SUCCESS)
+        return false;
+    if (state->set_parameter(general_section, "ScreenHeight", M64TYPE_INT, &window_height) != M64ERR_SUCCESS)
+        return false;
+
+    if (state->save_section(SR_CONFIG_M64P_SECTION) != M64ERR_SUCCESS)
+        return false;
+    return state->save_section("Video-General") == M64ERR_SUCCESS;
 }
 
 static void load_settings(struct softrdp_config_gui_state *state)
@@ -167,11 +237,23 @@ static void load_settings(struct softrdp_config_gui_state *state)
     bool disable_divot = SR_CONFIG_DEFAULT_DISABLE_VI_DIVOT_FILTER;
     bool disable_gamma = SR_CONFIG_DEFAULT_DISABLE_VI_GAMMA_DITHER;
     bool disable_aa = SR_CONFIG_DEFAULT_DISABLE_VI_AA;
+    bool vsync = SR_CONFIG_DEFAULT_VSYNC;
+    int window_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+    int window_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
 
     if (state->get_int != NULL)
     {
         scale = (int)sr_config_clamp_scale(state->get_int(state->section, SR_CONFIG_KEY_SCALE));
         workers = (int)sr_config_clamp_workers(state->get_int(state->section, SR_CONFIG_KEY_WORKERS));
+    }
+
+    m64p_handle general_section = NULL;
+    if (state->open_section != NULL &&
+        state->open_section("Video-General", &general_section) == M64ERR_SUCCESS &&
+        general_section != NULL && state->get_int != NULL)
+    {
+        window_width = state->get_int(general_section, "ScreenWidth");
+        window_height = state->get_int(general_section, "ScreenHeight");
     }
 
     if (state->get_bool != NULL)
@@ -182,7 +264,11 @@ static void load_settings(struct softrdp_config_gui_state *state)
         disable_divot = state->get_bool(state->section, SR_CONFIG_KEY_DISABLE_VI_DIVOT_FILTER) != 0;
         disable_gamma = state->get_bool(state->section, SR_CONFIG_KEY_DISABLE_VI_GAMMA_DITHER) != 0;
         disable_aa = state->get_bool(state->section, SR_CONFIG_KEY_DISABLE_VI_AA) != 0;
+        vsync = state->get_bool(state->section, SR_CONFIG_KEY_VSYNC) != 0;
     }
+
+    if (window_width <= 0) window_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+    if (window_height <= 0) window_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
 
     SendMessageW(state->scale, CB_SETCURSEL, scale - 1, 0);
     if (workers == 0)
@@ -190,12 +276,16 @@ static void load_settings(struct softrdp_config_gui_state *state)
     else
         SendMessageW(state->workers, CB_SETCURSEL, workers, 0);
 
+    SendMessageW(state->window_size, CB_SETCURSEL,
+                 find_window_size_index(window_width, window_height), 0);
+
     set_checkbox(state->integer_scale, integer_scale);
     set_checkbox(state->bilinear, bilinear);
     set_checkbox(state->disable_dither, disable_dither);
     set_checkbox(state->disable_divot, disable_divot);
     set_checkbox(state->disable_gamma, disable_gamma);
     set_checkbox(state->disable_aa, disable_aa);
+    set_checkbox(state->vsync, vsync);
 }
 
 static HWND create_control(
@@ -271,49 +361,67 @@ static void create_controls(struct softrdp_config_gui_state *state)
     add_combo_item(state->workers, L"11");
     add_combo_item(state->workers, L"12");
 
-    add_label(state, L"Presentation", left, 90, label_width);
+    add_label(state, L"Windowed size", left, 90, label_width);
+    state->window_size = create_control(WC_COMBOBOXW, L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
+                                        WS_EX_CLIENTEDGE, control_x, 86, 180, 190,
+                                        state->hwnd, IDC_WINDOW_SIZE, font);
+    add_combo_item(state->window_size, L"640 x 480");
+    add_combo_item(state->window_size, L"720 x 540");
+    add_combo_item(state->window_size, L"800 x 600");
+    add_combo_item(state->window_size, L"960 x 720");
+    add_combo_item(state->window_size, L"1024 x 768");
+    add_combo_item(state->window_size, L"1280 x 960");
+    add_combo_item(state->window_size, L"1440 x 1080");
+    add_combo_item(state->window_size, L"1600 x 1200");
+
+    add_label(state, L"Presentation", left, 128, label_width);
     state->integer_scale = create_control(WC_BUTTONW, L"Integer pixel scaling",
                                            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                           0, left, 112, control_width + label_width, 22,
+                                           0, left, 150, control_width + label_width, 22,
                                            state->hwnd, IDC_INTEGER_SCALE, font);
     state->bilinear = create_control(WC_BUTTONW, L"Bilinear filtering",
                                      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                     0, left, 140, control_width + label_width, 22,
+                                     0, left, 178, control_width + label_width, 22,
                                      state->hwnd, IDC_BILINEAR, font);
+    state->vsync = create_control(WC_BUTTONW, L"Vertical synchronization (VSync)",
+                                  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+                                  0, left, 206, control_width + label_width, 22,
+                                  state->hwnd, IDC_VSYNC, font);
 
-    add_label(state, L"VI filters", left, 182, label_width);
+    add_label(state, L"VI filters", left, 242, label_width);
     state->disable_dither = create_control(WC_BUTTONW, L"Disable VI dither filter",
                                             WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                            0, left, 204, control_width + label_width, 22,
+                                            0, left, 264, control_width + label_width, 22,
                                             state->hwnd, IDC_DISABLE_DITHER, font);
     state->disable_divot = create_control(WC_BUTTONW, L"Disable VI divot filter",
                                           WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                          0, left, 232, control_width + label_width, 22,
+                                          0, left, 292, control_width + label_width, 22,
                                           state->hwnd, IDC_DISABLE_DIVOT, font);
     state->disable_gamma = create_control(WC_BUTTONW, L"Disable VI gamma dither",
                                            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                           0, left, 260, control_width + label_width, 22,
+                                           0, left, 320, control_width + label_width, 22,
                                            state->hwnd, IDC_DISABLE_GAMMA, font);
     state->disable_aa = create_control(WC_BUTTONW, L"Disable VI anti-aliasing",
                                        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-                                       0, left, 288, control_width + label_width, 22,
+                                       0, left, 348, control_width + label_width, 22,
                                        state->hwnd, IDC_DISABLE_AA, font);
 
     state->defaults = create_control(WC_BUTTONW, L"Defaults",
                                      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-                                     0, 18, 336, 92, 30,
+                                     0, 18, 396, 92, 30,
                                      state->hwnd, IDC_DEFAULTS, font);
     state->cancel = create_control(WC_BUTTONW, L"Cancel",
                                    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-                                   0, 252, 336, 92, 30,
+                                   0, 252, 396, 92, 30,
                                    state->hwnd, IDC_CANCEL, font);
     state->ok = create_control(WC_BUTTONW, L"OK",
                                WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-                               0, 354, 336, 92, 30,
+                               0, 354, 396, 92, 30,
                                state->hwnd, IDC_OK, font);
 
     SendMessageW(state->scale, CB_SETCURSEL, 0, 0);
     SendMessageW(state->workers, CB_SETCURSEL, 0, 0);
+    SendMessageW(state->window_size, CB_SETCURSEL, 3, 0);
     set_defaults(state);
 
     load_settings(state);
@@ -416,18 +524,20 @@ static ATOM register_config_class(void)
 m64p_error softRdpConfigGui(
     void *parent,
     m64p_handle section,
+    ptr_ConfigOpenSection open_section,
     ptr_ConfigGetParamInt get_int,
     ptr_ConfigGetParamBool get_bool,
     ptr_ConfigSetParameter set_parameter,
     ptr_ConfigSaveSection save_section)
 {
-    if (section == NULL || get_int == NULL || get_bool == NULL ||
+    if (section == NULL || open_section == NULL || get_int == NULL || get_bool == NULL ||
         set_parameter == NULL || save_section == NULL)
         return M64ERR_NOT_INIT;
 
     struct softrdp_config_gui_state state;
     ZeroMemory(&state, sizeof(state));
     state.section = section;
+    state.open_section = open_section;
     state.get_int = get_int;
     state.get_bool = get_bool;
     state.set_parameter = set_parameter;
@@ -451,7 +561,7 @@ m64p_error softRdpConfigGui(
     SystemParametersInfoW(SPI_GETWORKAREA, 0, &work_area, 0);
 
     const int width = 480;
-    const int height = 400;
+    const int height = 460;
     const int x = work_area.left + ((work_area.right - work_area.left) - width) / 2;
     const int y = work_area.top + ((work_area.bottom - work_area.top) - height) / 2;
 

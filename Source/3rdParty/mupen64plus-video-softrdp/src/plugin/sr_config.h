@@ -38,6 +38,7 @@
 #define SR_CONFIG_KEY_DISABLE_VI_DIVOT_FILTER "DisableVIDivotFilter"
 #define SR_CONFIG_KEY_DISABLE_VI_GAMMA_DITHER "DisableVIGammaDither"
 #define SR_CONFIG_KEY_DISABLE_VI_AA "DisableVIAA"
+#define SR_CONFIG_KEY_VSYNC "VSync"
 
 #define SR_CONFIG_DESC_WORKERS \
     "Rendering worker threads: 0 = auto, 1 = single-threaded, 2+ = fixed core count (up to 12)."
@@ -64,6 +65,9 @@
 #define SR_CONFIG_DEFAULT_DISABLE_VI_DIVOT_FILTER false
 #define SR_CONFIG_DEFAULT_DISABLE_VI_GAMMA_DITHER false
 #define SR_CONFIG_DEFAULT_DISABLE_VI_AA false
+#define SR_CONFIG_DEFAULT_VSYNC false
+#define SR_CONFIG_DEFAULT_WINDOW_WIDTH 960
+#define SR_CONFIG_DEFAULT_WINDOW_HEIGHT 720
 
 typedef struct sr_plugin_config {
     uint32_t workers;

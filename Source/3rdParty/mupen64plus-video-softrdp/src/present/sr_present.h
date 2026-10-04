@@ -52,6 +52,7 @@ void sr_present_set_window_size(sr_present *present, uint32_t width, uint32_t he
  * as does shutdown.
  */
 void sr_present_set_options(sr_present *present, bool integer_scale, bool bilinear_filter);
+void sr_present_set_vsync(sr_present *present, bool enabled);
 void sr_present_draw(sr_present *present);
 bool sr_present_upload_rgba8(sr_present *present,
                              const sr_rgba8 *pixels,

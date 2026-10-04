@@ -284,8 +284,8 @@ static bool make_gl_context(sr_present *present)
         return false;
     }
 
-    /* PJ64's speed limiter is independent of the driver's swap interval.
-     * Keep presentation uncapped when VI VSync is disabled, so SwapBuffers cannot impose the desktop refresh rate. */
+    /* Keep the historical default: VSync is off until a front-end explicitly
+     * enables it with sr_present_set_vsync(). */
     p_wglSwapIntervalEXT =
         (wgl_swap_interval_ext_proc)load_gl_proc("wglSwapIntervalEXT");
     if (p_wglSwapIntervalEXT) {
@@ -554,6 +554,34 @@ void sr_present_set_options(sr_present *present, bool integer_scale, bool biline
     if (!present) return;
     present->integer_scale = integer_scale;
     present->bilinear_filter = bilinear_filter;
+}
+
+void sr_present_set_vsync(sr_present *present, bool enabled)
+{
+#ifdef _WIN32
+    if (!present || !present->ready) return;
+
+    bool release_current = false;
+    if (!present->external_context) {
+        if (!present_make_current(present)) return;
+        release_current = true;
+    }
+
+    if (!p_wglSwapIntervalEXT) {
+        p_wglSwapIntervalEXT =
+            (wgl_swap_interval_ext_proc)load_gl_proc("wglSwapIntervalEXT");
+    }
+    if (p_wglSwapIntervalEXT) {
+        (void)p_wglSwapIntervalEXT(enabled ? 1 : 0);
+    }
+
+    if (release_current) {
+        wglMakeCurrent(NULL, NULL);
+    }
+#else
+    (void)present;
+    (void)enabled;
+#endif
 }
 
 /* The frame texture's sampling filter, shared by minification and

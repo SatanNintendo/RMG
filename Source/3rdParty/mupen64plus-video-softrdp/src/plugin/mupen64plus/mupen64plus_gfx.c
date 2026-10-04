@@ -26,6 +26,7 @@
 extern m64p_error softRdpConfigGui(
     void *parent,
     m64p_handle section,
+    ptr_ConfigOpenSection open_section,
     ptr_ConfigGetParamInt get_int,
     ptr_ConfigGetParamBool get_bool,
     ptr_ConfigSetParameter set_parameter,
@@ -70,9 +71,10 @@ static sr_context *g_context = NULL;
 static sr_present g_present;
 static sr_plugin_screen g_screen;
 
-static int32_t g_win_width = 640;
-static int32_t g_win_height = 480;
+static int32_t g_win_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+static int32_t g_win_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
 static bool g_win_fullscreen = false;
+static bool g_win_vsync = SR_CONFIG_DEFAULT_VSYNC;
 static bool g_plugin_initialized = false;
 
 static void msg_log(int level, const char *fmt, ...)
@@ -115,8 +117,10 @@ static void register_config_defaults(void)
         if (ConfigSetDefaultBool)
             ConfigSetDefaultBool(general, "Fullscreen", 0, "Use fullscreen mode if True, or windowed mode if False");
         if (ConfigSetDefaultInt) {
-            ConfigSetDefaultInt(general, "ScreenWidth", 640, "Width of output window or fullscreen width");
-            ConfigSetDefaultInt(general, "ScreenHeight", 480, "Height of output window or fullscreen height");
+            ConfigSetDefaultInt(general, "ScreenWidth", SR_CONFIG_DEFAULT_WINDOW_WIDTH,
+                                "Width of output window or fullscreen width");
+            ConfigSetDefaultInt(general, "ScreenHeight", SR_CONFIG_DEFAULT_WINDOW_HEIGHT,
+                                "Height of output window or fullscreen height");
         }
         if (ConfigSaveSection) ConfigSaveSection("Video-General");
     }
@@ -135,6 +139,9 @@ static void register_config_defaults(void)
     ConfigSetDefaultInt(section, SR_CONFIG_KEY_SCALE, (int)defaults.scale,
                         SR_CONFIG_DESC_SCALE);
     if (ConfigSetDefaultBool) {
+        ConfigSetDefaultBool(section, SR_CONFIG_KEY_VSYNC,
+                             SR_CONFIG_DEFAULT_VSYNC,
+                             "Synchronize presentation to the display refresh rate.");
         ConfigSetDefaultBool(section, SR_CONFIG_KEY_INTEGER_PIXEL_SCALE,
                              defaults.integer_pixel_scale,
                              SR_CONFIG_DESC_INTEGER_PIXEL_SCALE);
@@ -168,6 +175,11 @@ static void load_config(void)
 {
     g_config = sr_config_defaults();
 
+    g_win_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+    g_win_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
+    g_win_vsync = SR_CONFIG_DEFAULT_VSYNC;
+    g_win_fullscreen = false;
+
     m64p_handle general = NULL;
     if (ConfigOpenSection && ConfigOpenSection("Video-General", &general) == M64ERR_SUCCESS) {
         if (ConfigGetParamBool) g_win_fullscreen = ConfigGetParamBool(general, "Fullscreen");
@@ -176,8 +188,6 @@ static void load_config(void)
             g_win_height = ConfigGetParamInt(general, "ScreenHeight");
         }
     }
-    if (g_win_width <= 0) g_win_width = 640;
-    if (g_win_height <= 0) g_win_height = 480;
 
     m64p_handle section = NULL;
     if (!ConfigOpenSection ||
@@ -189,7 +199,10 @@ static void load_config(void)
         g_config.scale = sr_config_clamp_scale(
             ConfigGetParamInt(section, SR_CONFIG_KEY_SCALE));
     }
+    if (g_win_width <= 0) g_win_width = SR_CONFIG_DEFAULT_WINDOW_WIDTH;
+    if (g_win_height <= 0) g_win_height = SR_CONFIG_DEFAULT_WINDOW_HEIGHT;
     if (ConfigGetParamBool) {
+        g_win_vsync = ConfigGetParamBool(section, SR_CONFIG_KEY_VSYNC) != 0;
         g_config.integer_pixel_scale =
             ConfigGetParamBool(section, SR_CONFIG_KEY_INTEGER_PIXEL_SCALE) != 0;
         g_config.bilinear_filter =
@@ -282,9 +295,9 @@ EXPORT m64p_error CALL PluginConfig(void *parent)
         section == NULL)
         return M64ERR_INPUT_INVALID;
 
-    return softRdpConfigGui(parent, section, ConfigGetParamInt,
-                            ConfigGetParamBool, ConfigSetParameter,
-                            ConfigSaveSection);
+    return softRdpConfigGui(parent, section, ConfigOpenSection,
+                            ConfigGetParamInt, ConfigGetParamBool,
+                            ConfigSetParameter, ConfigSaveSection);
 }
 #endif
 
@@ -364,6 +377,7 @@ EXPORT int CALL RomOpen(void)
     sr_present_set_options(&g_present, g_config.integer_pixel_scale,
                            g_config.bilinear_filter);
     sr_present_set_window_size(&g_present, (uint32_t)g_win_width, (uint32_t)g_win_height);
+    sr_present_set_vsync(&g_present, g_win_vsync);
     sr_present_set_display_size(&g_present, 640, 480);
     sr_present_clear(&g_present);
     return 1;

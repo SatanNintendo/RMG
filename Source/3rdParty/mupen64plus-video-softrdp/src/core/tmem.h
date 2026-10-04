@@ -1179,7 +1179,7 @@ static inline __attribute__((always_inline)) bool tmem_sample_compact_bilerp_cla
 /* One out-of-line instance per compact class, so the format is decided once
  * per sample rather than once per tap without growing the span loop. */
 #define TMEM_COMPACT_BILERP_INSTANCE(name, cls)                                  \
-    static __attribute__((noinline)) bool name(                           \
+    static inline __attribute__((noinline)) bool name(                           \
         const tmem_state *tmem, const rdp_texture_sample_state *sample,          \
         int32_t s_fixed, int32_t t_fixed, rdp_color *color)                      \
     {                                                                            \
@@ -1258,7 +1258,7 @@ static inline bool tmem_sample_rgba16_bilerp_fixed5(const tmem_state *tmem,
 /* The RGBA16 bilerp with the IA16 decode. A separate copy rather than a shared
  * template, which measurably perturbed the RGBA16 path; out of line like the
  * compact classes, so it does not grow the span loop. */
-static __attribute__((noinline)) bool tmem_sample_ia16_bilerp_fixed5(
+static inline __attribute__((noinline)) bool tmem_sample_ia16_bilerp_fixed5(
     const tmem_state *tmem, const rdp_texture_sample_state *sample,
     int32_t s_fixed, int32_t t_fixed, rdp_color *color)
 {
