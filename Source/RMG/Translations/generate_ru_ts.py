@@ -362,6 +362,10 @@ TRANSLATIONS = {
 
     # === RMG-Input: MainDialog ===
     "Rosalie's Mupen GUI - Input Plugin": "Rosalie's Mupen GUI — плагин ввода",
+
+    # === Integrated third-party plugins (RMG SettingsDialog) ===
+    "AziAudio-Plus HLE Audio (Mupen64Plus)": "AziAudio-Plus HLE — звуковой плагин (Mupen64Plus)",
+    "SoftRDP-Mupen64Plus": "SoftRDP-Mupen64Plus — видеоплагин",
     "Player 1": "Игрок 1",
     "Player 2": "Игрок 2",
     "Player 3": "Игрок 3",

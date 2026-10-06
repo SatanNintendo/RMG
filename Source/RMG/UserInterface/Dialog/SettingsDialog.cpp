@@ -14,6 +14,7 @@
 #include "SettingsDialog.hpp"
 
 #include <QRegularExpressionValidator>
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QFileDialog>
@@ -57,6 +58,27 @@ enum class SettingsDialogTab
     N64DD      = 13,
     Invalid    = 14
 };
+
+//
+// Local Functions
+//
+
+static QString translatedPluginName(const CorePlugin& plugin)
+{
+    const QString fileName = QString::fromStdString(plugin.File).toLower();
+
+    if (fileName.startsWith("mupen64plus-audio-aziaudio."))
+    {
+        return QCoreApplication::translate("SettingsDialog", "AziAudio-Plus HLE Audio (Mupen64Plus)");
+    }
+
+    if (fileName.startsWith("mupen64plus-video-softrdp."))
+    {
+        return QCoreApplication::translate("SettingsDialog", "SoftRDP-Mupen64Plus");
+    }
+
+    return QString::fromStdString(plugin.Name);
+}
 
 
 //
@@ -376,11 +398,11 @@ void SettingsDialog::loadGamePluginSettings(void)
         index = (static_cast<int>(p.Type) - 1);
 
         comboBox = comboBoxArray[index];
-        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
+        comboBox->addItem(translatedPluginName(p), QString::fromStdString(p.File));
 
         if (pluginFileNames[index] == QString::fromStdString(p.File))
         {
-            comboBox->setCurrentText(QString::fromStdString(p.Name));
+            comboBox->setCurrentText(translatedPluginName(p));
             pluginFound[index] = true;
         }
     }
@@ -1276,7 +1298,7 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         index = (static_cast<int>(p.Type) - 1);
         comboBox = comboBoxArray[index];
         pluginFileName = pluginFileNames[index];
-        pluginName = QString::fromStdString(p.Name);
+        pluginName = translatedPluginName(p);
 
         comboBox->addItem(pluginName, QString::fromStdString(p.File));
 

@@ -2254,6 +2254,14 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>SettingsDialog</name>
         <message>
+            <source>SoftRDP-Mupen64Plus</source>
+            <translation>SoftRDP-Mupen64Plus — видеоплагин</translation>
+        </message>
+        <message>
+            <source>AziAudio-Plus HLE Audio (Mupen64Plus)</source>
+            <translation>AziAudio-Plus HLE — звуковой плагин (Mupen64Plus)</translation>
+        </message>
+        <message>
             <source> (not found)</source>
             <translation> (не найден)</translation>
         </message>
