@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>
+#include <cstdlib>
 #include <array>
 
 //
@@ -302,6 +303,36 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
     return true;
 }
 
+static void set_plugin_language_environment(std::string& previousLanguage, bool& hadPreviousLanguage)
+{
+    const char* previous = std::getenv("RMG_LANGUAGE");
+    hadPreviousLanguage = previous != nullptr;
+    previousLanguage = previous != nullptr ? previous : std::string();
+
+    const std::string language = CoreSettingsGetStringValue(SettingsID::GUI_Language);
+
+#ifdef _WIN32
+    _putenv_s("RMG_LANGUAGE", language.c_str());
+#else
+    if (language.empty())
+        unsetenv("RMG_LANGUAGE");
+    else
+        setenv("RMG_LANGUAGE", language.c_str(), 1);
+#endif
+}
+
+static void restore_plugin_language_environment(const std::string& previousLanguage, bool hadPreviousLanguage)
+{
+#ifdef _WIN32
+    _putenv_s("RMG_LANGUAGE", hadPreviousLanguage ? previousLanguage.c_str() : "");
+#else
+    if (hadPreviousLanguage)
+        setenv("RMG_LANGUAGE", previousLanguage.c_str(), 1);
+    else
+        unsetenv("RMG_LANGUAGE");
+#endif
+}
+
 static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig, std::filesystem::path file)
 {
     std::string error;
@@ -349,6 +380,15 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
         }
     }
 
+    // Propagate RMG's language choice to native Win32 plugin configuration
+    // dialogs without linking those plugins against Qt. An empty value means
+    // "System Default"; native plugins may then fall back to the Windows UI
+    // language. The variable is restored immediately after the modal config
+    // call returns.
+    std::string previousPluginLanguage;
+    bool hadPreviousPluginLanguage = false;
+    set_plugin_language_environment(previousPluginLanguage, hadPreviousPluginLanguage);
+
     // check if the plugin has the ConfigWithRomConfig
     // or Config function, the ConfigWithRomConfig function
     // has priority
@@ -362,6 +402,8 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
         ret = plugin.Config(parent);
         functionName = "Config";
     }
+
+    restore_plugin_language_environment(previousPluginLanguage, hadPreviousPluginLanguage);
 
     if (ret != M64ERR_SUCCESS)
     {

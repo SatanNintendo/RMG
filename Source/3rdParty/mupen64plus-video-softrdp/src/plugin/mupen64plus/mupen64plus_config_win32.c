@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "api/m64p_types.h"
 #include "api/m64p_config.h"
@@ -34,7 +36,21 @@ m64p_error softRdpConfigGui(
 #include <commctrl.h>
 
 #define SOFTRDP_CFG_CLASS L"SoftRDPConfigWindow"
-#define SOFTRDP_CFG_TITLE L"SoftRDP Settings"
+
+static bool rmg_is_russian(void)
+{
+    const char *language = getenv("RMG_LANGUAGE");
+    if (language != NULL && language[0] != '\0')
+        return _strnicmp(language, "ru", 2) == 0;
+
+    return PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_RUSSIAN;
+}
+
+static const wchar_t *rmg_text(const wchar_t *english, const wchar_t *russian)
+{
+    return rmg_is_russian() ? russian : english;
+}
+
 
 #define IDC_SCALE              1001
 #define IDC_WORKERS            1002
@@ -336,18 +352,18 @@ static void create_controls(struct softrdp_config_gui_state *state)
     const int control_x = left + label_width;
     const int control_width = 235;
 
-    add_label(state, L"Internal resolution", left, 18, label_width);
+    add_label(state, rmg_text(L"Internal resolution", L"Внутреннее разрешение"), left, 18, label_width);
     state->scale = create_control(WC_COMBOBOXW, L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
                                   WS_EX_CLIENTEDGE, control_x, 14, 140, 180,
                                   state->hwnd, IDC_SCALE, font);
-    add_combo_item(state->scale, L"1x (native)");
+    add_combo_item(state->scale, rmg_text(L"1x (native)", L"1x (исходное)"));
     add_combo_item(state->scale, L"2x");
 
-    add_label(state, L"Worker threads", left, 52, label_width);
+    add_label(state, rmg_text(L"Worker threads", L"Рабочие потоки"), left, 52, label_width);
     state->workers = create_control(WC_COMBOBOXW, L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
                                     WS_EX_CLIENTEDGE, control_x, 48, 160, 240,
                                     state->hwnd, IDC_WORKERS, font);
-    add_combo_item(state->workers, L"Auto");
+    add_combo_item(state->workers, rmg_text(L"Auto", L"Авто"));
     add_combo_item(state->workers, L"1");
     add_combo_item(state->workers, L"2");
     add_combo_item(state->workers, L"3");
@@ -361,7 +377,7 @@ static void create_controls(struct softrdp_config_gui_state *state)
     add_combo_item(state->workers, L"11");
     add_combo_item(state->workers, L"12");
 
-    add_label(state, L"Windowed size", left, 90, label_width);
+    add_label(state, rmg_text(L"Windowed size", L"Размер окна"), left, 90, label_width);
     state->window_size = create_control(WC_COMBOBOXW, L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
                                         WS_EX_CLIENTEDGE, control_x, 86, 180, 190,
                                         state->hwnd, IDC_WINDOW_SIZE, font);
@@ -374,47 +390,47 @@ static void create_controls(struct softrdp_config_gui_state *state)
     add_combo_item(state->window_size, L"1440 x 1080");
     add_combo_item(state->window_size, L"1600 x 1200");
 
-    add_label(state, L"Presentation", left, 128, label_width);
-    state->integer_scale = create_control(WC_BUTTONW, L"Integer pixel scaling",
+    add_label(state, rmg_text(L"Presentation", L"Вывод изображения"), left, 128, label_width);
+    state->integer_scale = create_control(WC_BUTTONW, rmg_text(L"Integer pixel scaling", L"Целочисленное масштабирование пикселей"),
                                            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                            0, left, 150, control_width + label_width, 22,
                                            state->hwnd, IDC_INTEGER_SCALE, font);
-    state->bilinear = create_control(WC_BUTTONW, L"Bilinear filtering",
+    state->bilinear = create_control(WC_BUTTONW, rmg_text(L"Bilinear filtering", L"Билинейная фильтрация"),
                                      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                      0, left, 178, control_width + label_width, 22,
                                      state->hwnd, IDC_BILINEAR, font);
-    state->vsync = create_control(WC_BUTTONW, L"Vertical synchronization (VSync)",
+    state->vsync = create_control(WC_BUTTONW, rmg_text(L"Vertical synchronization (VSync)", L"Вертикальная синхронизация (VSync)"),
                                   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                   0, left, 206, control_width + label_width, 22,
                                   state->hwnd, IDC_VSYNC, font);
 
-    add_label(state, L"VI filters", left, 242, label_width);
-    state->disable_dither = create_control(WC_BUTTONW, L"Disable VI dither filter",
+    add_label(state, rmg_text(L"VI filters", L"Фильтры VI"), left, 242, label_width);
+    state->disable_dither = create_control(WC_BUTTONW, rmg_text(L"Disable VI dither filter", L"Отключить дизеринг VI"),
                                             WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                             0, left, 264, control_width + label_width, 22,
                                             state->hwnd, IDC_DISABLE_DITHER, font);
-    state->disable_divot = create_control(WC_BUTTONW, L"Disable VI divot filter",
+    state->disable_divot = create_control(WC_BUTTONW, rmg_text(L"Disable VI divot filter", L"Отключить фильтр Divot VI"),
                                           WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                           0, left, 292, control_width + label_width, 22,
                                           state->hwnd, IDC_DISABLE_DIVOT, font);
-    state->disable_gamma = create_control(WC_BUTTONW, L"Disable VI gamma dither",
+    state->disable_gamma = create_control(WC_BUTTONW, rmg_text(L"Disable VI gamma dither", L"Отключить гамма-дизеринг VI"),
                                            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                            0, left, 320, control_width + label_width, 22,
                                            state->hwnd, IDC_DISABLE_GAMMA, font);
-    state->disable_aa = create_control(WC_BUTTONW, L"Disable VI anti-aliasing",
+    state->disable_aa = create_control(WC_BUTTONW, rmg_text(L"Disable VI anti-aliasing", L"Отключить сглаживание VI"),
                                        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
                                        0, left, 348, control_width + label_width, 22,
                                        state->hwnd, IDC_DISABLE_AA, font);
 
-    state->defaults = create_control(WC_BUTTONW, L"Defaults",
+    state->defaults = create_control(WC_BUTTONW, rmg_text(L"Defaults", L"По умолчанию"),
                                      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                                      0, 18, 396, 92, 30,
                                      state->hwnd, IDC_DEFAULTS, font);
-    state->cancel = create_control(WC_BUTTONW, L"Cancel",
+    state->cancel = create_control(WC_BUTTONW, rmg_text(L"Cancel", L"Отмена"),
                                    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                                    0, 252, 396, 92, 30,
                                    state->hwnd, IDC_CANCEL, font);
-    state->ok = create_control(WC_BUTTONW, L"OK",
+    state->ok = create_control(WC_BUTTONW, rmg_text(L"OK", L"ОК"),
                                WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
                                0, 354, 396, 92, 30,
                                state->hwnd, IDC_OK, font);
@@ -463,8 +479,8 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
             if (!save_settings(state))
             {
                 MessageBoxW(hwnd,
-                            L"Failed to save SoftRDP settings.",
-                            SOFTRDP_CFG_TITLE,
+                            rmg_text(L"Failed to save SoftRDP settings.", L"Не удалось сохранить настройки SoftRDP."),
+                            rmg_text(L"SoftRDP Settings", L"Настройки SoftRDP"),
                             MB_OK | MB_ICONERROR);
                 return 0;
             }
@@ -568,7 +584,7 @@ m64p_error softRdpConfigGui(
     state.hwnd = CreateWindowExW(
         WS_EX_DLGMODALFRAME | WS_EX_CONTROLPARENT,
         SOFTRDP_CFG_CLASS,
-        SOFTRDP_CFG_TITLE,
+        rmg_text(L"SoftRDP Settings", L"Настройки SoftRDP"),
         WS_POPUP | WS_CAPTION | WS_SYSMENU,
         x,
         y,

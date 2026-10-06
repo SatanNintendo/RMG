@@ -67,12 +67,16 @@ static QString translatedPluginName(const CorePlugin& plugin)
 {
     const QString fileName = QString::fromStdString(plugin.File).toLower();
 
-    if (fileName.startsWith("mupen64plus-audio-aziaudio."))
+    const QString pluginDisplayName = QString::fromStdString(plugin.Name);
+
+    if (pluginDisplayName.compare(QStringLiteral("AziAudio-Plus HLE Audio (Mupen64Plus)"), Qt::CaseInsensitive) == 0 ||
+        fileName.startsWith("mupen64plus-audio-aziaudio"))
     {
         return QCoreApplication::translate("SettingsDialog", "AziAudio-Plus HLE Audio (Mupen64Plus)");
     }
 
-    if (fileName.startsWith("mupen64plus-video-softrdp."))
+    if (pluginDisplayName.compare(QStringLiteral("SoftRDP-Mupen64Plus"), Qt::CaseInsensitive) == 0 ||
+        fileName.startsWith("mupen64plus-video-softrdp"))
     {
         return QCoreApplication::translate("SettingsDialog", "SoftRDP-Mupen64Plus");
     }

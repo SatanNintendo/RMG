@@ -29,6 +29,7 @@
 #include <commctrl.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <wchar.h>
 #include <new>
 
@@ -94,6 +95,41 @@ struct DlgState
     int  currentTab;      /* 0=Settings 1=Advanced */
 };
 
+/* ── RMG language bridge ───────────────────────────────────────────────── */
+/* RMG passes the selected GUI locale through RMG_LANGUAGE while this modal
+   configuration dialog is open.  When the setting is "System Default" the
+   variable is empty, so we fall back to the Windows UI language. */
+static bool RmgIsRussian(void)
+{
+    const char *language = getenv("RMG_LANGUAGE");
+    if (language != NULL && language[0] != '\0')
+        return _strnicmp(language, "ru", 2) == 0;
+
+    return PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_RUSSIAN;
+}
+
+static const wchar_t *AzText(const wchar_t *english, const wchar_t *russian)
+{
+    return RmgIsRussian() ? russian : english;
+}
+
+static std::wstring AnsiToWide(const char *text)
+{
+    if (text == NULL || text[0] == '\0')
+        return std::wstring();
+
+    int length = MultiByteToWideChar(CP_ACP, 0, text, -1, NULL, 0);
+    if (length <= 1)
+        return std::wstring();
+
+    std::wstring result((size_t)length, L'\0');
+    if (MultiByteToWideChar(CP_ACP, 0, text, -1, &result[0], length) <= 0)
+        return std::wstring();
+
+    result.resize((size_t)length - 1);
+    return result;
+}
+
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
 /* Windows dialog templates are expressed in dialog units (DLU), while the
@@ -121,22 +157,22 @@ static void SetCtrlFont(HWND hwnd, HFONT hFont)
         SendMessage(hwnd, WM_SETFONT, (WPARAM)hFont, TRUE);
 }
 
-static HWND CreateGroupBox(HWND parent, const char *text,
+static HWND CreateGroupBox(HWND parent, const wchar_t *text,
                            int x, int y, int w, int hgt,
                            HFONT hFont)
 {
-    HWND h = CreateWindowA("BUTTON", text,
+    HWND h = CreateWindowW(L"BUTTON", text,
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         x, y, w, hgt, parent, NULL, g_hDllInst, NULL);
     SetCtrlFont(h, hFont);
     return h;
 }
 
-static HWND CreateLabel(HWND parent, const char *text,
+static HWND CreateLabel(HWND parent, const wchar_t *text,
                         int x, int y, int w, int hgt,
                         HFONT hFont)
 {
-    HWND h = CreateWindowA("STATIC", text,
+    HWND h = CreateWindowW(L"STATIC", text,
         WS_CHILD | WS_VISIBLE,
         x, y, w, hgt, parent, NULL, g_hDllInst, NULL);
     SetCtrlFont(h, hFont);
@@ -146,7 +182,7 @@ static HWND CreateLabel(HWND parent, const char *text,
 /* ── Create the "Settings" panel window (child of dialog) ─────────────── */
 static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowA("STATIC", "", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
+    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
     SetCtrlFont(hPanel, hFont);
@@ -162,22 +198,22 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     const int rightX = DluX(hDlg, 224);
     const int volumeW = DluX(hDlg, 64);
 
-    CreateGroupBox(hPanel, "Output Device",
+    CreateGroupBox(hPanel, AzText(L"Output Device", L"Устройство вывода"),
                    left, top, leftW, DluY(hDlg, 40), hFont);
 
-    HWND hDev = CreateWindowA("COMBOBOX", "",
+    HWND hDev = CreateWindowW(L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,
         left + DluX(hDlg, 8), top + DluY(hDlg, 12),
         DluX(hDlg, 185), DluY(hDlg, 90),
         hPanel, (HMENU)IDC_OUTPUT_DEVICE, g_hDllInst, NULL);
     SetCtrlFont(hDev, hFont);
-    SendMessageA(hDev, CB_ADDSTRING, 0, (LPARAM)"Default");
-    SendMessageA(hDev, CB_SETCURSEL, 0, 0);
+    SendMessageW(hDev, CB_ADDSTRING, 0, (LPARAM)AzText(L"Default", L"По умолчанию"));
+    SendMessageW(hDev, CB_SETCURSEL, 0, 0);
 
-    CreateGroupBox(hPanel, "Backend Sound Driver",
+    CreateGroupBox(hPanel, AzText(L"Backend Sound Driver", L"Звуковой драйвер"),
                    left, top + DluY(hDlg, 43), leftW, DluY(hDlg, 43), hFont);
 
-    HWND hDrv = CreateWindowA("COMBOBOX", "",
+    HWND hDrv = CreateWindowW(L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,
         left + DluX(hDlg, 8), top + DluY(hDlg, 55),
         DluX(hDlg, 185), DluY(hDlg, 120),
@@ -190,18 +226,21 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     for (int i = 0; i < nDrivers; i++)
     {
         const char *desc = SoundDriverFactory::GetDriverDescription(drivers[i]);
-        int idx = (int)SendMessageA(hDrv, CB_ADDSTRING, 0, (LPARAM)desc);
-        SendMessageA(hDrv, CB_SETITEMDATA, idx, (LPARAM)drivers[i]);
+        const std::wstring wDesc = AnsiToWide(desc);
+        int idx = (int)SendMessageW(hDrv, CB_ADDSTRING, 0, (LPARAM)wDesc.c_str());
+        SendMessageW(hDrv, CB_SETITEMDATA, idx, (LPARAM)drivers[i]);
         if (drivers[i] == st->driver)
             selIdx = idx;
     }
-    SendMessageA(hDrv, CB_SETCURSEL, selIdx, 0);
+    SendMessageW(hDrv, CB_SETCURSEL, selIdx, 0);
 
     /* The warning sits below the two combo groups, just like the reference,
        with enough width to keep both lines intact. */
-    HWND hCaution = CreateWindowA("STATIC",
-        "Caution: Changing waveOut driver volume\r\n"
-        "changes application volume for all drivers.",
+    HWND hCaution = CreateWindowW(L"STATIC",
+        AzText(L"Caution: Changing waveOut driver volume\r\n"
+               L"changes application volume for all drivers.",
+               L"Внимание: изменение громкости драйвера waveOut\r\n"
+               L"изменяет громкость приложения для всех драйверов."),
         WS_CHILD | WS_VISIBLE,
         left + DluX(hDlg, 8), top + DluY(hDlg, 90),
         DluX(hDlg, 205), DluY(hDlg, 26),
@@ -209,10 +248,10 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SetCtrlFont(hCaution, hFont);
 
     /* Volume */
-    CreateGroupBox(hPanel, "Volume", rightX, top,
+    CreateGroupBox(hPanel, AzText(L"Volume", L"Громкость"), rightX, top,
                    volumeW, DluY(hDlg, 108), hFont);
 
-    HWND hVol = CreateWindowA(TRACKBAR_CLASSA, "",
+    HWND hVol = CreateWindowW(TRACKBAR_CLASSW, L"",
         WS_CHILD | WS_VISIBLE | TBS_VERT | TBS_AUTOTICKS | WS_TABSTOP,
         rightX + DluX(hDlg, 15), top + DluY(hDlg, 13),
         DluX(hDlg, 30), DluY(hDlg, 70),
@@ -222,7 +261,7 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SendMessage(hVol, TBM_SETPOS, TRUE, 100 - st->volume);
     SendMessage(hVol, TBM_SETTICFREQ, 10, 0);
 
-    HWND hMute = CreateWindowA("BUTTON", "Mute",
+    HWND hMute = CreateWindowW(L"BUTTON", AzText(L"Mute", L"Без звука"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         rightX + DluX(hDlg, 8), top + DluY(hDlg, 86),
         DluX(hDlg, 50), DluY(hDlg, 12),
@@ -246,38 +285,38 @@ static LRESULT CALLBACK AdvancedPanelProc(HWND hPanel, UINT msg, WPARAM wParam, 
         HWND hDlg = GetParent(hPanel);
         if (hDlg)
         {
-            SendMessageA(hDlg, msg, wParam, lParam);
+            SendMessageW(hDlg, msg, wParam, lParam);
             return 0;
         }
     }
 
-    WNDPROC oldProc = (WNDPROC)GetWindowLongPtrA(hPanel, GWLP_USERDATA);
+    WNDPROC oldProc = (WNDPROC)GetWindowLongPtrW(hPanel, GWLP_USERDATA);
     if (oldProc)
-        return CallWindowProcA(oldProc, hPanel, msg, wParam, lParam);
+        return CallWindowProcW(oldProc, hPanel, msg, wParam, lParam);
 
-    return DefWindowProcA(hPanel, msg, wParam, lParam);
+    return DefWindowProcW(hPanel, msg, wParam, lParam);
 }
 
 static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowA("STATIC", "", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
+    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
     SetCtrlFont(hPanel, hFont);
 
-    WNDPROC oldPanelProc = (WNDPROC)SetWindowLongPtrA(
+    WNDPROC oldPanelProc = (WNDPROC)SetWindowLongPtrW(
         hPanel, GWLP_WNDPROC, (LONG_PTR)AdvancedPanelProc);
-    SetWindowLongPtrA(hPanel, GWLP_USERDATA, (LONG_PTR)oldPanelProc);
+    SetWindowLongPtrW(hPanel, GWLP_USERDATA, (LONG_PTR)oldPanelProc);
 
     const int lx = DluX(hDlg, 8);
     const int rx = DluX(hDlg, 220);
     const int top = DluY(hDlg, 7);
 
     /* Buffer options group */
-    CreateGroupBox(hPanel, "Buffer Options", lx, top,
+    CreateGroupBox(hPanel, AzText(L"Buffer Options", L"Параметры буфера"), lx, top,
                    DluX(hDlg, 195), DluY(hDlg, 153), hFont);
 
-    HWND hPrev = CreateWindowA("BUTTON", "Prevent Buffer Overruns",
+    HWND hPrev = CreateWindowW(L"BUTTON", AzText(L"Prevent Buffer Overruns", L"Предотвращать переполнение буфера"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 18),
         DluX(hDlg, 175), DluY(hDlg, 12),
@@ -285,7 +324,7 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SetCtrlFont(hPrev, hFont);
     SendMessage(hPrev, BM_SETCHECK, st->preventOverrun ? BST_CHECKED : BST_UNCHECKED, 0);
 
-    HWND hFS = CreateWindowA("BUTTON", "Force Old Audio Sync",
+    HWND hFS = CreateWindowW(L"BUTTON", AzText(L"Force Old Audio Sync", L"Принудительная старая синхронизация звука"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 36),
         DluX(hDlg, 175), DluY(hDlg, 12),
@@ -293,16 +332,16 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SetCtrlFont(hFS, hFont);
     SendMessage(hFS, BM_SETCHECK, st->forceSync ? BST_CHECKED : BST_UNCHECKED, 0);
 
-    char buf[32];
-    CreateLabel(hPanel, "Buffer FPS", lx + DluX(hDlg, 10), top + DluY(hDlg, 56),
+    wchar_t wbuf[32];
+    CreateLabel(hPanel, AzText(L"Buffer FPS", L"FPS буфера"), lx + DluX(hDlg, 10), top + DluY(hDlg, 56),
                 DluX(hDlg, 70), DluY(hDlg, 10), hFont);
-    snprintf(buf, sizeof(buf), "%d", st->bufferFPS);
-    HWND hBFVal = CreateWindowA("STATIC", buf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
+    swprintf(wbuf, sizeof(wbuf) / sizeof(wbuf[0]), L"%d", st->bufferFPS);
+    HWND hBFVal = CreateWindowW(L"STATIC", wbuf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
         lx + DluX(hDlg, 144), top + DluY(hDlg, 56),
         DluX(hDlg, 35), DluY(hDlg, 10), hPanel,
         (HMENU)IDC_BUFFERFPS_VAL, g_hDllInst, NULL);
     SetCtrlFont(hBFVal, hFont);
-    HWND hBF = CreateWindowA(TRACKBAR_CLASSA, "",
+    HWND hBF = CreateWindowW(TRACKBAR_CLASSW, L"",
         WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_AUTOTICKS | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 67),
         DluX(hDlg, 170), DluY(hDlg, 18), hPanel,
@@ -312,15 +351,15 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SendMessage(hBF, TBM_SETPOS, TRUE, st->bufferFPS);
     SendMessage(hBF, TBM_SETTICFREQ, 10, 0);
 
-    CreateLabel(hPanel, "Backend FPS", lx + DluX(hDlg, 10), top + DluY(hDlg, 88),
+    CreateLabel(hPanel, AzText(L"Backend FPS", L"FPS драйвера"), lx + DluX(hDlg, 10), top + DluY(hDlg, 88),
                 DluX(hDlg, 70), DluY(hDlg, 10), hFont);
-    snprintf(buf, sizeof(buf), "%d", st->backendFPS);
-    HWND hKFVal = CreateWindowA("STATIC", buf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
+    swprintf(wbuf, sizeof(wbuf) / sizeof(wbuf[0]), L"%d", st->backendFPS);
+    HWND hKFVal = CreateWindowW(L"STATIC", wbuf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
         lx + DluX(hDlg, 144), top + DluY(hDlg, 88),
         DluX(hDlg, 35), DluY(hDlg, 10), hPanel,
         (HMENU)IDC_BACKFPS_VAL, g_hDllInst, NULL);
     SetCtrlFont(hKFVal, hFont);
-    HWND hKF = CreateWindowA(TRACKBAR_CLASSA, "",
+    HWND hKF = CreateWindowW(TRACKBAR_CLASSW, L"",
         WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_AUTOTICKS | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 99),
         DluX(hDlg, 170), DluY(hDlg, 18), hPanel,
@@ -330,15 +369,15 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SendMessage(hKF, TBM_SETPOS, TRUE, st->backendFPS);
     SendMessage(hKF, TBM_SETTICFREQ, 10, 0);
 
-    CreateLabel(hPanel, "Buffers", lx + DluX(hDlg, 10), top + DluY(hDlg, 120),
+    CreateLabel(hPanel, AzText(L"Buffers", L"Буферы"), lx + DluX(hDlg, 10), top + DluY(hDlg, 120),
                 DluX(hDlg, 70), DluY(hDlg, 10), hFont);
-    snprintf(buf, sizeof(buf), "%d", st->buffers);
-    HWND hBUVal = CreateWindowA("STATIC", buf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
+    swprintf(wbuf, sizeof(wbuf) / sizeof(wbuf[0]), L"%d", st->buffers);
+    HWND hBUVal = CreateWindowW(L"STATIC", wbuf, WS_CHILD | WS_VISIBLE | SS_RIGHT,
         lx + DluX(hDlg, 144), top + DluY(hDlg, 120),
         DluX(hDlg, 35), DluY(hDlg, 10), hPanel,
         (HMENU)IDC_BUFFERS_VAL, g_hDllInst, NULL);
     SetCtrlFont(hBUVal, hFont);
-    HWND hBU = CreateWindowA(TRACKBAR_CLASSA, "",
+    HWND hBU = CreateWindowW(TRACKBAR_CLASSW, L"",
         WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_AUTOTICKS | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 131),
         DluX(hDlg, 170), DluY(hDlg, 18), hPanel,
@@ -349,30 +388,30 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SendMessage(hBU, TBM_SETTICFREQ, 1, 0);
 
     /* Emulation options group */
-    CreateGroupBox(hPanel, "Emulation Options", rx, top,
+    CreateGroupBox(hPanel, AzText(L"Emulation Options", L"Параметры эмуляции"), rx, top,
                    DluX(hDlg, 170), DluY(hDlg, 153), hFont);
 
-    CreateLabel(hPanel, "Frequency", rx + DluX(hDlg, 10), top + DluY(hDlg, 18),
+    CreateLabel(hPanel, AzText(L"Frequency", L"Частота"), rx + DluX(hDlg, 10), top + DluY(hDlg, 18),
                 DluX(hDlg, 70), DluY(hDlg, 10), hFont);
-    HWND hFq = CreateWindowA("COMBOBOX", "",
+    HWND hFq = CreateWindowW(L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,
         rx + DluX(hDlg, 10), top + DluY(hDlg, 29),
         DluX(hDlg, 140), DluY(hDlg, 100),
         hPanel, (HMENU)IDC_FREQ_COMBO, g_hDllInst, NULL);
     SetCtrlFont(hFq, hFont);
-    const char *freqs[] = {"Auto", "32000", "44100", "48000", NULL};
+    const wchar_t *freqs[] = {AzText(L"Auto", L"Авто"), L"32000", L"44100", L"48000", NULL};
     const int freqv[] = {0, 32000, 44100, 48000, 0};
     for (int i = 0; freqs[i]; i++)
     {
-        int idx = (int)SendMessageA(hFq, CB_ADDSTRING, 0, (LPARAM)freqs[i]);
-        SendMessageA(hFq, CB_SETITEMDATA, idx, (LPARAM)freqv[i]);
+        int idx = (int)SendMessageW(hFq, CB_ADDSTRING, 0, (LPARAM)freqs[i]);
+        SendMessageW(hFq, CB_SETITEMDATA, idx, (LPARAM)freqv[i]);
         if (st->defaultFrequency == freqv[i])
-            SendMessageA(hFq, CB_SETCURSEL, idx, 0);
+            SendMessageW(hFq, CB_SETCURSEL, idx, 0);
     }
-    if (SendMessageA(hFq, CB_GETCURSEL, 0, 0) == CB_ERR)
-        SendMessageA(hFq, CB_SETCURSEL, 0, 0);
+    if (SendMessageW(hFq, CB_GETCURSEL, 0, 0) == CB_ERR)
+        SendMessageW(hFq, CB_SETCURSEL, 0, 0);
 
-    HWND hDDS8 = CreateWindowA("BUTTON", "Disallow Thread Yielding DS8",
+    HWND hDDS8 = CreateWindowW(L"BUTTON", AzText(L"Disallow Thread Yielding DS8", L"Запретить уступку потока DS8"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         rx + DluX(hDlg, 10), top + DluY(hDlg, 57),
         DluX(hDlg, 150), DluY(hDlg, 12),
@@ -380,7 +419,7 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SetCtrlFont(hDDS8, hFont);
     SendMessage(hDDS8, BM_SETCHECK, st->disallowDS8 ? BST_CHECKED : BST_UNCHECKED, 0);
 
-    HWND hDXA2 = CreateWindowA("BUTTON", "Disallow Thread Yielding XA2",
+    HWND hDXA2 = CreateWindowW(L"BUTTON", AzText(L"Disallow Thread Yielding XA2", L"Запретить уступку потока XA2"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         rx + DluX(hDlg, 10), top + DluY(hDlg, 76),
         DluX(hDlg, 150), DluY(hDlg, 12),
@@ -511,20 +550,20 @@ static void ApplySettings(DlgState *st)
 /* ── Main dialog WndProc ─────────────────────────────────────────────────── */
 static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    DlgState *st = (DlgState*)GetWindowLongPtrA(hDlg, GWLP_USERDATA);
+    DlgState *st = (DlgState*)GetWindowLongPtrW(hDlg, GWLP_USERDATA);
 
     switch (msg)
     {
     case WM_INITDIALOG:
     {
         st = (DlgState*)lParam;
-        SetWindowLongPtrA(hDlg, GWLP_USERDATA, (LONG_PTR)st);
+        SetWindowLongPtrW(hDlg, GWLP_USERDATA, (LONG_PTR)st);
 
         /* Init common controls (TrackBar, TabControl) */
         INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_TAB_CLASSES | ICC_BAR_CLASSES };
         InitCommonControlsEx(&icc);
 
-        SetWindowTextA(hDlg, "AziAudio-Plus Audio Options");
+        SetWindowTextW(hDlg, AzText(L"AziAudio-Plus Audio Options", L"Параметры звука AziAudio-Plus"));
 
         /* ── Create Tab control ──────────────────────────────────── */
         RECT rcDlg;
@@ -537,7 +576,7 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
         HFONT hDlgFont = (HFONT)SendMessage(hDlg, WM_GETFONT, 0, 0);
 
-        HWND hTab = CreateWindowA(WC_TABCONTROLA, "",
+        HWND hTab = CreateWindowW(WC_TABCONTROLW, L"",
             WS_CHILD | WS_VISIBLE | TCS_TABS | WS_TABSTOP,
             DluX(hDlg, 6), DluY(hDlg, 5),
             rcDlg.right - DluX(hDlg, 12), tabH - DluY(hDlg, 7),
@@ -545,12 +584,12 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
         SetCtrlFont(hTab, hDlgFont);
         st->hTab = hTab;
 
-        TCITEMA ti = {};
+        TCITEMW ti = {};
         ti.mask = TCIF_TEXT;
-        ti.pszText = const_cast<char*>("Settings");
-        TabCtrl_InsertItem(hTab, 0, &ti);
-        ti.pszText = const_cast<char*>("Advanced");
-        TabCtrl_InsertItem(hTab, 1, &ti);
+        ti.pszText = const_cast<wchar_t*>(AzText(L"Settings", L"Настройки"));
+        SendMessageW(hTab, TCM_INSERTITEMW, 0, (LPARAM)&ti);
+        ti.pszText = const_cast<wchar_t*>(AzText(L"Advanced", L"Дополнительно"));
+        SendMessageW(hTab, TCM_INSERTITEMW, 1, (LPARAM)&ti);
 
         /* Compute inner rect of tab control (where panel goes) */
         RECT rcTab;
@@ -581,17 +620,17 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
         /* Plain ASCII labels avoid ANSI/Unicode mismatch in hosts that use
            Unicode window procedures. The dialog font is applied explicitly
            to keep all buttons identical to the rest of the UI. */
-        HWND hOk = CreateWindowA("BUTTON", "OK",
+        HWND hOk = CreateWindowW(L"BUTTON", AzText(L"OK", L"ОК"),
             WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
             rcDlg.right - 3 * (bW + gap), bY, bW, bH,
             hDlg, (HMENU)IDC_OK, g_hDllInst, NULL);
         SetCtrlFont(hOk, hDlgFont);
-        HWND hCancel = CreateWindowA("BUTTON", "Cancel",
+        HWND hCancel = CreateWindowW(L"BUTTON", AzText(L"Cancel", L"Отмена"),
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
             rcDlg.right - 2 * (bW + gap), bY, bW, bH,
             hDlg, (HMENU)IDC_CANCEL, g_hDllInst, NULL);
         SetCtrlFont(hCancel, hDlgFont);
-        HWND hApply = CreateWindowA("BUTTON", "Apply",
+        HWND hApply = CreateWindowW(L"BUTTON", AzText(L"Apply", L"Применить"),
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
             rcDlg.right - 1 * (bW + gap), bY, bW, bH,
             hDlg, (HMENU)IDC_APPLY, g_hDllInst, NULL);
@@ -714,7 +753,7 @@ static INT_PTR RunDialog(HINSTANCE hInst, HWND hParent, DlgState *st)
        DS_SHELLFONT but omitted the mandatory point-size/typeface fields;
        Windows therefore had to fall back to an implementation-dependent font.
        That made the same dialog look very different between hosts/DPI levels. */
-    const wchar_t title[]    = L"AziAudio-Plus Audio Options";
+    const wchar_t *title     = AzText(L"AziAudio-Plus Audio Options", L"Параметры звука AziAudio-Plus");
     const wchar_t fontName[] = L"MS Shell Dlg 2";
     const WORD pointSize = 9;
 
