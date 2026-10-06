@@ -108,7 +108,7 @@ endif()
 # Russian satellite DLL used by the plugin's language mechanism.
 add_library(NRage_Language_1049 SHARED
     src/regional/satellite-dllmain.c
-    src/regional/Russian 1049.rc
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/regional/Russian 1049.rc"
 )
 
 set_target_properties(NRage_Language_1049 PROPERTIES
