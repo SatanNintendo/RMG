@@ -272,6 +272,15 @@ jobs:
 
           cmake --build "$build_dir" --parallel "$(nproc)"
           cmake --install "$build_dir" --strip --prefix="$src_dir"
+
+          # Verify every integrated third-party plugin made it into the
+          # portable tree.  N-Rage is Windows-only; AziAudio and SoftRDP are
+          # expected on this UCRT64 build.
+          test -f "$src_dir/Bin/Release/Plugin/Audio/mupen64plus-audio-aziaudio.dll"
+          test -f "$src_dir/Bin/Release/Plugin/GFX/mupen64plus-video-softrdp.dll"
+          test -f "$src_dir/Bin/Release/Plugin/Input/mupen64plus-input-nrage.dll"
+          test -f "$src_dir/Bin/Release/Plugin/Input/NRage-Language-1049.dll"
+
           cmake --build "$build_dir" --target=bundle_dependencies
         shell: msys2 {0}
 
