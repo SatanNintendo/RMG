@@ -1931,7 +1931,16 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 		std::swap(blitParams.dstY0, blitParams.dstY1);
 	}
 
-	if (gfxContext.blitFramebuffers(blitParams))
+	// Hardware blit cannot apply the hybrid (integer pixel scaling) filter, which is a
+	// shader. When the filter is enabled and the image is being enlarged, go through the
+	// textured rect copy so that the shader is really used.
+	const bool useHybridShader = config.generalEmulation.enableHybridFilter != 0 &&
+		_params.combiner != nullptr &&
+		_params.tex[0] != nullptr &&
+		_params.srcWidth < _params.dstWidth &&
+		_params.srcHeight < _params.dstHeight;
+
+	if (!useHybridShader && gfxContext.blitFramebuffers(blitParams))
 		return;
 
 	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);

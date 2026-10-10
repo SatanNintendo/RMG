@@ -39,9 +39,18 @@ m64p_error softRdpConfigGui(
 
 static bool rmg_is_russian(void)
 {
-    const char *language = getenv("RMG_LANGUAGE");
-    if (language != NULL && language[0] != '\0')
+    /* Read the Win32 environment block: RMG may use a different C runtime than
+       this plugin, so getenv() can miss the value RMG has set. */
+    char language[64];
+    DWORD length = GetEnvironmentVariableA("RMG_LANGUAGE", language, sizeof(language));
+    if (length > 0 && length < sizeof(language))
         return _strnicmp(language, "ru", 2) == 0;
+
+    {
+        const char *crt_language = getenv("RMG_LANGUAGE");
+        if (crt_language != NULL && crt_language[0] != '\0')
+            return _strnicmp(crt_language, "ru", 2) == 0;
+    }
 
     return PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_RUSSIAN;
 }

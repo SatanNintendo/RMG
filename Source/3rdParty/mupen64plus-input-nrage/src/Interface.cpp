@@ -67,6 +67,69 @@ LPDIRECTINPUTEFFECT  g_pConfigEffect = NULL;		// FF-effect handle
 HWND g_hMainDialog = NULL;							// handle of base-dialog
 
 // Main dialog control handler
+// Resizes the language combo box so that the whole drop-down list is visible
+// (the list is a popup window, but its height is taken from the control height,
+// which was too small in the dialog template). Also widens the list to fit the
+// longest language name. The list is limited to the free space of the monitor.
+static void FitLanguageDropDown( HWND hCombo )
+{
+	if( !hCombo )
+		return;
+
+	int count = (int) SendMessage( hCombo, CB_GETCOUNT, 0, 0 );
+	if( count < 1 )
+		return;
+
+	int itemH = (int) SendMessage( hCombo, CB_GETITEMHEIGHT, 0, 0 );
+	int editH = (int) SendMessage( hCombo, CB_GETITEMHEIGHT, (WPARAM)-1, 0 );
+	if( itemH <= 0 ) itemH = 16;
+	if( editH <= 0 ) editH = itemH + 6;
+
+	RECT rcCombo;
+	GetWindowRect( hCombo, &rcCombo );
+
+	// available height below the control on its monitor
+	int availH = 0;
+	HMONITOR hMon = MonitorFromWindow( hCombo, MONITOR_DEFAULTTONEAREST );
+	MONITORINFO mi;
+	ZeroMemory( &mi, sizeof(mi) );
+	mi.cbSize = sizeof(mi);
+	if( hMon && GetMonitorInfo( hMon, &mi ) )
+		availH = mi.rcWork.bottom - rcCombo.top - editH;
+
+	int listH = itemH * count + 2 * GetSystemMetrics( SM_CYEDGE ) + 2;
+	if( availH > 0 && listH > availH )
+		listH = availH;
+
+	// widest string -> drop-down width
+	HDC hdc = GetDC( hCombo );
+	int maxW = 0;
+	if( hdc )
+	{
+		HFONT hFont = (HFONT) SendMessage( hCombo, WM_GETFONT, 0, 0 );
+		HGDIOBJ hOld = hFont ? SelectObject( hdc, hFont ) : NULL;
+		for( int k = 0; k < count; ++k )
+		{
+			TCHAR szItem[256];
+			szItem[0] = 0;
+			if( SendMessage( hCombo, CB_GETLBTEXTLEN, k, 0 ) < 255 )
+			{
+				SendMessage( hCombo, CB_GETLBTEXT, k, (LPARAM) szItem );
+				SIZE sz;
+				if( GetTextExtentPoint32( hdc, szItem, (int) _tcslen( szItem ), &sz ) && sz.cx > maxW )
+					maxW = sz.cx;
+			}
+		}
+		if( hOld ) SelectObject( hdc, hOld );
+		ReleaseDC( hCombo, hdc );
+	}
+	if( maxW > 0 )
+		SendMessage( hCombo, CB_SETDROPPEDWIDTH, (WPARAM)( maxW + GetSystemMetrics( SM_CXVSCROLL ) + 12 ), 0 );
+
+	SetWindowPos( hCombo, NULL, 0, 0, rcCombo.right - rcCombo.left, editH + listH + 4,
+		SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE );
+}
+
 INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	static HWND hTabControl;
@@ -335,6 +398,7 @@ INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			FindClose(fSearch);
 
 			SendMessage( hDlgItem, CB_SETCURSEL, lLangFound, 0 ); // set combo box selection
+			FitLanguageDropDown( hDlgItem );
 		}
 		// DropDownlist End
 #else

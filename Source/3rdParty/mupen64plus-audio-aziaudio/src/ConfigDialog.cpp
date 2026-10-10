@@ -101,9 +101,17 @@ struct DlgState
    variable is empty, so we fall back to the Windows UI language. */
 static bool RmgIsRussian(void)
 {
-    const char *language = getenv("RMG_LANGUAGE");
-    if (language != NULL && language[0] != '\0')
+    /* Read the Win32 environment block instead of the CRT copy: RMG may be
+       linked against a different C runtime than this plugin, in which case
+       getenv() would never see the value RMG set. */
+    char language[64];
+    DWORD length = GetEnvironmentVariableA("RMG_LANGUAGE", language, sizeof(language));
+    if (length > 0 && length < sizeof(language))
         return _strnicmp(language, "ru", 2) == 0;
+
+    const char *crtLanguage = getenv("RMG_LANGUAGE");
+    if (crtLanguage != NULL && crtLanguage[0] != '\0')
+        return _strnicmp(crtLanguage, "ru", 2) == 0;
 
     return PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_RUSSIAN;
 }

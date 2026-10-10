@@ -29,6 +29,16 @@
 #include <cstdlib>
 #include <array>
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+
 //
 // Local Variables
 //
@@ -303,16 +313,35 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
     return true;
 }
 
+#ifdef _WIN32
+// Plugins can be built against a different C runtime than RMG-Core
+// (msvcrt vs ucrt, static CRT, ...), in that case getenv() inside the plugin
+// doesn't see what _putenv_s() set here. The Win32 environment block is shared
+// by every module, so set it directly (and keep the CRT copy in sync too).
+static void set_win32_language_variable(const char* value)
+{
+    SetEnvironmentVariableA("RMG_LANGUAGE", (value != nullptr && value[0] != '\0') ? value : nullptr);
+    _putenv_s("RMG_LANGUAGE", value != nullptr ? value : "");
+}
+#endif
+
 static void set_plugin_language_environment(std::string& previousLanguage, bool& hadPreviousLanguage)
 {
+#ifdef _WIN32
+    char previousBuffer[128];
+    DWORD previousLength = GetEnvironmentVariableA("RMG_LANGUAGE", previousBuffer, sizeof(previousBuffer));
+    hadPreviousLanguage = previousLength > 0 && previousLength < sizeof(previousBuffer);
+    previousLanguage = hadPreviousLanguage ? std::string(previousBuffer, previousLength) : std::string();
+#else
     const char* previous = std::getenv("RMG_LANGUAGE");
     hadPreviousLanguage = previous != nullptr;
     previousLanguage = previous != nullptr ? previous : std::string();
+#endif
 
     const std::string language = CoreSettingsGetStringValue(SettingsID::GUI_Language);
 
 #ifdef _WIN32
-    _putenv_s("RMG_LANGUAGE", language.c_str());
+    set_win32_language_variable(language.c_str());
 #else
     if (language.empty())
         unsetenv("RMG_LANGUAGE");
@@ -324,7 +353,7 @@ static void set_plugin_language_environment(std::string& previousLanguage, bool&
 static void restore_plugin_language_environment(const std::string& previousLanguage, bool hadPreviousLanguage)
 {
 #ifdef _WIN32
-    _putenv_s("RMG_LANGUAGE", hadPreviousLanguage ? previousLanguage.c_str() : "");
+    set_win32_language_variable(hadPreviousLanguage ? previousLanguage.c_str() : "");
 #else
     if (hadPreviousLanguage)
         setenv("RMG_LANGUAGE", previousLanguage.c_str(), 1);

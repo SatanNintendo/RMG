@@ -265,7 +265,10 @@ endif(USE_ANGRYLION)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64_DATA ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)
+# GLideN64 translations (gliden64_<lang>.qm) must live next to the custom ini,
+# otherwise the plugin hides its language selector and cannot load any translation
+file(GLOB GLIDEN64_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/gliden64_*.qm")
+set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64_DATA ${GLIDEN64_CUSTOM_INI} ${GLIDEN64_TRANSLATIONS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)

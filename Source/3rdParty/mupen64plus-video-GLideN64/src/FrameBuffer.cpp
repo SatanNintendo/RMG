@@ -1111,9 +1111,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	blitParams.dstWidth = screenWidth;
 	blitParams.dstHeight = screenHeight + wndHeightOffset;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth || blitParams.srcHeight >= blitParams.dstHeight;
-	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 ?
+	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 || config.texture.bilinearMode != BILINEAR_3POINT ?
 		textureParameters::FILTER_LINEAR :
-		textureParameters::FILTER_NEAREST; //upscale; hybridFilter disabled
+		textureParameters::FILTER_NEAREST; //upscale; hybridFilter and bilinear filtering disabled
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
@@ -1441,9 +1441,9 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = m_pTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth || blitParams.srcHeight >= blitParams.dstHeight;
-	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 ?
+	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 || config.texture.bilinearMode != BILINEAR_3POINT ?
 		textureParameters::FILTER_LINEAR :
-		textureParameters::FILTER_NEAREST; //upscale; hybridFilter disabled
+		textureParameters::FILTER_NEAREST; //upscale; hybridFilter and bilinear filtering disabled
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
@@ -1616,9 +1616,9 @@ void FrameBufferList::renderBuffer()
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth || blitParams.srcHeight >= blitParams.dstHeight;
-	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 ?
+	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter > 0 || config.texture.bilinearMode != BILINEAR_3POINT ?
 		textureParameters::FILTER_LINEAR :
-		textureParameters::FILTER_NEAREST; //upscale; hybridFilter disabled
+		textureParameters::FILTER_NEAREST; //upscale; hybridFilter and bilinear filtering disabled
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
