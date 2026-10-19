@@ -507,6 +507,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const QString & _strSh
 	WriteCustomSetting(generalEmulation, enableHWLighting);
 	WriteCustomSetting(generalEmulation, enableCoverage);
 	WriteCustomSetting(generalEmulation, enableShadersStorage);
+	WriteCustomSetting(generalEmulation, enableHybridFilter);
 	settings.endGroup();
 
 	settings.beginGroup("graphics2D");
