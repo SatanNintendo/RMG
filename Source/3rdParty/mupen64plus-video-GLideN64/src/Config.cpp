@@ -171,6 +171,13 @@ bool isHWLightingAllowed()
 
 void Config::validate()
 {
+	// Integer pixel scaling enlarges the native-resolution image to the window.
+	// With the "window size" resolution (0) the frame is already rendered at window size,
+	// so there is nothing to enlarge and the option (and the final bilinear filter) would
+	// have no visible effect. Render at native resolution in this case.
+	if (generalEmulation.enableHybridFilter != 0 && frameBufferEmulation.enable != 0 &&
+		frameBufferEmulation.nativeResFactor == 0)
+		frameBufferEmulation.nativeResFactor = 1;
 	if (frameBufferEmulation.enable != 0 && frameBufferEmulation.N64DepthCompare != dcDisable)
 		video.multisampling = 0;
 	if (frameBufferEmulation.nativeResFactor == 1) {
