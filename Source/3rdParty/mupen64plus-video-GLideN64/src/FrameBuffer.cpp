@@ -1578,6 +1578,48 @@ void FrameBufferList::renderBuffer()
 						hOffset + dstX1,
 						vOffset + static_cast<s32>(dstY1*dstScaleY) };
 
+	// Integer scaling: the image is enlarged by a whole multiple of its source size and centered
+	// in the window; the rest of the window stays black.
+	const bool integerScaling = config.generalEmulation.enableHybridFilter != 0 &&
+		config.frameBufferEmulation.enableOverscan == 0;
+	bool integerScalingActive = false;
+	s32 intX0 = 0, intY0 = 0, intFullX0 = 0, intFullY0 = 0;
+	f32 intSX = 1.0f, intSY = 1.0f;
+	if (integerScaling) {
+		const s32 srcImgW = srcCoord[2] - srcCoord[0];
+		const s32 srcImgH = static_cast<s32>(srcHeight * srcScaleY);
+		const s32 fullX0 = min(dstCoord[0], dstCoord[2]);
+		const s32 fullX1 = max(dstCoord[0], dstCoord[2]);
+		const s32 fullY0 = vOffset + static_cast<s32>(dstY0*dstScaleY);
+		const s32 fullY1 = vOffset + static_cast<s32>((dstY0 + static_cast<s32>(rdpRes.vi_vres))*dstScaleY);
+		const s32 fullW = fullX1 - fullX0;
+		const s32 fullH = fullY1 - min(fullY0, fullY1);
+		if (srcImgW > 0 && srcImgH > 0 && fullW > 0 && fullH > 0) {
+			const s32 k = min(fullW / srcImgW, fullH / srcImgH);
+			if (k >= 1) {
+				const s32 newW = srcImgW * k;
+				const s32 newH = srcImgH * k;
+				intFullX0 = fullX0;
+				intFullY0 = min(fullY0, fullY1);
+				intX0 = fullX0 + (fullW - newW) / 2;
+				intY0 = intFullY0 + (fullH - newH) / 2;
+				intSX = static_cast<f32>(newW) / static_cast<f32>(fullW);
+				intSY = static_cast<f32>(newH) / static_cast<f32>(fullH);
+				integerScalingActive = true;
+			}
+		}
+	}
+	auto mapX = [&](s32 x) -> s32 {
+		return integerScalingActive ? intX0 + static_cast<s32>((x - intFullX0) * intSX + 0.5f) : x;
+	};
+	auto mapY = [&](s32 y) -> s32 {
+		return integerScalingActive ? intY0 + static_cast<s32>((y - intFullY0) * intSY + 0.5f) : y;
+	};
+	dstCoord[0] = mapX(dstCoord[0]);
+	dstCoord[1] = mapY(dstCoord[1]);
+	dstCoord[2] = mapX(dstCoord[2]);
+	dstCoord[3] = mapY(dstCoord[3]);
+
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
@@ -1609,7 +1651,13 @@ void FrameBufferList::renderBuffer()
 	blitParams.dstHeight = m_overscan.getBufferHeight();
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
-	const bool downscale = GraphicsDrawer::setupScreenScaling(blitParams);
+	bool downscale = GraphicsDrawer::setupScreenScaling(blitParams);
+	if (integerScalingActive) {
+		// Uniform integer scale: plain copy shader, "bilinear" decides smooth or sharp pixels.
+		downscale = true;
+		blitParams.filter = config.texture.bilinearMode != BILINEAR_3POINT ?
+			textureParameters::FILTER_LINEAR : textureParameters::FILTER_NEAREST;
+	}
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
@@ -1646,8 +1694,8 @@ void FrameBufferList::renderBuffer()
 		blitParams.srcY1 = min(static_cast<s32>(srcY1*srcScaleY), static_cast<s32>(pFilteredBuffer->m_pTexture->height));
 		blitParams.srcWidth = pBufferTexture->width;
 		blitParams.srcHeight = pBufferTexture->height;
-		blitParams.dstY0 = vOffset + static_cast<s32>(dstY0*dstScaleY);
-		blitParams.dstY1 = vOffset + static_cast<s32>(dstY1*dstScaleY);
+		blitParams.dstY0 = mapY(vOffset + static_cast<s32>(dstY0*dstScaleY));
+		blitParams.dstY1 = mapY(vOffset + static_cast<s32>(dstY1*dstScaleY));
 		blitParams.dstWidth = m_overscan.getBufferWidth();
 		blitParams.dstHeight = m_overscan.getBufferHeight();
 		blitParams.tex[0] = pBufferTexture;
