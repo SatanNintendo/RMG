@@ -112,6 +112,11 @@ public:
 
 	void copyTexturedRect(const CopyRectParams & _params);
 
+	// Chooses the texture filter for the final stretch of the image to the screen, using the
+	// real source and destination rectangles. Returns true if the image is shrunk (or kept 1:1),
+	// i.e. the downscale copy program must be used; otherwise the upscale program is needed.
+	static bool setupScreenScaling(CopyRectParams & _params);
+
 	struct BlitOrCopyRectParams : public CopyRectParams
 	{
 		graphics::ObjectHandle readBuffer;

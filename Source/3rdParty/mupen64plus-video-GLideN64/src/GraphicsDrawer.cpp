@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <algorithm>
 #include <string>
 #include <thread>
@@ -1909,6 +1910,35 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE;
 }
 
+bool GraphicsDrawer::setupScreenScaling(CopyRectParams & _params)
+{
+	s32 srcW = std::abs(_params.srcX1 - _params.srcX0);
+	s32 srcH = std::abs(_params.srcY1 - _params.srcY0);
+	s32 dstW = std::abs(_params.dstX1 - _params.dstX0);
+	s32 dstH = std::abs(_params.dstY1 - _params.dstY0);
+	if (srcW == 0 || srcH == 0) {
+		srcW = static_cast<s32>(_params.srcWidth);
+		srcH = static_cast<s32>(_params.srcHeight);
+	}
+	if (dstW == 0 || dstH == 0) {
+		dstW = static_cast<s32>(_params.dstWidth);
+		dstH = static_cast<s32>(_params.dstHeight);
+	}
+	const bool downscale = srcW >= dstW || srcH >= dstH;
+	// Hybrid (integer pixel scaling) shader needs a linear sampler; bilinear needs it too.
+	const bool linear = downscale ||
+		config.generalEmulation.enableHybridFilter != 0 ||
+		config.texture.bilinearMode != BILINEAR_3POINT;
+	_params.filter = linear ? textureParameters::FILTER_LINEAR : textureParameters::FILTER_NEAREST;
+	return downscale;
+}
+
+static bool setupScreenScalingIsDownscale(const GraphicsDrawer::CopyRectParams & _p)
+{
+	GraphicsDrawer::CopyRectParams tmp(_p);
+	return GraphicsDrawer::setupScreenScaling(tmp);
+}
+
 void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params)
 {
 	Context::BlitFramebuffersParams blitParams;
@@ -1937,8 +1967,7 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 	const bool useHybridShader = config.generalEmulation.enableHybridFilter != 0 &&
 		_params.combiner != nullptr &&
 		_params.tex[0] != nullptr &&
-		_params.srcWidth < _params.dstWidth &&
-		_params.srcHeight < _params.dstHeight;
+		!setupScreenScalingIsDownscale(_params);
 
 	if (!useHybridShader && gfxContext.blitFramebuffers(blitParams))
 		return;
