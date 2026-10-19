@@ -42,7 +42,7 @@ void Config::resetToDefaults()
 
 	texture.anisotropy = 0;
 	texture.maxAnisotropy = 0;
-	texture.bilinearMode = BILINEAR_STANDARD;
+	texture.bilinearMode = BILINEAR_3POINT;
 	texture.enableHalosRemoval = 0;
 
 	generalEmulation.enableLOD = 1;
@@ -56,7 +56,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
 	generalEmulation.enableLegacyBlending = 0;
-	generalEmulation.enableHybridFilter = 1;
+	generalEmulation.enableHybridFilter = 0;
 	generalEmulation.enableInaccurateTextureCoordinates = 0;
 	generalEmulation.hacks = 0;
 #if defined(OS_ANDROID) || defined(OS_IOS)
