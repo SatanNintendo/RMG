@@ -631,7 +631,10 @@ m64p_error softRdpConfigGui(
         SetForegroundWindow(state.owner);
     }
 
-    return state.result ? M64ERR_SUCCESS : M64ERR_SUCCESS;
+    /* state.result distinguishes OK from Cancel for future callers, but the
+     * mupen64plus ConfigGui contract treats both as a completed (successful)
+     * dialog run, so always report success here. */
+    return M64ERR_SUCCESS;
 }
 
 #endif /* _WIN32 */
