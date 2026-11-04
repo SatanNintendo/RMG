@@ -1,11 +1,12 @@
 Name:    RMG       
-Version: 0.9.1
+Version: 0.9.1.1
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
 License: GPL-3.0-only       
-URL:     https://github.com/Rosalie241/RMG
-Source0: https://github.com/Rosalie241/RMG/archive/refs/tags/v%{version}.tar.gz       
+URL:     https://github.com/SatanNintendo/RMG
+# The fork maintains no release tags, so package the master branch snapshot.
+Source0: https://github.com/SatanNintendo/RMG/archive/refs/heads/master.tar.gz       
 
 BuildRequires: gcc
 BuildRequires: g++

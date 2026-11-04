@@ -1,16 +1,17 @@
 # Maintainer: Rosalie Wanders <rosalie@mailbox.org>
 pkgname=rmg
-pkgver=0.9.1
+pkgver=0.9.1.1
 pkgrel=1
 pkgdesc="Rosalie's Mupen GUI"
 arch=('x86_64' 'aarch64')
-url="https://github.com/Rosalie241/$pkgname"
+url="https://github.com/SatanNintendo/$pkgname"
 license=('GPL3')
 
 depends=("libusb" "hidapi" "libsamplerate" "speexdsp" "minizip" "sdl3" "sdl3_net" "zlib" "zstd" "freetype2" "qt6-base" "qt6-svg" "qt6-websockets")
 makedepends=("git" "nasm" "cmake" "vulkan-headers")
 
-source=("git+https://github.com/Rosalie241/$pkgname.git#tag=v$pkgver")
+# The fork maintains no release tags, so track its master branch.
+source=("git+https://github.com/SatanNintendo/$pkgname.git#branch=master")
 sha256sums=('SKIP')
 
 prepare()

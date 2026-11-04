@@ -26,7 +26,7 @@ CORE_EXPORT std::string CoreGetVersion(void)
     // a commit hash or garbage in the window title and About dialog.
     //
     // Per the fork maintainer's request, the version is now hardcoded to
-    // "0.9.1" so the displayed version is always clean and deterministic,
+    // "0.9.1.1" so the displayed version is always clean and deterministic,
     // regardless of build environment state.
-    return std::string("0.9.1");
+    return std::string("0.9.1.1");
 }

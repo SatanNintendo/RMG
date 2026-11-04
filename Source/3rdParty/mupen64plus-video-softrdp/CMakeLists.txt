@@ -4,8 +4,7 @@ project(mupen64plus-video-softrdp LANGUAGES C)
 
 # SoftRDP Mupen64Plus-only integration for RMG.
 # The Project64 adapter and its 32-bit toolchain are intentionally omitted:
-# RMG uses the Mupen64Plus adapter, and this keeps the integration independent
-# of the archive's i7-2600K/Sandy-Bridge CPU build profile.
+# RMG uses the Mupen64Plus adapter only.
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -13,6 +12,29 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 option(SOFTRDP_ENABLE_LOG "Enable SoftRDP logging" OFF)
 option(SOFTRDP_CENSUS "Enable SoftRDP pixel census" OFF)
 option(SOFTRDP_ENABLE_DUMP "Enable SoftRDP frame dumping" OFF)
+option(SOFTRDP_ENABLE_AVX2
+    "Build with AVX2 instructions on x86 targets, like the upstream Makefile build"
+    ON
+)
+
+# Mirror the upstream Makefile's CPU flag handling: it appends X86_CFLAGS
+# (default: -mavx2) only when the compiler target (`$(CC) -dumpmachine`)
+# matches i386*/i486*/i586*/i686*/x86_64*/amd64*, so native ARM and other
+# non-x86 builds never receive an x86-only flag. CMAKE_SYSTEM_PROCESSOR
+# holds the processor of the system being built FOR, which is the same
+# target-based notion; it is lower-cased first because MSVC reports "AMD64"
+# while GCC/Clang report "x86_64".
+if(SOFTRDP_ENABLE_AVX2)
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SOFTRDP_SYSTEM_PROCESSOR)
+    if(SOFTRDP_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86_64|amd64)")
+        if(MSVC)
+            set(SOFTRDP_ARCH_COMPILE_OPTIONS /arch:AVX2)
+        else()
+            set(SOFTRDP_ARCH_COMPILE_OPTIONS -mavx2)
+        endif()
+        message(STATUS "softrdp: AVX2 enabled for x86 target '${CMAKE_SYSTEM_PROCESSOR}'")
+    endif()
+endif()
 
 if(SOFTRDP_ENABLE_DUMP AND NOT WIN32)
     message(FATAL_ERROR
@@ -71,8 +93,9 @@ if(SOFTRDP_ENABLE_DUMP)
 endif()
 
 # One namespaced copy of the scaled renderer for 1x and 2x paths.  This is
-# the key mechanism used by the original SoftRDP build and is preserved here
-# without importing its CPU-specific -march/-mtune flags.
+# the key mechanism used by the original SoftRDP build; its CPU-specific
+# flags (AVX2 on x86 targets) are applied as well, see SOFTRDP_ENABLE_AVX2
+# above.
 add_library(softrdp_core_s1 OBJECT ${SOFTRDP_SCALED_SOURCES})
 add_library(softrdp_core_s2 OBJECT ${SOFTRDP_SCALED_SOURCES})
 add_library(softrdp_core_shared OBJECT ${SOFTRDP_SHARED_CORE_SOURCES})
@@ -86,6 +109,9 @@ foreach(_target IN ITEMS softrdp_core_s1 softrdp_core_s2 softrdp_core_shared)
         SOFTRDP_CENSUS=$<IF:$<BOOL:${SOFTRDP_CENSUS}>,1,0>
         SOFTRDP_ENABLE_DUMP=$<IF:$<BOOL:${SOFTRDP_ENABLE_DUMP}>,1,0>
     )
+    if(SOFTRDP_ARCH_COMPILE_OPTIONS)
+        target_compile_options(${_target} PRIVATE ${SOFTRDP_ARCH_COMPILE_OPTIONS})
+    endif()
 endforeach()
 
 target_compile_definitions(softrdp_core_s1 PRIVATE
@@ -144,6 +170,10 @@ target_compile_definitions(mupen64plus-video-softrdp PRIVATE
     SOFTRDP_CENSUS=$<IF:$<BOOL:${SOFTRDP_CENSUS}>,1,0>
     SOFTRDP_ENABLE_DUMP=$<IF:$<BOOL:${SOFTRDP_ENABLE_DUMP}>,1,0>
 )
+
+if(SOFTRDP_ARCH_COMPILE_OPTIONS)
+    target_compile_options(mupen64plus-video-softrdp PRIVATE ${SOFTRDP_ARCH_COMPILE_OPTIONS})
+endif()
 
 set_target_properties(mupen64plus-video-softrdp PROPERTIES
     PREFIX ""
