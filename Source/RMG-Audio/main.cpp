@@ -26,6 +26,7 @@
 #include <SDL3/SDL_audio.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #include "main.hpp"
 
@@ -38,7 +39,7 @@
 
 #include <RMG-Core/Settings.hpp>
 
-#include "UserInterface//MainDialog.hpp"
+#include "UserInterface/MainDialog.hpp"
 
 /* version info */
 #define SDL_AUDIO_PLUGIN_VERSION 0x020509
@@ -62,6 +63,11 @@ static int l_Volume = 80;
 static bool l_Muted = 0;
 
 /* Helper functions */
+static int clamp_volume(int volume)
+{
+    return volume < 0 ? 0 : (volume > 100 ? 100 : volume);
+}
+
 static void apply_volume_settings(void)
 {
     float volume = 0;
@@ -80,7 +86,7 @@ static void apply_volume_settings(void)
 static void load_volume_settings(void)
 {
     l_Muted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted);
-    l_Volume = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
+    l_Volume = clamp_volume(CoreSettingsGetIntValue(SettingsID::Audio_Volume));
 }
 
 /* Global functions */
@@ -93,7 +99,7 @@ void DebugMessage(int level, const char *message, ...)
       return;
 
   va_start(args, message);
-  vsprintf(msgbuf, message, args);
+  vsnprintf(msgbuf, sizeof(msgbuf), message, args);
 
   (*l_DebugCallback)(l_DebugCallContext, level, msgbuf);
 
@@ -201,7 +207,8 @@ static unsigned int vi_clock_from_system_type(int system_type)
 
 static unsigned int dacrate2freq(unsigned int vi_clock, uint32_t dacrate)
 {
-    return vi_clock / (dacrate + 1);
+    // use 64-bit math, so dacrate + 1 can't wrap around to zero
+    return static_cast<unsigned int>(vi_clock / (static_cast<uint64_t>(dacrate) + 1));
 }
 
 EXPORT void CALL AiDacrateChanged(int SystemType)
@@ -210,6 +217,9 @@ EXPORT void CALL AiDacrateChanged(int SystemType)
         return;
 
     unsigned int frequency = dacrate2freq(vi_clock_from_system_type(SystemType), *l_AudioInfo.AI_DACRATE_REG);
+
+    if (frequency == 0)
+        return;
 
     sdl_set_frequency(l_sdl_backend, frequency);
     apply_volume_settings();
@@ -272,13 +282,13 @@ EXPORT void CALL VolumeMute(void)
 
 EXPORT void CALL VolumeUp(void)
 {
-    l_Volume += 10;
+    l_Volume = clamp_volume(l_Volume + 10);
     apply_volume_settings();
 }
 
 EXPORT void CALL VolumeDown(void)
 {
-    l_Volume -= 10;
+    l_Volume = clamp_volume(l_Volume - 10);
     apply_volume_settings();
 }
 
@@ -289,7 +299,7 @@ EXPORT int CALL VolumeGetLevel(void)
 
 EXPORT void CALL VolumeSetLevel(int level)
 {
-    l_Volume = level;
+    l_Volume = clamp_volume(level);
     apply_volume_settings();
 }
 

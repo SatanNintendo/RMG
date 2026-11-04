@@ -31,7 +31,7 @@ CORE_EXPORT bool CoreReadFile(std::filesystem::path file, std::vector<char>& out
 {
     std::string   error;
     std::ifstream fileStream;
-    int           fileStreamLen;
+    std::streamoff fileStreamLen;
 
     // attempt to open file
     fileStream.open(file, std::ios::binary);
@@ -51,12 +51,37 @@ CORE_EXPORT bool CoreReadFile(std::filesystem::path file, std::vector<char>& out
     fileStream.seekg(0, fileStream.end);
     fileStreamLen = fileStream.tellg();
     fileStream.seekg(0, fileStream.beg);
+    if (!fileStream.good() || fileStreamLen < 0)
+    {
+        error = "CoreReadFile Failed: ";
+        error += "failed to retrieve file length";
+        CoreSetError(error);
+        return false;
+    }
 
     // resize buffer
-    outBuffer.resize(fileStreamLen);
+    try
+    {
+        outBuffer.resize(static_cast<size_t>(fileStreamLen));
+    }
+    catch (const std::exception&)
+    {
+        error = "CoreReadFile Failed: ";
+        error += "failed to allocate buffer for file";
+        CoreSetError(error);
+        return false;
+    }
 
     // read file
     fileStream.read(outBuffer.data(), fileStreamLen);
+    if (fileStream.gcount() != fileStreamLen)
+    {
+        error = "CoreReadFile Failed: ";
+        error += "failed to read file";
+        CoreSetError(error);
+        outBuffer.clear();
+        return false;
+    }
 
     fileStream.close();
     return true;
@@ -84,6 +109,14 @@ CORE_EXPORT bool CoreWriteFile(std::filesystem::path file, std::vector<char>& bu
     // write buffer to file
     fileStream.write(buffer.data(), buffer.size());
     fileStream.close();
+    if (fileStream.fail())
+    {
+        error = "CoreWriteFile Failed: ";
+        error += "failed to write file";
+        CoreSetError(error);
+        return false;
+    }
+
     return true;
 }
 
@@ -104,6 +137,7 @@ CORE_EXPORT CoreFileTime CoreGetFileTime(std::filesystem::path file)
     ret = GetFileTime(file_handle, nullptr, nullptr, &file_time);
     if (ret != TRUE)
     {
+        CloseHandle(file_handle);
         return 0;
     }
 

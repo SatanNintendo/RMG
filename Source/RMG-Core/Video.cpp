@@ -125,6 +125,11 @@ CORE_EXPORT bool CoreGetVideoMode(CoreVideoMode& mode)
     m64p_error ret;
     m64p_video_mode videoMode;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_MODE, &videoMode);
     if (ret != M64ERR_SUCCESS)
     {

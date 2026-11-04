@@ -156,6 +156,14 @@ CORE_EXPORT bool CoreOpenRom(std::filesystem::path file)
         // update cached rom header and settings entry
         CoreUpdateCachedRomHeaderAndSettings(file);
     }
+    else if (l_HasExtractedDisk)
+    {
+        // opening failed, so CoreCloseRom() will never
+        // clean up the extracted disk, do it here
+        std::error_code removeErrorCode;
+        std::filesystem::remove(l_ExtractedDiskPath, removeErrorCode);
+        l_HasExtractedDisk = false;
+    }
 
     return l_HasRomOpen;
 }

@@ -156,6 +156,7 @@ CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::pa
     {
         error = "CoreReadZipFile: unzGetGlobalInfo Failed!";
         CoreSetError(error);
+        unzClose(zipFile);
         return false;
     }
 
@@ -202,6 +203,7 @@ CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::pa
             {
                 error = "CoreReadZipFile Failed: unzOpenCurrentFile Failed!";
                 CoreSetError(error);
+                unzClose(zipFile);
                 return false;
             }
 
@@ -297,6 +299,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
     {
         error = "CoreRead7zipFile Failed: ISzAlloc_Alloc Failed!";
         CoreSetError(error);
+        File_Close(&archiveStream.file);
         return false;
     }
 
@@ -320,6 +323,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
         CoreSetError(error);
         SzArEx_Free(&db, &allocImp);
         ISzAlloc_Free(&allocImp, lookStream.buf);
+        File_Close(&archiveStream.file);
         return false;
     }
 
@@ -438,6 +442,36 @@ CORE_EXPORT bool CoreReadArchiveFile(std::filesystem::path file, std::filesystem
     return true;
 }
 
+// returns whether the name of an archive entry is relative
+// and doesn't contain any '..' components (Zip Slip protection)
+static bool is_safe_archive_entry_name(const std::string& name)
+{
+    if (name.empty() || name[0] == '/' || name[0] == '\\' ||
+        (name.size() > 1 && name[1] == ':'))
+    {
+        return false;
+    }
+
+    std::string component;
+    for (size_t i = 0; i <= name.size(); i++)
+    {
+        if (i == name.size() || name[i] == '/' || name[i] == '\\')
+        {
+            if (component == "..")
+            {
+                return false;
+            }
+            component.clear();
+        }
+        else
+        {
+            component += name[i];
+        }
+    }
+
+    return true;
+}
+
 CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
 {
     std::string error;
@@ -474,9 +508,9 @@ CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path pat
     {
         error = "CoreUnzip: unzGetGlobalInfo Failed!";
         CoreSetError(error);
+        unzClose(zipFile);
         return false;
     }
-
 
     for (uint64_t i = 0; i < zipInfo.number_entry; i++)
     {
@@ -488,6 +522,16 @@ CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path pat
         {
             unzClose(zipFile);
             error = "CoreUnzip: unzGetCurrentFileInfo Failed!";
+            CoreSetError(error);
+            return false;
+        }
+
+        // refuse entries that would be extracted outside of the target directory
+        if (!is_safe_archive_entry_name(fileName))
+        {
+            unzClose(zipFile);
+            error = "CoreUnzip: refusing to extract unsafe path: ";
+            error += fileName;
             CoreSetError(error);
             return false;
         }

@@ -30,7 +30,7 @@
 
 #include <RMG-Core/m64p/api/m64p_types.h>
 
-#define ARRAY_SIZE(x) sizeof((x)) / sizeof((x)[0])
+#define ARRAY_SIZE(x) (sizeof((x)) / sizeof((x)[0]))
 
 /* assume 2x16bit interleaved channels */
 enum { BYTES_PER_SAMPLE = 4 };

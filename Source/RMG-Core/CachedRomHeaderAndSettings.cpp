@@ -16,6 +16,7 @@
 #include "File.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -147,10 +148,34 @@ static void add_invalid_cache_entry(const std::filesystem::path& file)
 // Exported Functions
 //
 
+// reads a length-prefixed string into buf,
+// fails when the length doesn't fit (including the terminating NUL)
+// so a corrupt cache file can never overflow the buffer
+static bool read_cache_string(std::ifstream& inputStream, void* buf, size_t bufSize)
+{
+    uint32_t size = 0;
+    inputStream.read(reinterpret_cast<char*>(&size), sizeof(size));
+    if (!inputStream.good() || size >= bufSize)
+    {
+        return false;
+    }
+    inputStream.read(reinterpret_cast<char*>(buf), size);
+    return inputStream.good();
+}
+
+// writes a length-prefixed string, the string is
+// truncated when it doesn't fit in bufSize (including the NUL)
+static void write_cache_string(std::ofstream& outputStream, const std::string& string, size_t bufSize)
+{
+    uint32_t size = static_cast<uint32_t>(std::min(string.size(), bufSize - 1));
+    outputStream.write(reinterpret_cast<const char*>(&size), sizeof(size));
+    outputStream.write(string.data(), size);
+}
+
 CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
 {
     std::ifstream inputStream;
-    char magicBuf[sizeof(CACHE_FILE_MAGIC)];
+    char magicBuf[sizeof(CACHE_FILE_MAGIC)] = {0};
     wchar_t fileNameBuf[CORE_DIR_MAX_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char gameIDBuf[GAMEID_LEN];
@@ -158,6 +183,8 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
     uint32_t size;
+    uint32_t entryCount = 0;
+    uint8_t  validByte;
     l_CacheEntry cacheEntry;
 
     inputStream.open(get_cache_file_name(), std::ios::binary);
@@ -167,27 +194,33 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
     }
 
     // when magic doesn't match, don't read cache file
-    inputStream.read((char*)magicBuf, sizeof(CACHE_FILE_MAGIC));
-    if (std::string(magicBuf) != std::string(CACHE_FILE_MAGIC))
+    inputStream.read(magicBuf, sizeof(CACHE_FILE_MAGIC));
+    if (!inputStream.good() ||
+        memcmp(magicBuf, CACHE_FILE_MAGIC, sizeof(CACHE_FILE_MAGIC)) != 0)
     {
         inputStream.close();
         return;
     }
 
     // read entry count
-    size = l_CacheEntries.size();
-    inputStream.read((char*)&size, sizeof(size));
+    inputStream.read(reinterpret_cast<char*>(&entryCount), sizeof(entryCount));
+    if (!inputStream.good() || entryCount > CACHE_FILE_ITEMS_MAX)
+    {
+        inputStream.close();
+        return;
+    }
 
     // reserve items
-    l_CacheEntries.reserve(size);
+    l_CacheEntries.reserve(entryCount);
 
-    // read all file entries
-#define FREAD(x) inputStream.read((char*)&x, sizeof(x))
-#define FREAD_STR(x, y) inputStream.read((char*)x, y)
-    while (!inputStream.eof())
+    // read all file entries, when the file is corrupt
+    // or truncated, throw everything away, the cache
+    // will simply be rebuilt
+#define FREAD(x) inputStream.read(reinterpret_cast<char*>(&x), sizeof(x))
+#define FAIL_IF(cond) if (cond) { l_CacheEntries.clear(); inputStream.close(); return; }
+    for (uint32_t i = 0; i < entryCount; i++)
     {
         // reset state
-        size = 0;
         cacheEntry = {};
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
@@ -196,13 +229,21 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         memset(goodNameBuf, 0, sizeof(goodNameBuf));
         memset(md5Buf, 0, sizeof(md5Buf));
 
-        // file info
+        // file info (size is in bytes of wchar_t's)
+        size = 0;
         FREAD(size);
-        FREAD_STR(fileNameBuf, size);
+        FAIL_IF(!inputStream.good() ||
+                size >= sizeof(fileNameBuf) ||
+                (size % sizeof(wchar_t)) != 0);
+        inputStream.read(reinterpret_cast<char*>(fileNameBuf), size);
+        FAIL_IF(!inputStream.good());
         cacheEntry.fileName = std::filesystem::path(fileNameBuf);
         FREAD(cacheEntry.fileTime);
         // validity
-        FREAD(cacheEntry.valid);
+        validByte = 0;
+        FREAD(validByte);
+        FAIL_IF(!inputStream.good());
+        cacheEntry.valid = (validByte != 0);
         // invalid entries have less data
         // so we don't need to read further
         if (!cacheEntry.valid)
@@ -213,12 +254,9 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         // type
         FREAD(cacheEntry.type);
         // header
-        FREAD(size);
-        FREAD_STR(headerNameBuf, size);
-        FREAD(size);
-        FREAD_STR(gameIDBuf, size);
-        FREAD(size);
-        FREAD_STR(regionBuf, size);
+        FAIL_IF(!read_cache_string(inputStream, headerNameBuf, sizeof(headerNameBuf)));
+        FAIL_IF(!read_cache_string(inputStream, gameIDBuf, sizeof(gameIDBuf)));
+        FAIL_IF(!read_cache_string(inputStream, regionBuf, sizeof(regionBuf)));
         cacheEntry.header.Name = std::string(headerNameBuf);
         cacheEntry.header.GameID = std::string(gameIDBuf);
         cacheEntry.header.Region = std::string(regionBuf);
@@ -227,10 +265,8 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         FREAD(cacheEntry.header.CountryCode);
         FREAD(cacheEntry.header.SystemType);
         // shared settings
-        FREAD(size);
-        FREAD_STR(goodNameBuf, size);
-        FREAD(size);
-        FREAD_STR(md5Buf, size);
+        FAIL_IF(!read_cache_string(inputStream, goodNameBuf, sizeof(goodNameBuf)));
+        FAIL_IF(!read_cache_string(inputStream, md5Buf, sizeof(md5Buf)));
         cacheEntry.defaultSettings.GoodName = std::string(goodNameBuf);
         cacheEntry.defaultSettings.MD5 = std::string(md5Buf);
         cacheEntry.settings.GoodName = std::string(goodNameBuf);
@@ -247,12 +283,13 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         FREAD(cacheEntry.settings.TransferPak);
         FREAD(cacheEntry.settings.CountPerOp);
         FREAD(cacheEntry.settings.SiDMADuration);
+        FAIL_IF(!inputStream.good());
 
         // add to cached entries
         l_CacheEntries.push_back(cacheEntry);
     }
+#undef FAIL_IF
 #undef FREAD
-#undef FREAD_STR
 
     inputStream.close();
 }
@@ -260,14 +297,8 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
 CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
 {
     std::ofstream outputStream;
-    wchar_t fileNameBuf[CORE_DIR_MAX_LEN];
-    char headerNameBuf[ROMHEADER_NAME_LEN];
-    char gameIDBuf[GAMEID_LEN];
-    char regionBuf[REGION_LEN];
-    char goodNameBuf[GOODNAME_LEN];
-    char md5Buf[MD5_LEN];
     uint32_t size;
-    l_CacheEntry cacheEntry;
+    uint8_t  validByte;
 
     // only save cache when the entries have changed
     if (!l_CacheEntriesChanged)
@@ -282,43 +313,27 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
     }
 
     // write magic header
-    outputStream.write((char*)CACHE_FILE_MAGIC, sizeof(CACHE_FILE_MAGIC));
+    outputStream.write(CACHE_FILE_MAGIC, sizeof(CACHE_FILE_MAGIC));
 
     // write entry count
-    size = l_CacheEntries.size();
-    outputStream.write((char*)&size, sizeof(size));
+    size = static_cast<uint32_t>(l_CacheEntries.size());
+    outputStream.write(reinterpret_cast<char*>(&size), sizeof(size));
 
     // write each entry in the file
-#define FWRITE(x) outputStream.write((char*)&x, sizeof(x))
-#define FWRITE_STR(x, y) outputStream.write((char*)x, y)
-    for (auto iter = l_CacheEntries.cbegin(); iter != l_CacheEntries.end(); iter++)
+#define FWRITE(x) outputStream.write(reinterpret_cast<const char*>(&x), sizeof(x))
+    for (const l_CacheEntry& cacheEntry : l_CacheEntries)
     {
-        cacheEntry = (*iter);
-
-        // reset buffers
-        size = 0;
-        memset(fileNameBuf, 0, sizeof(fileNameBuf));
-        memset(headerNameBuf, 0, sizeof(headerNameBuf));
-        memset(gameIDBuf, 0, sizeof(gameIDBuf));
-        memset(regionBuf, 0, sizeof(regionBuf));
-        memset(goodNameBuf, 0, sizeof(goodNameBuf));
-        memset(md5Buf, 0, sizeof(md5Buf));
-
-        // copy strings into buffers
-        wcsncpy(fileNameBuf, cacheEntry.fileName.wstring().c_str(), CORE_DIR_MAX_LEN);
-        strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
-        strncpy(gameIDBuf, cacheEntry.header.GameID.c_str(), sizeof(gameIDBuf));
-        strncpy(regionBuf, cacheEntry.header.Region.c_str(), sizeof(regionBuf));
-        strncpy(goodNameBuf, cacheEntry.settings.GoodName.c_str(), sizeof(goodNameBuf));
-        strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
-
-        // file info
-        size = cacheEntry.fileName.wstring().size() * sizeof(wchar_t);
+        // file info (size is in bytes of wchar_t's),
+        // paths that don't fit are truncated
+        const std::wstring fileName = cacheEntry.fileName.wstring();
+        const size_t fileNameLen = std::min(fileName.size(), static_cast<size_t>(CORE_DIR_MAX_LEN - 1));
+        size = static_cast<uint32_t>(fileNameLen * sizeof(wchar_t));
         FWRITE(size);
-        FWRITE_STR(fileNameBuf, size);
+        outputStream.write(reinterpret_cast<const char*>(fileName.data()), size);
         FWRITE(cacheEntry.fileTime);
         // validity
-        FWRITE(cacheEntry.valid);
+        validByte = cacheEntry.valid ? 1 : 0;
+        FWRITE(validByte);
         // skip writing more data
         // when the entry is invalid
         if (!cacheEntry.valid)
@@ -328,26 +343,16 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
         // type
         FWRITE(cacheEntry.type);
         // header
-        size = cacheEntry.header.Name.size();
-        FWRITE(size);
-        FWRITE_STR(headerNameBuf, size);
-        size = cacheEntry.header.GameID.size();
-        FWRITE(size);
-        FWRITE_STR(gameIDBuf, size);
-        size = cacheEntry.header.Region.size();
-        FWRITE(size);
-        FWRITE_STR(regionBuf, size);
+        write_cache_string(outputStream, cacheEntry.header.Name, ROMHEADER_NAME_LEN);
+        write_cache_string(outputStream, cacheEntry.header.GameID, GAMEID_LEN);
+        write_cache_string(outputStream, cacheEntry.header.Region, REGION_LEN);
         FWRITE(cacheEntry.header.CRC1);
         FWRITE(cacheEntry.header.CRC2);
         FWRITE(cacheEntry.header.CountryCode);
         FWRITE(cacheEntry.header.SystemType);
         // shared settings
-        size = cacheEntry.settings.GoodName.size();
-        FWRITE(size);
-        FWRITE_STR(goodNameBuf, size);
-        size = cacheEntry.settings.MD5.size();
-        FWRITE(size);
-        FWRITE_STR(md5Buf, size);
+        write_cache_string(outputStream, cacheEntry.settings.GoodName, GOODNAME_LEN);
+        write_cache_string(outputStream, cacheEntry.settings.MD5, MD5_LEN);
         // default settings
         FWRITE(cacheEntry.defaultSettings.SaveType);
         FWRITE(cacheEntry.defaultSettings.DisableExtraMem);
@@ -362,10 +367,9 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
         FWRITE(cacheEntry.settings.SiDMADuration);
     }
 #undef FWRITE
-#undef FWRITE_STR
 
     outputStream.close();
-    return true;
+    return !outputStream.fail();
 }
 
 CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* type, CoreRomHeader* header, CoreRomSettings* defaultSettings, CoreRomSettings* settings)
@@ -413,7 +417,7 @@ CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, C
                 *defaultSettings = romDefaultSettings;
             }
 
-            add_cache_entry(file, romType, romHeader, romSettings, romDefaultSettings);
+            add_cache_entry(file, romType, romHeader, romDefaultSettings, romSettings);
             return true;
         }
         else

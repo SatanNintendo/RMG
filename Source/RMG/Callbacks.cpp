@@ -43,7 +43,7 @@ bool CoreCallbacks::Init(void)
 {
     // needed for Qt
     qRegisterMetaType<CoreDebugMessageType>("CoreDebugMessageType");
-    qRegisterMetaType<CoreDebugMessageType>("CoreStateCallbackType");
+    qRegisterMetaType<CoreStateCallbackType>("CoreStateCallbackType");
     qRegisterMetaType<CoreCallbackMessage>("CoreCallbackMessage");
 
     this->LoadSettings();
@@ -76,13 +76,20 @@ void CoreCallbacks::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == this->callbackTimerId)
     {
-        l_CallbackMessagesMutex.lock();
-        if (!l_CallbackMessages.isEmpty())
+        QList<CoreCallbackMessage> messages;
+
+        // only hold the lock while taking the messages,
+        // emitting while locked could deadlock when a slot
+        // causes another callback on this thread
         {
-            emit this->OnCoreDebugCallback(l_CallbackMessages);
-            l_CallbackMessages.clear();
+            QMutexLocker locker(&l_CallbackMessagesMutex);
+            messages.swap(l_CallbackMessages);
         }
-        l_CallbackMessagesMutex.unlock();
+
+        if (!messages.isEmpty())
+        {
+            emit this->OnCoreDebugCallback(messages);
+        }
     }
 }
 

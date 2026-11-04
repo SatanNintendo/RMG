@@ -151,7 +151,7 @@ CORE_EXPORT void CoreResetMediaLoader(void)
     std::error_code errorCode;
 
     // attempt to remove extracted disk file
-    if (l_HasExtractedDisk && !l_DdRomFile.empty())
+    if (l_HasExtractedDisk && !l_DdDiskFile.empty())
     {
         std::filesystem::remove(l_DdDiskFile, errorCode);
     }

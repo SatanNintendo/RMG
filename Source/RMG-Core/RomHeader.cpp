@@ -179,7 +179,7 @@ CORE_EXPORT bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_settings), &m64p_header);
+    ret = m64p::Core.DoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_header), &m64p_header);
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreGetCurrentRomHeader m64p::Core.DoCommand(M64CMD_ROM_GET_HEADER) Failed: ";

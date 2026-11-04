@@ -26,7 +26,7 @@
 
 #include <RMG-Core/m64p/api/m64p_types.h>
 
-#define ARRAY_SIZE(x) sizeof((x)) / sizeof((x)[0])
+#define ARRAY_SIZE(x) (sizeof((x)) / sizeof((x)[0]))
 
 const struct resampler_interface* get_iresampler(const char* resampler_id, void** resampler)
 {
@@ -59,5 +59,15 @@ const struct resampler_interface* get_iresampler(const char* resampler_id, void*
 
     /* instanciate resampler */
     *resampler = resamplers[i].iresampler->init_from_id(resampler_id);
+
+    /* fall back to the trivial resampler when initializing the
+     * selected resampler failed, otherwise we'd resample using NULL */
+    if (*resampler == NULL && resamplers[i].iresampler != &g_trivial_iresampler) {
+        DebugMessage(M64MSG_WARNING, "Could not initialize resampler %s; use %s resampler",
+            resamplers[i].iresampler->name, resamplers[0].iresampler->name);
+        i = 0;
+        *resampler = resamplers[i].iresampler->init_from_id(resampler_id);
+    }
+
     return resamplers[i].iresampler;
 }

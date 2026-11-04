@@ -54,12 +54,16 @@ CORE_EXPORT std::string CoreGetLibraryError(void)
         FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        nullptr, err, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (LPSTR)&buf, 0, nullptr);
 
-    std::string msg(buf, size);
-
-    LocalFree(buf);
+    std::string msg;
+    if (buf != nullptr)
+    {
+        msg.assign(buf, size);
+        LocalFree(buf);
+    }
 
     return msg;
 #else // Linux
-    return std::string(dlerror());
+    const char* err = dlerror();
+    return std::string(err != nullptr ? err : "");
 #endif
 }

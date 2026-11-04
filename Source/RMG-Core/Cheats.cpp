@@ -194,6 +194,11 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
 {
     std::string error;
     std::string line;
+
+    // when the cheat ends at the last line (for example
+    // with a metadata line), we have to resume parsing after it
+    endIndex = static_cast<int>(lines.size()) - 1;
+
     for (size_t i = startIndex; i < lines.size(); i++)
     {
         line = lines[i];
@@ -570,6 +575,11 @@ CORE_EXPORT bool CoreGetCurrentCheats(std::filesystem::path file, std::vector<Co
     bool hasUserCheatFile   = false;
     std::vector<std::string> sharedCheatFilelines;
     std::vector<std::string> userCheatFileLines;
+
+    // always reset the state, otherwise the cheats of
+    // a previously used ROM could end up in the cheat file of this ROM
+    l_SharedCheatFile = {};
+    l_UserCheatFile   = {};
 
     if (!get_romheader_and_romsettings(file, romHeader, romSettings))
     {

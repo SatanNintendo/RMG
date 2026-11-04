@@ -106,10 +106,10 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
     std::filesystem::path directory;
 
     const char* env = std::getenv(var.c_str());
-    if (env == nullptr)
-    {
+    if (env == nullptr || env[0] == '\0')
+    { // per XDG spec, an empty variable is treated as unset
         env = std::getenv(fallbackVar.c_str());
-        if (env == nullptr)
+        if (env == nullptr || env[0] == '\0')
         {
             throw std::runtime_error("get_var_directory: fallbackVar: $" + fallbackVar + " cannot be non-existent");
         }

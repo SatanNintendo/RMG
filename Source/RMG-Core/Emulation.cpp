@@ -150,10 +150,12 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
     std::string address, int port, int player)
 {
     std::string error;
-    m64p_error  m64p_ret;
     bool        netplay_ret = false;
     CoreRomType type;
     bool        netplay = !address.empty();
+    // when netplay was requested, this is
+    // only overwritten when emulation starts
+    m64p_error  m64p_ret = netplay ? M64ERR_SYSTEM_FAIL : M64ERR_SUCCESS;
 
     if (!CoreOpenRom(n64rom))
     {
@@ -317,7 +319,7 @@ CORE_EXPORT bool CorePauseEmulation(void)
     if (!CoreIsEmulationRunning())
     {
         error = "CorePauseEmulation Failed: ";
-        error += "cannot pause emulation when emulation isn't running!";\
+        error += "cannot pause emulation when emulation isn't running!";
         CoreSetError(error);
         return false;
     }

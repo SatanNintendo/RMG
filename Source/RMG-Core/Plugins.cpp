@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 #include <array>
 
 #ifdef _WIN32
@@ -214,8 +215,8 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
             continue;
         }
 
-        // copy context string to a c string using strcpy
-        std::strcpy(l_PluginContext[i], get_plugin_context_name(pluginType).c_str());
+        // copy context string to a c string
+        std::snprintf(l_PluginContext[i], sizeof(l_PluginContext[i]), "%s", get_plugin_context_name(pluginType).c_str());
 
         if (settingValue != l_PluginFiles[i])
         {
@@ -268,6 +269,7 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
                 error += plugin.GetLastError();
                 CoreSetError(error);
                 plugin.Unhook();
+                CoreCloseLibrary(handle);
                 return false;
             }
 
@@ -281,6 +283,7 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
                 error += "!";
                 CoreSetError(error);
                 plugin.Unhook();
+                CoreCloseLibrary(handle);
                 return false;
             }
 
@@ -405,6 +408,10 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
         // try to retrieve cached rom header & settings
         if (!CoreGetCachedRomHeaderAndSettings(file, nullptr, &romHeader, nullptr, &romSettings))
         {
+            if (resumeEmulation)
+            {
+                CoreResumeEmulation();
+            }
             return false;
         }
     }
@@ -466,7 +473,14 @@ CORE_EXPORT std::vector<CorePlugin> CoreGetAllPlugins(void)
     CoreLibraryHandle       handle;
     m64p::PluginApi         plugin;
 
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetPluginDirectory()))
+    std::error_code errorCode;
+    std::filesystem::recursive_directory_iterator pluginIterator(CoreGetPluginDirectory(), errorCode);
+    if (errorCode)
+    { // plugin directory doesn't exist or isn't accessible
+        return plugins;
+    }
+
+    for (const auto& entry : pluginIterator)
     {
         std::string path = entry.path().string();
         std::string file = entry.path().filename().string();
@@ -474,8 +488,14 @@ CORE_EXPORT std::vector<CorePlugin> CoreGetAllPlugins(void)
             path.ends_with(CORE_LIBRARY_EXT_STR))
         {
             handle = CoreOpenLibrary(path.c_str());
-            if (handle == nullptr || !plugin.Hook(handle))
+            if (handle == nullptr)
             { // skip invalid libs
+                continue;
+            }
+            if (!plugin.Hook(handle))
+            { // skip invalid libs
+                plugin.Unhook();
+                CoreCloseLibrary(handle);
                 continue;
             }
 
@@ -647,7 +667,7 @@ CORE_EXPORT bool CorePluginsShutdown(void)
 {
     std::string      error;
     m64p::PluginApi* plugin;
-    m64p_error       ret;
+    m64p_error       ret = M64ERR_SUCCESS;
 
     for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {

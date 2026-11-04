@@ -1439,7 +1439,7 @@ static bool config_section_open(const std::string& section)
     if (ret != M64ERR_SUCCESS)
     {
         error = "config_section_open m64p::Config.OpenSection Failed: ";
-        error = m64p::Core.ErrorMessage(ret);
+        error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
 
@@ -1709,6 +1709,14 @@ CORE_EXPORT bool CoreSettingsUpgrade(void)
     std::string settingsString;
 
     settingsVersion = CoreSettingsGetStringValue(SettingsID::GUI_Version);
+
+    // we don't need to do anything
+    // when the core version and the settings version match
+    if (settingsVersion == CoreGetVersion())
+    {
+        return true;
+    }
+
     if (settingsVersion.size() > 6)
     { // strip git prefix
         settingsVersion = settingsVersion.substr(0, 6);
@@ -1755,7 +1763,6 @@ CORE_EXPORT bool CoreSettingsUpgrade(void)
 
     if (settingsVersion == "v0.6.8" || 
         settingsVersion == "v0.6.9" ||
-        settingsVersion == "v0.7.0" ||
         settingsVersion == "v0.7.0" ||
         settingsVersion == "v0.7.1" ||
         settingsVersion == "v0.7.2" ||
@@ -1868,7 +1875,7 @@ CORE_EXPORT bool CoreSettingsRevertSection(std::string section)
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSettingsRevertSection m64p::Config.RevertChanges() Failed: ";
-        error = m64p::Core.ErrorMessage(ret);
+        error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
 
@@ -1896,7 +1903,7 @@ CORE_EXPORT bool CoreSettingsDeleteSection(std::string section)
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSettingsDeleteSection m64p::Config.DeleteSection() Failed: ";
-        error = m64p::Core.ErrorMessage(ret);
+        error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
 

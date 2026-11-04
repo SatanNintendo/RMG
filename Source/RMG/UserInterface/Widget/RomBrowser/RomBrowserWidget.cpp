@@ -1156,8 +1156,8 @@ void RomBrowserWidget::on_Action_OpenRomDirectory(void)
         return;
     }
 
-    QDesktopServices::openUrl(QUrl("file:///" + directory));
-}   
+    QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
+}
 
 void RomBrowserWidget::on_Action_ChangeRomDirectory(void)
 {
@@ -1235,6 +1235,10 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
 
     QModelIndex         index = model.second->mapToSource(view->currentIndex());
     QStandardItem*      item  = model.first->item(index.row(), index.column());
+    if (!index.isValid() || item == nullptr)
+    {
+        return;
+    }
     RomBrowserModelData data  = model.first->itemData(index).last().value<RomBrowserModelData>();
 
     // construct new file name (for the cover)
@@ -1280,6 +1284,10 @@ void RomBrowserWidget::on_Action_RemoveCoverImage(void)
 
     QModelIndex         index = model.second->mapToSource(view->currentIndex());
     QStandardItem*      item  = model.first->item(index.row(), index.column());
+    if (!index.isValid() || item == nullptr)
+    {
+        return;
+    }
     RomBrowserModelData data  = model.first->itemData(index).last().value<RomBrowserModelData>();
     QString coverFile;
 

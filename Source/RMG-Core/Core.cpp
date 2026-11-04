@@ -24,6 +24,7 @@
 #include <filesystem>
 #include <string>
 #include <cstring>
+#include <cstdio>
 
 //
 // Local Variables
@@ -38,7 +39,14 @@ static char l_CoreContextString[20];
 
 static std::filesystem::path find_core_lib(void)
 {
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetCoreDirectory()))
+    std::error_code errorCode;
+    std::filesystem::recursive_directory_iterator coreIterator(CoreGetCoreDirectory(), errorCode);
+    if (errorCode)
+    { // core directory doesn't exist or isn't accessible
+        return std::filesystem::path();
+    }
+
+    for (const auto& entry : coreIterator)
     {
         std::filesystem::path path = entry.path();
         if (path.has_extension() && 
@@ -81,7 +89,7 @@ CORE_EXPORT bool CoreInit(void)
     bool ret = false;
 
     // initialize context string
-    std::strcpy(l_CoreContextString, "[CORE]  ");
+    std::snprintf(l_CoreContextString, sizeof(l_CoreContextString), "%s", "[CORE]  ");
 
     core_file = find_core_lib();
     if (core_file.empty())

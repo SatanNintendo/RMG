@@ -183,9 +183,9 @@ void release_sdl_backend(struct sdl_backend* sdl_backend)
         return;
     }
 
-    if (sdl_backend->error == 0) {
-        release_audio_device(sdl_backend);
-    }
+    /* always release the audio device, SDL's audio subsystem
+     * can be initialized even when opening the stream failed */
+    release_audio_device(sdl_backend);
 
     /* release primary buffer */
     if (sdl_backend->primary_buffer != nullptr) {
@@ -264,6 +264,10 @@ void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t s
     if (sdl_backend->stream != nullptr)
     {
         int queuedBytes = SDL_GetAudioStreamQueued(sdl_backend->stream);
+        if (queuedBytes < 0)
+        { /* SDL reports -1 on error */
+            queuedBytes = 0;
+        }
 
         /* Target ~80ms of buffered audio: enough headroom to absorb
          * jitter without adding noticeable input lag. */
@@ -316,8 +320,19 @@ void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t s
     /* resize buffers when required */
     if (size > sdl_backend->buffers_size)
     {
-        sdl_backend->primary_buffer = realloc(sdl_backend->primary_buffer, size);
-        sdl_backend->resample_buffer = realloc(sdl_backend->resample_buffer, size);
+        void* primary_buffer = realloc(sdl_backend->primary_buffer, size);
+        if (primary_buffer == nullptr)
+        {
+            return;
+        }
+        sdl_backend->primary_buffer = primary_buffer;
+
+        void* resample_buffer = realloc(sdl_backend->resample_buffer, size);
+        if (resample_buffer == nullptr)
+        {
+            return;
+        }
+        sdl_backend->resample_buffer = resample_buffer;
 
         sdl_backend->buffers_size = size;
     }

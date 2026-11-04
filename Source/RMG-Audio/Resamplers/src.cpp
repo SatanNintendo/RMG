@@ -31,7 +31,7 @@
 
 #include <RMG-Core/m64p/api/m64p_types.h>
 
-#define ARRAY_SIZE(x) sizeof((x)) / sizeof((x)[0])
+#define ARRAY_SIZE(x) (sizeof((x)) / sizeof((x)[0]))
 
 struct fbuffer
 {
@@ -39,12 +39,18 @@ struct fbuffer
     size_t size;
 };
 
-static void grow_fbuffer(struct fbuffer* fbuffer, size_t new_size)
+static bool grow_fbuffer(struct fbuffer* fbuffer, size_t new_size)
 {
     if (fbuffer->size < new_size) {
-        fbuffer->data = (float*)realloc(fbuffer->data, new_size);
+        float* data = (float*)realloc(fbuffer->data, new_size);
+        if (data == NULL) {
+            return false;
+        }
+        fbuffer->data = data;
         fbuffer->size = new_size;
     }
+
+    return true;
 }
 
 static void free_fbuffer(struct fbuffer* fbuffer)
@@ -131,6 +137,9 @@ static void src_release(void* resampler)
     for(i = 0; i < 2; ++i) {
         free_fbuffer(&src_resampler->fbuffers[i]);
     }
+
+    /* the resampler struct itself was allocated in init */
+    free(src_resampler);
 }
 
 static size_t src_resample(void* resampler,
@@ -149,11 +158,11 @@ static size_t src_resample(void* resampler,
     }
 
     /* grow float buffers if necessary */
-    if (src_size > 0) {
-        grow_fbuffer(&src_resampler->fbuffers[0], src_size*2);
-    }
-    if (dst_size > 0) {
-        grow_fbuffer(&src_resampler->fbuffers[1], dst_size*2);
+    if ((src_size > 0 && !grow_fbuffer(&src_resampler->fbuffers[0], src_size*2)) ||
+        (dst_size > 0 && !grow_fbuffer(&src_resampler->fbuffers[1], dst_size*2))) {
+        /* out of memory, output silence and discard input */
+        memset(dst, 0, dst_size);
+        return src_size;
     }
 
     src_short_to_float_array((short*)src, src_resampler->fbuffers[0].data, src_size/2);

@@ -155,47 +155,38 @@ CORE_EXPORT bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings sett
         return true;
     }
 
-    // else use new filename
+    // else use new filename,
+    // the file name is built separately and sanitized as a whole,
+    // so a ROM name containing path separators (e.g. "../")
+    // can never escape the save state directory
     int format = CoreSettingsGetIntValue(SettingsID::Core_SaveFileNameFormat);
     if (format == 0)
     {
-        saveStatePath += header.Name;
-        saveStatePath += saveStateExtension;
+        saveStateFileName = header.Name;
     }
     else
     {
         if (settings.GoodName.find("(unknown rom)") == std::string::npos)
         {
-            if (settings.GoodName.size() < 32)
-            {
-                saveStatePath += settings.GoodName;
-            }
-            else
-            {
-                saveStatePath += settings.GoodName.substr(0, 32);
-            }
+            saveStateFileName = settings.GoodName.substr(0, 32);
         }
         else if (!header.Name.empty())
         {
-            saveStatePath += header.Name;
+            saveStateFileName = header.Name;
         }
         else
         {
-            saveStatePath += "unknown";
+            saveStateFileName = "unknown";
         }
-        saveStatePath += "-";
-        saveStatePath += settings.MD5.substr(0, 8);
-        saveStatePath += saveStateExtension;
+        saveStateFileName += "-";
+        saveStateFileName += settings.MD5.substr(0, 8);
     }
-
-    // retrieve filename from path
-    saveStateFileName = saveStatePath.filename().string();
+    saveStateFileName += saveStateExtension.string();
 
     // sanitize filename
     str_replace_chars(saveStateFileName, ":<>\"/\\|?*", '_');
 
-    // replace filename in path
-    saveStatePath.replace_filename(saveStateFileName);
+    saveStatePath += saveStateFileName;
 
     path = saveStatePath;
     return true;

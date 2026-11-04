@@ -790,7 +790,7 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
             } break;
             case InputType::Keyboard:
             {
-                state = l_KeyboardState[data] ? 1 : 0;
+                state = (data >= 0 && data < SDL_SCANCODE_COUNT && l_KeyboardState[data]) ? 1 : 0;
             } break;
             default:
                 break;
@@ -864,7 +864,7 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             } break;
             case InputType::Keyboard:
             {
-                button_state |= l_KeyboardState[data];
+                button_state |= (data >= 0 && data < SDL_SCANCODE_COUNT && l_KeyboardState[data]);
             } break;
             default:
                 break;
@@ -1450,10 +1450,20 @@ EXPORT void CALL RomClosed(void)
 
 EXPORT void CALL SDL_KeyDown(int keymod, int keysym)
 {
+    if (keysym < 0 || keysym >= SDL_SCANCODE_COUNT)
+    {
+        return;
+    }
+
     l_KeyboardState[keysym] = true;
 }
 
 EXPORT void CALL SDL_KeyUp(int keymod, int keysym)
 {
+    if (keysym < 0 || keysym >= SDL_SCANCODE_COUNT)
+    {
+        return;
+    }
+
     l_KeyboardState[keysym] = false;
 }

@@ -95,7 +95,7 @@ CORE_EXPORT bool CoreDecreaseVolume(void)
     }
     else if (volume < 10)
     {
-        error = "CoreIncreaseVolume Failed: cannot decrease volume!";
+        error = "CoreDecreaseVolume Failed: cannot decrease volume!";
         CoreSetError(error);
         return false;
     }
@@ -117,7 +117,7 @@ CORE_EXPORT bool CoreToggleMuteVolume(void)
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_AUDIO_MUTE, &muted);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreGetVolume: m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
+        error = "CoreToggleMuteVolume: m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
         return false;
@@ -128,7 +128,7 @@ CORE_EXPORT bool CoreToggleMuteVolume(void)
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_AUDIO_MUTE, &muted);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreGetVolume: m64p::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
+        error = "CoreToggleMuteVolume: m64p::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }

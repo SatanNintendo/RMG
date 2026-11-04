@@ -13,6 +13,7 @@
 #include "Error.hpp"
 
 #include <string.h>
+#include <cerrno>
 #include <iconv.h>
 #include <string>
 
@@ -49,7 +50,7 @@ CORE_EXPORT std::string CoreConvertStringEncoding(std::string str, CoreStringEnc
     {
         error = "CoreConvertStringEncoding Failed: ";
         error += "iconv_open Failed: ";
-        error += errno;
+        error += std::to_string(errno);
         CoreSetError(error);
         return str;
     }
@@ -59,7 +60,7 @@ CORE_EXPORT std::string CoreConvertStringEncoding(std::string str, CoreStringEnc
     {
         error = "CoreConvertStringEncoding Failed: ";
         error += "iconv Failed: ";
-        error += errno;
+        error += std::to_string(errno);
         CoreSetError(error);
 
         // reset iconv
@@ -73,5 +74,6 @@ CORE_EXPORT std::string CoreConvertStringEncoding(std::string str, CoreStringEnc
     iconv(cd, nullptr, nullptr, nullptr, nullptr);
     iconv_close(cd);
 
-    return std::string(outputBuf);
+    // never read past the buffer when the output filled it completely
+    return std::string(outputBuf, strnlen(outputBuf, sizeof(outputBuf) - outputBufSize));
 }
