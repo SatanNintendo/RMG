@@ -84,8 +84,10 @@ extern "C"
 			return cycles;
 		else if (*RSP::cpu.get_state().cp0.irq & 1)
 			RSP::rsp.CheckInterrupts();
-		else if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
-			return cycles;
+		// HALT can be a temporary yield signal (for example, when the
+		// SP_STATUS polling timeout in cp0.cpp lets the CPU run). Do not
+		// return with this bit set: the core uses a cleared HALT bit to
+		// recognize the yielded task and raise MI_INTR_SP so it can resume.
 		else if (*RSP::rsp.SP_SEMAPHORE_REG != 0) // Semaphore lock fixes.
 		{
 		}
