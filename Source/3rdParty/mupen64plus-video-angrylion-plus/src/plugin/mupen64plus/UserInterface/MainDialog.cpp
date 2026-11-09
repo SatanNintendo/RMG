@@ -56,6 +56,7 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     this->viHideOverscanCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN));
     this->viIntegerScalingCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING));
     this->viVsyncCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_VSYNC));
+    this->viBobDeinterlaceCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE));
 }
 
 MainDialog::~MainDialog()
@@ -101,6 +102,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         int viHideOverscanValue = this->viHideOverscanCheckBox->isChecked() ? 1 : 0;
         int viIntegerScalingValue = this->viIntegerScalingCheckBox->isChecked() ? 1 : 0;
         int viVsyncValue = this->viVsyncCheckBox->isChecked() ? 1 : 0;
+        int viBobDeinterlaceValue = this->viBobDeinterlaceCheckBox->isChecked() ? 1 : 0;
 
         ConfigSetParameter(configVideoAngrylionPlus, KEY_PARALLEL, M64TYPE_BOOL, &parallelValue);
         ConfigSetParameter(configVideoAngrylionPlus, KEY_BUSY_LOOP, M64TYPE_BOOL, &busyLoopValue);
@@ -109,6 +111,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN, M64TYPE_BOOL, &viHideOverscanValue);
         ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, M64TYPE_BOOL, &viIntegerScalingValue);
         ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_VSYNC, M64TYPE_BOOL, &viVsyncValue);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE, M64TYPE_BOOL, &viBobDeinterlaceValue);
 
         ConfigSaveSection("Video-AngrylionPlus");   
     }
@@ -128,5 +131,6 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         this->viHideOverscanCheckBox->setChecked(config.vi.hide_overscan);
         this->viIntegerScalingCheckBox->setChecked(config.vi.integer_scaling);
         this->viVsyncCheckBox->setChecked(config.vi.vsync);
+        this->viBobDeinterlaceCheckBox->setChecked(config.vi.bob_deinterlace);
     }
 }

@@ -105,6 +105,7 @@ struct n64video_config
         bool vsync;                 // enable vsync if true
         bool exclusive;             // run in exclusive mode when in fullscreen if true
         bool integer_scaling;       // one native pixel is displayed as a multiple of a screen pixel if true
+        bool bob_deinterlace;       // display only the current VI field, doubled to full height
     } vi;
     struct {
         enum dp_compat_profile compat;  // multithreading compatibility mode

@@ -40,6 +40,7 @@ extern ptr_PluginGetVersion       CoreGetVersion;
 #define KEY_VI_HIDE_OVERSCAN "ViHideOverscan"
 #define KEY_VI_INTEGER_SCALING "ViIntegerScaling"
 #define KEY_VI_VSYNC "ViVsync"
+#define KEY_VI_DEINTERLACE "ViBobDeinterlace"
 
 
 #define KEY_DP_COMPAT "DpCompat"

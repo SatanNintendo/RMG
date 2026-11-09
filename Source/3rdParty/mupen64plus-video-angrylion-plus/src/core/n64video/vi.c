@@ -78,8 +78,10 @@ static uint32_t tvfadeoutstate[PRESCALE_HEIGHT];
 static uint32_t zb_address;
 static int32_t vinnglitch;
 
-// prescale buffer
+// prescale buffer. Interlaced games keep both temporal fields here; the Bob
+// output uses a separate buffer so it cannot destroy the retained opposite field.
 static struct n64video_pixel prescale[PRESCALE_WIDTH * PRESCALE_HEIGHT];
+static struct n64video_pixel bob_buffer[PRESCALE_WIDTH * PRESCALE_HEIGHT];
 static uint32_t prescale_ptr;
 static int32_t linecount;
 
@@ -318,6 +320,66 @@ static void vi_process_full_parallel(uint32_t worker_id)
     }
 }
 
+/*
+ * Bob deinterlacing for serrated VI output.
+ *
+ * The VI renderer stores alternating fields in alternating output rows. Those
+ * rows belong to different moments in time, so presenting them together causes
+ * combing on moving objects. Bob uses only the field rendered on this update
+ * and duplicates each of its lines into a pair of output lines. The original
+ * prescale buffer is deliberately left untouched because it retains the other
+ * field for the next VI update.
+ */
+static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
+{
+    if (!config.vi.bob_deinterlace || !ctrl.serrate || !fb->pixels ||
+        !fb->width || !fb->height) {
+        return;
+    }
+
+    const uint32_t width = fb->width;
+    const uint32_t height = fb->height;
+    const uint32_t parity = lowerfield ? 1u : 0u;
+
+    if (width > PRESCALE_WIDTH || height > PRESCALE_HEIGHT) {
+        return;
+    }
+
+    uint32_t source_x = 0;
+    uint32_t source_y = parity;
+    if (config.vi.hide_overscan) {
+        source_x = (uint32_t)(h_start + minhpass);
+
+        /* Match the normal VI crop origin, then select the current field. */
+        source_y = (uint32_t)(v_start + (emucontrolsvicurrent ? lowerfield : 0)) * 2u;
+        if ((source_y & 1u) != parity) {
+            ++source_y;
+        }
+    }
+
+    if (source_x > PRESCALE_WIDTH || width > PRESCALE_WIDTH - source_x) {
+        return;
+    }
+
+    /* Every output line pair comes from one line of the current field. */
+    const uint32_t last_source_y = source_y + ((height - 1u) / 2u) * 2u;
+    if (last_source_y >= PRESCALE_HEIGHT) {
+        return;
+    }
+
+    for (uint32_t y = 0; y < height; y++) {
+        const uint32_t field_line = source_y + (y / 2u) * 2u;
+        const struct n64video_pixel* source =
+            &prescale[(size_t)field_line * PRESCALE_WIDTH + source_x];
+        struct n64video_pixel* destination =
+            &bob_buffer[(size_t)y * width];
+        memcpy(destination, source, (size_t)width * sizeof(*destination));
+    }
+
+    fb->pixels = bob_buffer;
+    fb->pitch = width;
+}
+
 static bool vi_process_full(struct n64video_frame_buffer* fb)
 {
     bool isblank = (ctrl.type & 2) == 0;
@@ -480,6 +542,9 @@ static bool vi_process_full(struct n64video_frame_buffer* fb)
     if (config.vi.widescreen) {
         fb->height_out = fb->height_out * 3 / 4;
     }
+
+    /* Apply deinterlacing after VI filtering, without changing the RDP data. */
+    vi_deinterlace_bob(fb);
 
     return fb->width > 0 && fb->height > 0;
 }

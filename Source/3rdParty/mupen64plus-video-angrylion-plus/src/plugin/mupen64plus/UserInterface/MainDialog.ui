@@ -281,6 +281,16 @@
                <property name="text">
                 <string>Enable Vsync</string>
                </property>
+             </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="viBobDeinterlaceCheckBox">
+               <property name="toolTip">
+                <string>Only applies in Filtered VI mode. Uses the current field and doubles its lines to remove moving combing. Vertical detail is reduced while enabled.</string>
+               </property>
+               <property name="text">
+                <string>Bob deinterlacing</string>
+               </property>
               </widget>
              </item>
             </layout>
