@@ -321,14 +321,15 @@ static void vi_process_full_parallel(uint32_t worker_id)
 }
 
 /*
- * Bob deinterlacing for serrated VI output.
+ * Field-aware Bob deinterlacing for serrated VI output.
  *
- * The VI renderer stores alternating fields in alternating output rows. Those
- * rows belong to different moments in time, so presenting them together causes
- * combing on moving objects. Bob uses only the field rendered on this update
- * and duplicates each of its lines into a pair of output lines. The original
- * prescale buffer is deliberately left untouched because it retains the other
- * field for the next VI update.
+ * A field's samples must remain on their original output scanlines. Duplicating
+ * every source line into rows 2*n and 2*n+1 shifts odd fields by one line,
+ * causing vertical twitter on fine horizontal details. This version preserves
+ * field parity and linearly interpolates only the missing scanlines.
+ *
+ * The original prescale buffer is deliberately left untouched because it
+ * retains the opposite field for the next VI update.
  */
 static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
 {
@@ -341,7 +342,7 @@ static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
     const uint32_t height = fb->height;
     const uint32_t parity = lowerfield ? 1u : 0u;
 
-    if (width > PRESCALE_WIDTH || height > PRESCALE_HEIGHT) {
+    if (width > PRESCALE_WIDTH || height > PRESCALE_HEIGHT || height <= parity) {
         return;
     }
 
@@ -361,19 +362,43 @@ static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
         return;
     }
 
-    /* Every output line pair comes from one line of the current field. */
-    const uint32_t last_source_y = source_y + ((height - 1u) / 2u) * 2u;
+    /* Last source row actually present in this field and output crop. */
+    const uint32_t last_field_index = (height - 1u - parity) / 2u;
+    const uint32_t last_source_y = source_y + last_field_index * 2u;
     if (last_source_y >= PRESCALE_HEIGHT) {
         return;
     }
 
-    for (uint32_t y = 0; y < height; y++) {
-        const uint32_t field_line = source_y + (y / 2u) * 2u;
-        const struct n64video_pixel* source =
-            &prescale[(size_t)field_line * PRESCALE_WIDTH + source_x];
+    for (uint32_t y = 0; y < height; ++y) {
         struct n64video_pixel* destination =
             &bob_buffer[(size_t)y * width];
-        memcpy(destination, source, (size_t)width * sizeof(*destination));
+
+        if ((y & 1u) == parity) {
+            /* This scanline belongs to the field being displayed. */
+            const uint32_t field_line = source_y + ((y - parity) / 2u) * 2u;
+            const struct n64video_pixel* source =
+                &prescale[(size_t)field_line * PRESCALE_WIDTH + source_x];
+            memcpy(destination, source, (size_t)width * sizeof(*destination));
+        } else {
+            /* Interpolate the missing scanline between adjacent field lines. */
+            uint32_t upper_y = (y > 0u) ? y - 1u : y + 1u;
+            uint32_t lower_y = (y + 1u < height) ? y + 1u : upper_y;
+            const uint32_t upper_field_line =
+                source_y + ((upper_y - parity) / 2u) * 2u;
+            const uint32_t lower_field_line =
+                source_y + ((lower_y - parity) / 2u) * 2u;
+            const struct n64video_pixel* upper =
+                &prescale[(size_t)upper_field_line * PRESCALE_WIDTH + source_x];
+            const struct n64video_pixel* lower =
+                &prescale[(size_t)lower_field_line * PRESCALE_WIDTH + source_x];
+
+            for (uint32_t x = 0; x < width; ++x) {
+                destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
+                destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
+                destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
+                destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
+            }
+        }
     }
 
     fb->pixels = bob_buffer;
