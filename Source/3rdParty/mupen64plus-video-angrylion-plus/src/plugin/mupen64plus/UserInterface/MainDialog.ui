@@ -288,7 +288,7 @@
                <item>
                 <widget class="QLabel" name="viDeinterlaceLabel">
                  <property name="toolTip">
-                  <string>Only applies in Filtered VI mode when the game outputs interlaced fields (SERRATE). Motion Adaptive uses Weave for static areas and Field-aware Bob for moving or uncertain areas.</string>
+                  <string>Only applies in Filtered VI mode with interlaced (SERRATE) output. Motion Adaptive uses Weave for static areas and Bob for movement. Edge-Directed Motion Adaptive uses conservative diagonal interpolation on moving areas only.</string>
                  </property>
                  <property name="text">
                   <string>Deinterlacing</string>
@@ -298,7 +298,7 @@
                <item>
                 <widget class="QComboBox" name="viDeinterlaceComboBox">
                  <property name="toolTip">
-                  <string>Off: native VI output. Bob: reconstruct from the current field. Motion Adaptive: preserve static detail with Weave and avoid combing on motion with Bob.</string>
+                  <string>Off: native VI output. Bob: vertical interpolation. Motion Adaptive: Weave static areas and Bob moving areas. Edge-Directed Motion Adaptive: same motion mask, with conservative edge-guided interpolation on moving areas.</string>
                  </property>
                  <item>
                   <property name="text">
@@ -313,6 +313,11 @@
                  <item>
                   <property name="text">
                    <string>Motion Adaptive</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Motion Adaptive (Edge Directed)</string>
                   </property>
                  </item>
                 </widget>

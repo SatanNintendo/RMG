@@ -94,6 +94,11 @@ static struct n64video_pixel bob_buffer[PRESCALE_WIDTH * PRESCALE_HEIGHT];
 #define VI_MAD_ENTER_THRESHOLD 20u
 #define VI_MAD_EXIT_THRESHOLD 11u
 
+/* ELA is deliberately conservative: use a diagonal only when its local
+   three-sample match is clearly better than vertical interpolation. */
+#define VI_EDI_MIN_COST_GAIN 18u
+#define VI_EDI_MAX_BEST_COST 96u
+
 struct vi_mad_history_info
 {
     bool valid;
@@ -493,7 +498,108 @@ static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
     fb->pitch = width;
 }
 
-static void vi_deinterlace_motion_adaptive(struct n64video_frame_buffer* fb)
+/* Clamp an ELA probe to the visible image. This is important for small or
+   overscan-cropped VI views where the first/last pixels have no full window. */
+static uint32_t vi_edi_clamp_x(int32_t x, uint32_t width)
+{
+    if (x < 0) {
+        return 0;
+    }
+    if ((uint32_t)x >= width) {
+        return width - 1u;
+    }
+    return (uint32_t)x;
+}
+
+/* Spatial color distance for ELA. The maximum RGB-channel difference
+   preserves isoluminant color edges without the luma multiplications used by
+   the temporal motion detector. Alpha is not part of the VI edge direction. */
+static uint32_t vi_edi_color_delta(const struct n64video_pixel* a,
+                                   const struct n64video_pixel* b)
+{
+    uint32_t dr = a->r > b->r ? a->r - b->r : b->r - a->r;
+    uint32_t dg = a->g > b->g ? a->g - b->g : b->g - a->g;
+    uint32_t db = a->b > b->b ? a->b - b->b : b->b - a->b;
+    uint32_t delta = dr > dg ? dr : dg;
+    return delta > db ? delta : db;
+}
+
+/* Compare the two current-field lines at one candidate diagonal. The
+   caller clamps the logical sample coordinate, so the helper can also be
+   used for the two support samples next to the output pixel. */
+static uint32_t vi_edi_pair_cost(const struct n64video_pixel* upper,
+                                 const struct n64video_pixel* lower,
+                                 int32_t x, uint32_t width, int32_t offset)
+{
+    uint32_t upper_x = vi_edi_clamp_x(x + offset, width);
+    uint32_t lower_x = vi_edi_clamp_x(x - offset, width);
+    return vi_edi_color_delta(&upper[upper_x], &lower[lower_x]);
+}
+
+/* Edge-directed interpolation for one missing scanline pixel. First, only
+   the central sample is tested against the four candidate diagonals. The
+   winner is then validated over a 3-sample support window against vertical
+   Bob. This keeps the decision conservative while avoiding 15 full pixel
+   comparisons on every moving pixel. */
+static void vi_edi_interpolate_pixel(struct n64video_pixel* destination,
+                                     const struct n64video_pixel* upper,
+                                     const struct n64video_pixel* lower,
+                                     uint32_t x, uint32_t width)
+{
+    static const int32_t offsets[] = { 0, -1, 1, -2, 2 };
+    uint32_t vertical_center;
+    uint32_t best_center;
+    uint32_t vertical_cost;
+    uint32_t best_cost;
+    int32_t best_offset = 0;
+    size_t i;
+    uint32_t upper_x;
+    uint32_t lower_x;
+
+    vertical_center = vi_edi_pair_cost(upper, lower, (int32_t)x, width, 0);
+    best_center = vertical_center;
+
+    if (width >= 3u) {
+        for (i = 1; i < sizeof(offsets) / sizeof(offsets[0]); ++i) {
+            uint32_t cost = vi_edi_pair_cost(upper, lower, (int32_t)x,
+                                             width, offsets[i]);
+            if (cost < best_center) {
+                best_center = cost;
+                best_offset = offsets[i];
+            }
+        }
+    }
+
+    if (best_offset != 0) {
+        /* Validate both the vertical and selected diagonal over x-1..x+1. */
+        vertical_cost = vertical_center +
+            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, 0) +
+            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, 0);
+        best_cost = best_center +
+            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, best_offset) +
+            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, best_offset);
+
+        if (best_cost <= VI_EDI_MAX_BEST_COST &&
+            vertical_cost > best_cost + VI_EDI_MIN_COST_GAIN) {
+            upper_x = vi_edi_clamp_x((int32_t)x + best_offset, width);
+            lower_x = vi_edi_clamp_x((int32_t)x - best_offset, width);
+        } else {
+            upper_x = x;
+            lower_x = x;
+        }
+    } else {
+        upper_x = x;
+        lower_x = x;
+    }
+
+    destination->r = (uint8_t)(((uint16_t)upper[upper_x].r + lower[lower_x].r + 1u) >> 1);
+    destination->g = (uint8_t)(((uint16_t)upper[upper_x].g + lower[lower_x].g + 1u) >> 1);
+    destination->b = (uint8_t)(((uint16_t)upper[upper_x].b + lower[lower_x].b + 1u) >> 1);
+    destination->a = (uint8_t)(((uint16_t)upper[upper_x].a + lower[lower_x].a + 1u) >> 1);
+}
+
+static void vi_deinterlace_motion_adaptive(struct n64video_frame_buffer* fb,
+                                           bool edge_directed)
 {
     uint32_t origin_x, origin_y;
     const uint32_t width = fb->width;
@@ -654,11 +760,17 @@ static void vi_deinterlace_motion_adaptive(struct n64video_frame_buffer* fb)
                     /* Static region: use the real opposite-field scanline. */
                     destination[x] = source[x];
                 } else {
-                    /* Moving/uncertain region: Bob from the current field only. */
-                    destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
-                    destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
-                    destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
-                    destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
+                    /* Moving/uncertain region: use current-field samples only.
+                       EDI changes only the direction of interpolation; every
+                       real scanline and every static Weave pixel is untouched. */
+                    if (edge_directed && upper_y != lower_y) {
+                        vi_edi_interpolate_pixel(&destination[x], upper, lower, x, width);
+                    } else {
+                        destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
+                        destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
+                        destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
+                        destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
+                    }
                 }
             }
         }
@@ -717,7 +829,9 @@ static void vi_deinterlace(struct n64video_frame_buffer* fb)
         vi_mad_reset_history();
         vi_deinterlace_bob(fb);
     } else if (mode == VI_DEINTERLACE_MOTION_ADAPTIVE) {
-        vi_deinterlace_motion_adaptive(fb);
+        vi_deinterlace_motion_adaptive(fb, false);
+    } else if (mode == VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE) {
+        vi_deinterlace_motion_adaptive(fb, true);
     } else {
         vi_mad_reset_history();
     }
