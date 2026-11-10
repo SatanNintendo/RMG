@@ -1,164 +1,218 @@
-#include <stdint.h>
-#include <stddef.h>
+#include "../Source/3rdParty/mupen64plus-video-angrylion-plus/src/core/n64video/vi_deinterlace.h"
+
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-struct n64video_pixel { uint8_t r,g,b,a; };
-#define VI_EDI_MIN_COST_GAIN 18u
-#define VI_EDI_MAX_BEST_COST 96u
-static uint32_t vi_edi_clamp_x(int32_t x, uint32_t width)
+
+static int failures;
+
+static void check(int condition, const char* name)
 {
-    if (x < 0) {
-        return 0;
-    }
-    if ((uint32_t)x >= width) {
-        return width - 1u;
-    }
-    return (uint32_t)x;
-}
-
-/* Spatial color distance for ELA. The maximum RGB-channel difference
-   preserves isoluminant color edges without the luma multiplications used by
-   the temporal motion detector. Alpha is not part of the VI edge direction. */
-static uint32_t vi_edi_color_delta(const struct n64video_pixel* a,
-                                   const struct n64video_pixel* b)
-{
-    uint32_t dr = a->r > b->r ? a->r - b->r : b->r - a->r;
-    uint32_t dg = a->g > b->g ? a->g - b->g : b->g - a->g;
-    uint32_t db = a->b > b->b ? a->b - b->b : b->b - a->b;
-    uint32_t delta = dr > dg ? dr : dg;
-    return delta > db ? delta : db;
-}
-
-/* Compare the two current-field lines at one candidate diagonal. The
-   caller clamps the logical sample coordinate, so the helper can also be
-   used for the two support samples next to the output pixel. */
-static uint32_t vi_edi_pair_cost(const struct n64video_pixel* upper,
-                                 const struct n64video_pixel* lower,
-                                 int32_t x, uint32_t width, int32_t offset)
-{
-    uint32_t upper_x = vi_edi_clamp_x(x + offset, width);
-    uint32_t lower_x = vi_edi_clamp_x(x - offset, width);
-    return vi_edi_color_delta(&upper[upper_x], &lower[lower_x]);
-}
-
-/* Edge-directed interpolation for one missing scanline pixel. First, only
-   the central sample is tested against the four candidate diagonals. The
-   winner is then validated over a 3-sample support window against vertical
-   Bob. This keeps the decision conservative while avoiding 15 full pixel
-   comparisons on every moving pixel. */
-static void vi_edi_interpolate_pixel(struct n64video_pixel* destination,
-                                     const struct n64video_pixel* upper,
-                                     const struct n64video_pixel* lower,
-                                     uint32_t x, uint32_t width)
-{
-    static const int32_t offsets[] = { 0, -1, 1, -2, 2 };
-    uint32_t vertical_center;
-    uint32_t best_center;
-    uint32_t vertical_cost;
-    uint32_t best_cost;
-    int32_t best_offset = 0;
-    size_t i;
-    uint32_t upper_x;
-    uint32_t lower_x;
-
-    vertical_center = vi_edi_pair_cost(upper, lower, (int32_t)x, width, 0);
-    best_center = vertical_center;
-
-    if (width >= 3u) {
-        for (i = 1; i < sizeof(offsets) / sizeof(offsets[0]); ++i) {
-            uint32_t cost = vi_edi_pair_cost(upper, lower, (int32_t)x,
-                                             width, offsets[i]);
-            if (cost < best_center) {
-                best_center = cost;
-                best_offset = offsets[i];
-            }
-        }
-    }
-
-    if (best_offset != 0) {
-        /* Validate both the vertical and selected diagonal over x-1..x+1. */
-        vertical_cost = vertical_center +
-            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, 0) +
-            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, 0);
-        best_cost = best_center +
-            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, best_offset) +
-            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, best_offset);
-
-        if (best_cost <= VI_EDI_MAX_BEST_COST &&
-            vertical_cost > best_cost + VI_EDI_MIN_COST_GAIN) {
-            upper_x = vi_edi_clamp_x((int32_t)x + best_offset, width);
-            lower_x = vi_edi_clamp_x((int32_t)x - best_offset, width);
-        } else {
-            upper_x = x;
-            lower_x = x;
-        }
+    if (!condition) {
+        fprintf(stderr, "FAIL: %s\n", name);
+        ++failures;
     } else {
-        upper_x = x;
-        lower_x = x;
+        printf("PASS: %s\n", name);
     }
-
-    destination->r = (uint8_t)(((uint16_t)upper[upper_x].r + lower[lower_x].r + 1u) >> 1);
-    destination->g = (uint8_t)(((uint16_t)upper[upper_x].g + lower[lower_x].g + 1u) >> 1);
-    destination->b = (uint8_t)(((uint16_t)upper[upper_x].b + lower[lower_x].b + 1u) >> 1);
-    destination->a = (uint8_t)(((uint16_t)upper[upper_x].a + lower[lower_x].a + 1u) >> 1);
 }
 
-static int failures = 0;
-static void check(int ok, const char* name) { if (!ok) { fprintf(stderr, "FAIL: %s\n", name); ++failures; } else { printf("PASS: %s\n", name); } }
-static void fill(struct n64video_pixel* p, unsigned w, unsigned v) { for (unsigned i=0;i<w;i++) p[i]=(struct n64video_pixel){(uint8_t)v,(uint8_t)v,(uint8_t)v,255}; }
-static void fill_rgb(struct n64video_pixel* p, unsigned w, uint8_t r, uint8_t g, uint8_t b) { for (unsigned i=0;i<w;i++) p[i]=(struct n64video_pixel){r,g,b,255}; }
-int main(void) {
-    struct n64video_pixel up[16], lo[16], out;
-    /* One-pixel diagonal whose correct missing-line center is x=5. */
-    fill(up,16,0); fill(lo,16,0); for (unsigned i=6;i<16;i++) up[i].r=up[i].g=up[i].b=255; for (unsigned i=4;i<16;i++) lo[i].r=lo[i].g=lo[i].b=255;
-    vi_edi_interpolate_pixel(&out,up,lo,5,16);
-    check(out.r>=250 && out.g>=250 && out.b>=250, "left-to-right diagonal follows edge");
-    /* Opposite diagonal. */
-    fill(up,16,0); fill(lo,16,0); for (unsigned i=4;i<16;i++) up[i].r=up[i].g=up[i].b=255; for (unsigned i=6;i<16;i++) lo[i].r=lo[i].g=lo[i].b=255;
-    vi_edi_interpolate_pixel(&out,up,lo,5,16);
-    check(out.r>=250 && out.g>=250 && out.b>=250, "right-to-left diagonal follows edge");
-    /* Vertical alignment must not be shifted. */
-    fill(up,16,0); fill(lo,16,0); up[5].r=up[5].g=up[5].b=255; lo[5].r=lo[5].g=lo[5].b=255;
-    vi_edi_interpolate_pixel(&out,up,lo,5,16);
-    check(out.r==255 && out.g==255 && out.b==255, "vertical edge remains unshifted");
-    /* Flat values should fall back to exact vertical Bob. */
-    fill(up,16,20); fill(lo,16,40);
-    vi_edi_interpolate_pixel(&out,up,lo,5,16);
-    check(out.r==30 && out.g==30 && out.b==30, "flat region falls back to vertical Bob");
-    /* Narrow image and first/last pixel are bounds-safe. */
-    fill(up,1,40); fill(lo,1,80);
-    vi_edi_interpolate_pixel(&out,up,lo,0,1);
-    check(out.r==60, "one-pixel-wide image uses vertical fallback");
-    fill(up,16,10); fill(lo,16,30);
-    vi_edi_interpolate_pixel(&out,up,lo,0,16);
-    vi_edi_interpolate_pixel(&out,up,lo,15,16);
-    check(out.r==20, "frame-edge pixels clamp safely");
-    /* Equal-luma red/green transition: the chroma component must guide ELA. */
-    fill_rgb(up,16,0,130,0); fill_rgb(lo,16,0,130,0);
-    for (unsigned i=6;i<16;i++) up[i]=(struct n64video_pixel){255,0,0,255};
-    for (unsigned i=4;i<16;i++) lo[i]=(struct n64video_pixel){255,0,0,255};
-    vi_edi_interpolate_pixel(&out,up,lo,5,16);
-    check(out.r>240 && out.g<10, "equal-luma chroma edge is preserved");
+static void fill(struct n64video_pixel* pixels, uint32_t width, uint8_t value)
+{
+    for (uint32_t x = 0; x < width; ++x) {
+        pixels[x].r = value;
+        pixels[x].g = value;
+        pixels[x].b = value;
+        pixels[x].a = 255u;
+    }
+}
 
-    /* Exercise every visible x on widths 1..64 with deterministic pseudo-random rows. */
+static void fill_rgb(struct n64video_pixel* pixels, uint32_t width,
+                     uint8_t r, uint8_t g, uint8_t b)
+{
+    for (uint32_t x = 0; x < width; ++x) {
+        pixels[x].r = r;
+        pixels[x].g = g;
+        pixels[x].b = b;
+        pixels[x].a = 255u;
+    }
+}
+
+static void test_edge_directed_interpolation(void)
+{
+    struct n64video_pixel upper[64];
+    struct n64video_pixel lower[64];
+    struct n64video_pixel output;
+
+    fill(upper, 16u, 0u);
+    fill(lower, 16u, 0u);
+    for (uint32_t x = 6u; x < 16u; ++x) {
+        upper[x].r = upper[x].g = upper[x].b = 255u;
+    }
+    for (uint32_t x = 4u; x < 16u; ++x) {
+        lower[x].r = lower[x].g = lower[x].b = 255u;
+    }
+    vi_edi_interpolate_pixel(&output, upper, lower, 5u, 16u);
+    check(output.r >= 250u && output.g >= 250u && output.b >= 250u,
+          "left-to-right diagonal follows edge");
+
+    fill(upper, 16u, 0u);
+    fill(lower, 16u, 0u);
+    for (uint32_t x = 4u; x < 16u; ++x) {
+        upper[x].r = upper[x].g = upper[x].b = 255u;
+    }
+    for (uint32_t x = 6u; x < 16u; ++x) {
+        lower[x].r = lower[x].g = lower[x].b = 255u;
+    }
+    vi_edi_interpolate_pixel(&output, upper, lower, 5u, 16u);
+    check(output.r >= 250u && output.g >= 250u && output.b >= 250u,
+          "right-to-left diagonal follows edge");
+
+    fill(upper, 16u, 0u);
+    fill(lower, 16u, 0u);
+    upper[5].r = upper[5].g = upper[5].b = 255u;
+    lower[5].r = lower[5].g = lower[5].b = 255u;
+    vi_edi_interpolate_pixel(&output, upper, lower, 5u, 16u);
+    check(output.r == 255u && output.g == 255u && output.b == 255u,
+          "vertical edge remains unshifted");
+
+    fill(upper, 16u, 20u);
+    fill(lower, 16u, 40u);
+    vi_edi_interpolate_pixel(&output, upper, lower, 5u, 16u);
+    check(output.r == 30u && output.g == 30u && output.b == 30u,
+          "flat region falls back to vertical Bob");
+
+    fill(upper, 1u, 40u);
+    fill(lower, 1u, 80u);
+    vi_edi_interpolate_pixel(&output, upper, lower, 0u, 1u);
+    check(output.r == 60u, "one-pixel-wide image uses vertical fallback");
+
+    fill(upper, 16u, 10u);
+    fill(lower, 16u, 30u);
+    vi_edi_interpolate_pixel(&output, upper, lower, 0u, 16u);
+    vi_edi_interpolate_pixel(&output, upper, lower, 15u, 16u);
+    check(output.r == 20u, "frame-edge pixels clamp safely");
+
+    fill_rgb(upper, 16u, 0u, 130u, 0u);
+    fill_rgb(lower, 16u, 0u, 130u, 0u);
+    for (uint32_t x = 6u; x < 16u; ++x) {
+        upper[x].r = 255u;
+        upper[x].g = 0u;
+        upper[x].b = 0u;
+    }
+    for (uint32_t x = 4u; x < 16u; ++x) {
+        lower[x].r = 255u;
+        lower[x].g = 0u;
+        lower[x].b = 0u;
+    }
+    vi_edi_interpolate_pixel(&output, upper, lower, 5u, 16u);
+    check(output.r > 240u && output.g < 10u,
+          "equal-luma chroma edge is preserved");
+
+    /* Widths 1..64 exercise every valid output coordinate, including edges. */
     {
-        uint32_t seed=0x6D2B79F5u;
-        struct n64video_pixel random_up[64], random_lo[64];
-        int bounds_ok=1;
-        for (unsigned w=1;w<=64;w++) {
-            for (unsigned x=0;x<w;x++) {
-                seed=seed*1664525u+1013904223u;
-                random_up[x]=(struct n64video_pixel){(uint8_t)(seed>>24),(uint8_t)(seed>>16),(uint8_t)(seed>>8),255};
-                seed=seed*1664525u+1013904223u;
-                random_lo[x]=(struct n64video_pixel){(uint8_t)(seed>>24),(uint8_t)(seed>>16),(uint8_t)(seed>>8),255};
+        uint32_t seed = 0x6D2B79F5u;
+        int alpha_ok = 1;
+        for (uint32_t width = 1u; width <= 64u; ++width) {
+            for (uint32_t x = 0; x < width; ++x) {
+                seed = seed * 1664525u + 1013904223u;
+                upper[x].r = (uint8_t)(seed >> 24);
+                upper[x].g = (uint8_t)(seed >> 16);
+                upper[x].b = (uint8_t)(seed >> 8);
+                upper[x].a = 255u;
+                seed = seed * 1664525u + 1013904223u;
+                lower[x].r = (uint8_t)(seed >> 24);
+                lower[x].g = (uint8_t)(seed >> 16);
+                lower[x].b = (uint8_t)(seed >> 8);
+                lower[x].a = 255u;
             }
-            for (unsigned x=0;x<w;x++) {
-                vi_edi_interpolate_pixel(&out,random_up,random_lo,x,w);
-                if (out.a != 255u) bounds_ok=0;
+            for (uint32_t x = 0; x < width; ++x) {
+                vi_edi_interpolate_pixel(&output, upper, lower, x, width);
+                if (output.a != 255u) {
+                    alpha_ok = 0;
+                }
             }
         }
-        check(bounds_ok, "randomized widths 1..64 remain bounds-safe");
+        check(alpha_ok, "randomized widths 1..64 remain bounds-safe");
     }
-    return failures ? 1 : 0;
+
+    /* The shared production helper rejects invalid empty/null requests. */
+    output.r = 77u;
+    vi_edi_interpolate_pixel(&output, upper, lower, 0u, 0u);
+    check(output.r == 77u, "zero-width interpolation is a safe no-op");
+    vi_edi_interpolate_pixel(NULL, upper, lower, 0u, 1u);
+    check(vi_edi_clamp_x(0, 1u) == 0u && vi_edi_clamp_x(7, 1u) == 0u,
+          "single-pixel clamping stays within bounds");
+}
+
+static void test_temporal_motion_helpers(void)
+{
+    struct n64video_pixel red = { 255u, 0u, 0u, 255u };
+    struct n64video_pixel green = { 0u, 130u, 0u, 255u };
+    struct n64video_pixel gray_a = { 100u, 100u, 100u, 255u };
+    struct n64video_pixel gray_b = { 125u, 125u, 125u, 255u };
+
+    check(vi_deint_pixel_delta(&red, &green) > VI_MAD_ENTER_THRESHOLD,
+          "temporal delta detects isoluminant chroma changes");
+    check(vi_deint_pixel_delta(&gray_a, &gray_b) >= 24u,
+          "temporal delta detects luminance changes");
+
+    check(vi_deint_update_motion_state(19u, 0u) == 0u,
+          "motion enter threshold rejects sub-threshold noise");
+    check(vi_deint_update_motion_state(20u, 0u) == 1u,
+          "motion enter threshold detects ordinary change");
+    check(vi_deint_update_motion_state(39u, 0u) == 1u,
+          "ordinary change remains below strong threshold");
+    check(vi_deint_update_motion_state(40u, 0u) == 2u,
+          "strong isolated change gets high confidence");
+    check(vi_deint_update_motion_state(11u, 1u) == 2u,
+          "motion hysteresis confirms a persistent weak pixel change");
+    check(vi_deint_update_motion_state(10u, 1u) == 0u,
+          "motion hysteresis releases below exit threshold");
+    check(vi_deint_update_motion_state(21u, 2u) == 2u,
+          "strong motion state remains confirmed inside hysteresis band");
+}
+
+static void test_local_motion_support(void)
+{
+    uint8_t upper[7] = { 0u };
+    uint8_t lower[7] = { 0u };
+
+    upper[3] = 1u;
+    check(!vi_deint_local_motion(upper, lower, 3u, 7u),
+          "one weak changed sample is rejected as isolated noise");
+    upper[3] = 2u;
+    check(vi_deint_local_motion(upper, lower, 3u, 7u),
+          "one strong or persistent changed sample protects a thin moving edge");
+    upper[3] = 1u;
+    lower[4] = 1u;
+    check(vi_deint_local_motion(upper, lower, 3u, 7u),
+          "two nearby ordinary changes trigger local motion");
+    upper[3] = 0u;
+    lower[4] = 0u;
+    lower[6] = 2u;
+    check(!vi_deint_local_motion(upper, lower, 3u, 7u),
+          "motion outside the local support does not spread");
+    check(!vi_deint_local_motion(upper, lower, 0u, 0u),
+          "empty local window is safe");
+    check(!vi_deint_local_motion(NULL, lower, 0u, 7u),
+          "null motion row is safe");
+
+    upper[0] = 1u;
+    lower[0] = 1u;
+    check(vi_deint_local_motion(upper, lower, 0u, 1u),
+          "left/right image boundaries clamp the local window");
+}
+
+int main(void)
+{
+    test_edge_directed_interpolation();
+    test_temporal_motion_helpers();
+    test_local_motion_support();
+
+    if (failures) {
+        fprintf(stderr, "%d test(s) failed.\n", failures);
+        return 1;
+    }
+
+    puts("All production VI deinterlacing helper tests passed.");
+    return 0;
 }

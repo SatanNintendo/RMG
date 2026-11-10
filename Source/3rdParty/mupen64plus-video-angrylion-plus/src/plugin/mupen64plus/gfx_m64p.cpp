@@ -108,7 +108,7 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, config.vi.integer_scaling, "Display upscaled pixels as groups of 1x1, 2x2, 3x3, etc. if True");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_VSYNC, config.vi.vsync, "Enable vsync to prevent tearing");
     ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE, -1,
-                        "VI deinterlacing (-1=auto-migrate legacy setting, 0=Off, 1=Bob, 2=Motion Adaptive, 3=Motion Adaptive Edge-Directed)");
+                        "VI deinterlacing (-1=auto-migrate legacy setting, 0=Off, 1=Bob, 2=Motion Adaptive, 3=Motion Adaptive Edge-Directed, 4=Motion Adaptive Fine Edge-Directed)");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE, config.vi.bob_deinterlace,
                          "Legacy Bob deinterlacing setting retained for old profiles");
 

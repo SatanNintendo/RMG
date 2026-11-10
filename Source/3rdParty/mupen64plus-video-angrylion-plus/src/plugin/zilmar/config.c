@@ -109,7 +109,8 @@ INT_PTR CALLBACK config_dialog_proc(HWND hwnd, UINT iMessage, WPARAM wParam, LPA
                 "Off",               // VI_DEINTERLACE_OFF
                 "Bob",               // VI_DEINTERLACE_BOB
                 "Motion Adaptive",  // VI_DEINTERLACE_MOTION_ADAPTIVE
-                "Motion Adaptive (Edge Directed)" // VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE
+                "Motion Adaptive (Edge Directed)", // VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE
+                "Motion Adaptive (Fine Edge Directed)" // VI_DEINTERLACE_MOTION_ADAPTIVE_PIXEL_EDGE
             };
 
             dlg_combo_vi_deinterlace = GetDlgItem(hwnd, IDC_COMBO_VI_DEINTERLACE);
