@@ -284,14 +284,40 @@
              </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="viBobDeinterlaceCheckBox">
-               <property name="toolTip">
-                <string>Only applies in Filtered VI mode. Uses the current field and doubles its lines to remove moving combing. Vertical detail is reduced while enabled.</string>
-               </property>
-               <property name="text">
-                <string>Bob deinterlacing</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="viDeinterlaceLayout">
+               <item>
+                <widget class="QLabel" name="viDeinterlaceLabel">
+                 <property name="toolTip">
+                  <string>Only applies in Filtered VI mode when the game outputs interlaced fields (SERRATE). Motion Adaptive uses Weave for static areas and Field-aware Bob for moving or uncertain areas.</string>
+                 </property>
+                 <property name="text">
+                  <string>Deinterlacing</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="viDeinterlaceComboBox">
+                 <property name="toolTip">
+                  <string>Off: native VI output. Bob: reconstruct from the current field. Motion Adaptive: preserve static detail with Weave and avoid combing on motion with Bob.</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Off</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bob</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Motion Adaptive</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>

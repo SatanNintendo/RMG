@@ -107,8 +107,28 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN, config.vi.hide_overscan, "Hide overscan area in filteded mode if True");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, config.vi.integer_scaling, "Display upscaled pixels as groups of 1x1, 2x2, 3x3, etc. if True");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_VSYNC, config.vi.vsync, "Enable vsync to prevent tearing");
+    ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE, -1,
+                        "VI deinterlacing (-1=auto-migrate legacy setting, 0=Off, 1=Bob, 2=Motion Adaptive)");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE, config.vi.bob_deinterlace,
-                         "Bob deinterlacing in Filtered VI mode: use the current field and double its lines to remove motion combing");
+                         "Legacy Bob deinterlacing setting retained for old profiles");
+
+    /* Migrate pre-mode profiles once, before the configuration dialog opens. */
+    int initial_deinterlace_mode = ConfigGetParamInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE);
+    if (initial_deinterlace_mode == -1) {
+        initial_deinterlace_mode = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE)
+            ? VI_DEINTERLACE_BOB : VI_DEINTERLACE_OFF;
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE,
+                           M64TYPE_INT, &initial_deinterlace_mode);
+    } else if (initial_deinterlace_mode < VI_DEINTERLACE_OFF ||
+               initial_deinterlace_mode >= VI_DEINTERLACE_NUM) {
+        initial_deinterlace_mode = VI_DEINTERLACE_OFF;
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE,
+                           M64TYPE_INT, &initial_deinterlace_mode);
+    }
+    int legacy_bob_value = initial_deinterlace_mode == VI_DEINTERLACE_BOB ? 1 : 0;
+    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE,
+                       M64TYPE_BOOL, &legacy_bob_value);
+
     ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_DP_COMPAT, config.dp.compat, "Compatibility mode (0=Fast 1=Moderate 2=Slow");
 
     ConfigSaveSection("Video-AngrylionPlus");
@@ -214,7 +234,12 @@ EXPORT int CALL RomOpen (void)
     config.vi.hide_overscan = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN);
     config.vi.integer_scaling = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING);
     config.vi.vsync = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_VSYNC);
-    config.vi.bob_deinterlace = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE);
+    int deinterlace_mode = ConfigGetParamInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE);
+    if (deinterlace_mode < VI_DEINTERLACE_OFF || deinterlace_mode >= VI_DEINTERLACE_NUM) {
+        deinterlace_mode = VI_DEINTERLACE_OFF;
+    }
+    config.vi.deinterlace_mode = (vi_deinterlace_mode)deinterlace_mode;
+    config.vi.bob_deinterlace = deinterlace_mode == VI_DEINTERLACE_BOB;
 
     config.dp.compat = (dp_compat_profile)ConfigGetParamInt(configVideoAngrylionPlus, KEY_DP_COMPAT);
 

@@ -60,6 +60,14 @@ enum vi_interp
     VI_INTERP_NUM
 };
 
+enum vi_deinterlace_mode
+{
+    VI_DEINTERLACE_OFF,
+    VI_DEINTERLACE_BOB,
+    VI_DEINTERLACE_MOTION_ADAPTIVE,
+    VI_DEINTERLACE_NUM
+};
+
 enum dp_compat_profile
 {
     DP_COMPAT_LOW,
@@ -105,7 +113,8 @@ struct n64video_config
         bool vsync;                 // enable vsync if true
         bool exclusive;             // run in exclusive mode when in fullscreen if true
         bool integer_scaling;       // one native pixel is displayed as a multiple of a screen pixel if true
-        bool bob_deinterlace;       // display only the current VI field, doubled to full height
+        enum vi_deinterlace_mode deinterlace_mode; // Off, Field-aware Bob, or Motion Adaptive
+        bool bob_deinterlace;       // legacy compatibility with old bob_deinterlace configuration key
     } vi;
     struct {
         enum dp_compat_profile compat;  // multithreading compatibility mode
