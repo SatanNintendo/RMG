@@ -24,6 +24,7 @@
 #include "Configuration.h"
 #include "SoundDriverFactory.h"
 #include "common.h"
+#include "RmgPluginThemeWin32.h"
 
 #include <windows.h>
 #include <commctrl.h>
@@ -161,8 +162,12 @@ static int DluY(HWND hDlg, int value)
 
 static void SetCtrlFont(HWND hwnd, HFONT hFont)
 {
-    if (hwnd && hFont)
-        SendMessage(hwnd, WM_SETFONT, (WPARAM)hFont, TRUE);
+    if (hwnd)
+    {
+        if (hFont)
+            SendMessage(hwnd, WM_SETFONT, (WPARAM)hFont, TRUE);
+        RmgPluginThemeAttach(hwnd);
+    }
 }
 
 static HWND CreateGroupBox(HWND parent, const wchar_t *text,
@@ -566,6 +571,7 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
     {
         st = (DlgState*)lParam;
         SetWindowLongPtrW(hDlg, GWLP_USERDATA, (LONG_PTR)st);
+        RmgPluginThemeAttach(hDlg);
 
         /* Init common controls (TrackBar, TabControl) */
         INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_TAB_CLASSES | ICC_BAR_CLASSES };
@@ -762,7 +768,7 @@ static INT_PTR RunDialog(HINSTANCE hInst, HWND hParent, DlgState *st)
        Windows therefore had to fall back to an implementation-dependent font.
        That made the same dialog look very different between hosts/DPI levels. */
     const wchar_t *title     = AzText(L"AziAudio-Plus Audio Options", L"Параметры звука AziAudio-Plus");
-    const wchar_t fontName[] = L"MS Shell Dlg 2";
+    const wchar_t fontName[] = L"Segoe UI";
     const WORD pointSize = 9;
 
     /* Template layout (see the Dialog Templates reference; every string is
@@ -881,7 +887,10 @@ static DWORD WINAPI DialogThreadProc(LPVOID lpParameter)
     INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_TAB_CLASSES | ICC_BAR_CLASSES };
     InitCommonControlsEx(&icc);
 
+    RmgPluginThemeActivation themeActivation = {};
+    RmgPluginThemeActivate((HMODULE)ctx->hInst, &themeActivation);
     ctx->result = RunDialog(ctx->hInst, NULL /* ownerless - see above */, ctx->st);
+    RmgPluginThemeDeactivate(&themeActivation);
     return 0;
 }
 

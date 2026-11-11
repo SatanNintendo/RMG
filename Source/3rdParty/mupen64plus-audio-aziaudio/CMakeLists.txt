@@ -76,6 +76,7 @@ set_target_properties(mupen64plus-audio-aziaudio PROPERTIES
 )
 
 target_include_directories(mupen64plus-audio-aziaudio PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/mupen64plus-api
 )
@@ -93,7 +94,10 @@ if(WIN32)
         dsound
         winmm
         ole32
+        user32
+        gdi32
         comctl32
+        uxtheme
         psapi
         uuid
     )
@@ -125,6 +129,7 @@ else()
 endif()
 
 if(MSVC)
+    target_link_options(mupen64plus-audio-aziaudio PRIVATE /MANIFEST:NO)
     target_compile_options(mupen64plus-audio-aziaudio PRIVATE
         /W4 /permissive- /Zc:__cplusplus
         /wd4996

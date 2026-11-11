@@ -34,6 +34,7 @@ m64p_error softRdpConfigGui(
 
 #include <windows.h>
 #include <commctrl.h>
+#include "RmgPluginThemeWin32.h"
 
 #define SOFTRDP_CFG_CLASS L"SoftRDPConfigWindow"
 
@@ -108,7 +109,22 @@ struct softrdp_config_gui_state
 
 static HFONT cfg_font(void)
 {
-    return (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+    static HFONT font = NULL;
+    if (font == NULL)
+    {
+        HDC screen = GetDC(NULL);
+        int dpi = screen != NULL ? GetDeviceCaps(screen, LOGPIXELSY) : 96;
+        if (screen != NULL)
+            ReleaseDC(NULL, screen);
+        font = CreateFontW(-MulDiv(9, dpi, 72), 0, 0, 0, FW_NORMAL,
+                           FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+                           OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                           CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                           L"Segoe UI");
+        if (font == NULL)
+            font = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+    }
+    return font;
 }
 static void set_checkbox(HWND hwnd, bool checked)
 {
@@ -340,17 +356,20 @@ static HWND create_control(
         GetModuleHandleW(NULL),
         NULL);
 
-    if (control != NULL && font != NULL)
-        SendMessageW(control, WM_SETFONT, (WPARAM)font, TRUE);
+    if (control != NULL)
+    {
+        if (font != NULL)
+            SendMessageW(control, WM_SETFONT, (WPARAM)font, TRUE);
+        RmgPluginThemeAttach(control);
+    }
 
     return control;
 }
 
 static void add_label(struct softrdp_config_gui_state *state, const wchar_t *text, int x, int y, int width)
 {
-    (void)state;
     create_control(WC_STATICW, text, WS_CHILD | WS_VISIBLE, 0,
-                   x, y, width, 22, state->hwnd, IDC_LABEL_BASE + y, NULL);
+                   x, y, width, 22, state->hwnd, IDC_LABEL_BASE + y, cfg_font());
 }
 
 static void create_controls(struct softrdp_config_gui_state *state)
@@ -469,8 +488,21 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
         state = (struct softrdp_config_gui_state *)create->lpCreateParams;
         state->hwnd = hwnd;
         SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)state);
+        RmgPluginThemeAttach(hwnd);
         return TRUE;
     }
+
+    case WM_ERASEBKGND:
+        if (RmgPluginThemeIsDark())
+        {
+            RECT clientRect;
+            if (GetClientRect(hwnd, &clientRect))
+            {
+                FillRect((HDC)wParam, &clientRect, RmgPluginThemeDarkBrush());
+                return 1;
+            }
+        }
+        break;
 
     case WM_CREATE:
         create_controls(state);
@@ -534,7 +566,8 @@ static ATOM register_config_class(void)
     wc.lpfnWndProc = config_wnd_proc;
     wc.hInstance = GetModuleHandleW(NULL);
     wc.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(32512));
-    wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+    wc.hbrBackground = RmgPluginThemeIsDark()
+        ? RmgPluginThemeDarkBrush() : (HBRUSH)(COLOR_BTNFACE + 1);
     wc.lpszClassName = SOFTRDP_CFG_CLASS;
 
     registered = RegisterClassExW(&wc);
@@ -570,6 +603,9 @@ m64p_error softRdpConfigGui(
     state.result = false;
     state.done = false;
 
+    RmgPluginThemeActivation themeActivation = { 0 };
+    RmgPluginThemeActivate(GetModuleHandleW(L"mupen64plus-video-softrdp.dll"), &themeActivation);
+
     (void)parent;
     state.owner = GetActiveWindow();
     if (state.owner != NULL)
@@ -579,6 +615,7 @@ m64p_error softRdpConfigGui(
     {
         if (state.owner != NULL)
             EnableWindow(state.owner, TRUE);
+        RmgPluginThemeDeactivate(&themeActivation);
         return M64ERR_SYSTEM_FAIL;
     }
 
@@ -608,6 +645,7 @@ m64p_error softRdpConfigGui(
     {
         if (state.owner != NULL)
             EnableWindow(state.owner, TRUE);
+        RmgPluginThemeDeactivate(&themeActivation);
         return M64ERR_SYSTEM_FAIL;
     }
 
@@ -630,6 +668,8 @@ m64p_error softRdpConfigGui(
         EnableWindow(state.owner, TRUE);
         SetForegroundWindow(state.owner);
     }
+
+    RmgPluginThemeDeactivate(&themeActivation);
 
     /* state.result distinguishes OK from Cancel for future callers, but the
      * mupen64plus ConfigGui contract treats both as a completed (successful)

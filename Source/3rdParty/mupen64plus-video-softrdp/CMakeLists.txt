@@ -63,6 +63,7 @@ set(SOFTRDP_SHARED_CORE_SOURCES
 )
 
 if(WIN32)
+    enable_language(RC)
     list(APPEND SOFTRDP_SHARED_CORE_SOURCES
         ${SOFTRDP_SOURCE_DIR}/core/sr_threads_win32.c
     )
@@ -82,6 +83,11 @@ set(SOFTRDP_PLUGIN_SOURCES
     ${SOFTRDP_SOURCE_DIR}/plugin/mupen64plus/mupen64plus_gfx.c
     ${SOFTRDP_SOURCE_DIR}/plugin/mupen64plus/mupen64plus_config_win32.c
 )
+if(WIN32)
+    list(APPEND SOFTRDP_PLUGIN_SOURCES
+        ${SOFTRDP_SOURCE_DIR}/plugin/mupen64plus/softrdp.rc
+    )
+endif()
 
 if(SOFTRDP_ENABLE_DUMP)
     list(APPEND SOFTRDP_SHARED_CORE_SOURCES
@@ -161,7 +167,9 @@ add_library(mupen64plus-video-softrdp MODULE
 )
 
 target_include_directories(mupen64plus-video-softrdp PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${SOFTRDP_SOURCE_DIR}
+    ${SOFTRDP_SOURCE_DIR}/plugin/mupen64plus
     ${SOFTRDP_SOURCE_DIR}/plugin/mupen64plus/api
 )
 
@@ -185,6 +193,8 @@ if(WIN32)
         opengl32
         gdi32
         user32
+        comctl32
+        uxtheme
     )
 else()
     find_package(Threads REQUIRED)
@@ -194,7 +204,9 @@ else()
     )
 endif()
 
-if(NOT MSVC)
+if(MSVC)
+    target_link_options(mupen64plus-video-softrdp PRIVATE /MANIFEST:NO)
+else()
     set_target_properties(mupen64plus-video-softrdp PROPERTIES
         C_VISIBILITY_PRESET hidden
     )

@@ -39,6 +39,7 @@ set_target_properties(NRage_Input_V2 PROPERTIES
 )
 
 target_include_directories(NRage_Input_V2 PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/goombasav
@@ -65,6 +66,7 @@ if(MSVC)
         dxguid.lib
         Xinput.lib
         comctl32.lib
+        uxtheme.lib
         comdlg32.lib
         ole32.lib
         oleaut32.lib
@@ -82,6 +84,7 @@ elseif(MINGW)
         dxguid
         xinput1_4
         comctl32
+        uxtheme
         comdlg32
         ole32
         oleaut32
@@ -95,6 +98,7 @@ elseif(MINGW)
 endif()
 
 if(MSVC)
+    target_link_options(NRage_Input_V2 PRIVATE /MANIFEST:NO)
     target_compile_options(NRage_Input_V2 PRIVATE
         /W3
         /wd4996
@@ -120,6 +124,10 @@ target_include_directories(NRage_Language_1049 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/regional
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
+if(MSVC)
+    target_link_options(NRage_Language_1049 PRIVATE /MANIFEST:NO)
+endif()
 
 target_compile_definitions(NRage_Language_1049 PRIVATE
     WIN32

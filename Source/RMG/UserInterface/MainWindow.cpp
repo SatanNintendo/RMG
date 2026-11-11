@@ -39,6 +39,7 @@
 #include <QWebSocket>
 #endif // NETPLAY
 #include <QCoreApplication>
+#include <QByteArray>
 #include <QDesktopServices>
 #include <QGuiApplication>
 #include <QStyleFactory>
@@ -49,6 +50,7 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QPalette>
 #include <QSettings>
 #include <QStatusBar>
 #include <QMenuBar>
@@ -111,6 +113,21 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     // LanguageChange events (posted by installTranslator) are processed,
     // preventing any potential palette reset during widget re-polishing.
     this->configureTheme(app);
+
+    // Native Win32 plugin dialogs do not inherit Qt's application palette or
+    // QTranslator.  Pass the active UI language and the resolved dark/light
+    // state through the process environment so those dialogs can match RMG.
+    {
+        const QPalette palette = app->palette();
+        const QString selectedTheme = QString::fromStdString(
+            CoreSettingsGetStringValue(SettingsID::GUI_Theme));
+        const bool darkTheme = selectedTheme.contains("dark", Qt::CaseInsensitive) ||
+            palette.color(QPalette::WindowText).value() > palette.color(QPalette::Window).value();
+        qputenv("RMG_DARK_THEME", darkTheme ? QByteArray("1") : QByteArray("0"));
+        const QByteArray language = QString::fromStdString(
+            CoreSettingsGetStringValue(SettingsID::GUI_Language)).toLocal8Bit();
+        qputenv("RMG_LANGUAGE", language);
+    }
 
     // Install translations after the theme is applied but BEFORE
     // initializeUI() (which calls setupUi → retranslateUi). This way:

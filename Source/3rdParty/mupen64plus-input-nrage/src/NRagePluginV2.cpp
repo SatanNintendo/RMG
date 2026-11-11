@@ -1,4 +1,4 @@
-/*
+﻿/*
         N-Rage`s Dinput8 Plugin -- Mupen64Plus input plugin
     (C) 2002, 2006  Norbert Wladyka
     (C) 2026        Mupen64Plus port of the Luna x64 fork (2.4.7)
@@ -23,6 +23,7 @@
 */
 
 #include "commonIncludes.h"
+#include "RmgPluginThemeWin32.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <dinput.h>
@@ -35,6 +36,18 @@
 #include "DirectInput.h"
 #include "International.h"
 #include "Debug.h"
+
+
+/* Apply the active RMG dark palette to every dialog and child page N-Rage
+   creates during its configuration session. The hook is restricted to the
+   current UI thread and is removed as soon as the modal dialog closes. */
+static LRESULT CALLBACK RmgNRateThemeCbtProc(int code, WPARAM wParam, LPARAM lParam)
+{
+    (void)lParam;
+    if (code == HCBT_CREATEWND && RmgPluginThemeIsDark())
+        RmgPluginThemeAttach((HWND)wParam);
+    return CallNextHookEx(NULL, code, wParam, lParam);
+}
 
 // ProtoTypes //
 bool prepareHeap();
@@ -161,6 +174,7 @@ void OpenConfigurationDialog( HWND hParent )
                         INITCOMMONCONTROLSEX ccCtrls =  {       sizeof(INITCOMMONCONTROLSEX),
                                                                                         ICC_BAR_CLASSES | ICC_TAB_CLASSES | ICC_LISTVIEW_CLASSES };
                         InitCommonControlsEx( &ccCtrls ); // needed for TrackBars & Tabs
+                        bInitCC = true;
                 }
 
                 EnterCriticalSection( &g_critical );
@@ -170,7 +184,18 @@ void OpenConfigurationDialog( HWND hParent )
                 }
                 LeaveCriticalSection( &g_critical );
 
+                RmgPluginThemeActivation themeActivation = {};
+                RmgPluginThemeActivate((HMODULE)g_hResourceDLL, &themeActivation);
+
+                HHOOK themeHook = NULL;
+                if (RmgPluginThemeIsDark())
+                    themeHook = SetWindowsHookExW(WH_CBT, RmgNRateThemeCbtProc, NULL, GetCurrentThreadId());
+
                 int iOK = DialogBox( g_hResourceDLL, MAKEINTRESOURCE( IDD_MAINCFGDIALOG ), hParent, MainDlgProc );
+
+                if (themeHook != NULL)
+                    UnhookWindowsHookEx(themeHook);
+                RmgPluginThemeDeactivate(&themeActivation);
 
                 // If we go into the dialog box, and the user navigates to the Rumble window, our FF device can get unacquired.
                 // So let's reinit them now if we're running, just to be safe --rabid

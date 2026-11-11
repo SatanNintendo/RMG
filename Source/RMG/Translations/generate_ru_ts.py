@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate a complete RMG_ru.ts file with ALL translatable strings
-from RMG, RMG-Input, and RMG-Audio.
+from RMG, RMG-Input, RMG-Audio, and integrated Qt video plugins.
 
 This script:
 1. Parses all .ui files to extract (context, string) pairs
@@ -741,6 +741,12 @@ TRANSLATIONS = {
     "Compatibility": "Совместимость",
     "Coverage": "Покрытие",
     "Depth": "Глубина",
+    "Deinterlacing": "Деинтерлейсинг",
+    "Only applies in Filtered VI mode with interlaced (SERRATE) output.": "Применяется только в фильтрованном режиме VI при чересстрочном выводе (SERRATE).",
+    "Off: native VI output. Bob: vertical interpolation of the current field. Adaptive: per-pixel blend between the previous field (full detail where the picture is static) and Bob (where it moves).": "Выкл.: исходный вывод VI. Боб: вертикальная интерполяция текущего поля. Адаптивный: попиксельное смешивание с предыдущим полем (полная детализация на статичных участках) и режимом «Боб» (на движущихся участках).",
+    "Off": "Выкл.",
+    "Bob": "Боб",
+    "Adaptive": "Адаптивный",
     "Enable Vsync": "Включить Vsync",
     "Enable busyloop": "Включить busyloop",
     "Fast": "Быстрый",
