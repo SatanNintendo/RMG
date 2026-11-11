@@ -64,9 +64,7 @@ enum vi_deinterlace_mode
 {
     VI_DEINTERLACE_OFF,
     VI_DEINTERLACE_BOB,
-    VI_DEINTERLACE_MOTION_ADAPTIVE,
-    VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE,
-    VI_DEINTERLACE_MOTION_ADAPTIVE_PIXEL_EDGE,
+    VI_DEINTERLACE_ADAPTIVE,
     VI_DEINTERLACE_NUM
 };
 
@@ -115,7 +113,7 @@ struct n64video_config
         bool vsync;                 // enable vsync if true
         bool exclusive;             // run in exclusive mode when in fullscreen if true
         bool integer_scaling;       // one native pixel is displayed as a multiple of a screen pixel if true
-        enum vi_deinterlace_mode deinterlace_mode; // Off, Bob, block MA, block EDI, or fine-grained EDI
+        enum vi_deinterlace_mode deinterlace_mode; // Off, Bob, or Adaptive (motion adaptive weave/bob)
         bool bob_deinterlace;       // legacy compatibility with old bob_deinterlace configuration key
     } vi;
     struct {

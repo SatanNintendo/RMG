@@ -84,16 +84,12 @@ static int32_t vinnglitch;
 static struct n64video_pixel prescale[PRESCALE_WIDTH * PRESCALE_HEIGHT];
 static struct n64video_pixel bob_buffer[PRESCALE_WIDTH * PRESCALE_HEIGHT];
 
-// Motion-adaptive detector works on small blocks and compares the same field
-// parity across time. This avoids interpreting the spatial difference between
-// adjacent even/odd scanlines as motion.
-#define VI_MAD_BLOCK_WIDTH 8u
-#define VI_MAD_BLOCK_HEIGHT 4u
-#define VI_MAD_BLOCK_COLUMNS ((PRESCALE_WIDTH + VI_MAD_BLOCK_WIDTH - 1u) / VI_MAD_BLOCK_WIDTH)
-#define VI_MAD_BLOCK_ROWS ((PRESCALE_HEIGHT + VI_MAD_BLOCK_HEIGHT - 1u) / VI_MAD_BLOCK_HEIGHT)
-#define VI_MAD_MAX_BLOCKS (VI_MAD_BLOCK_COLUMNS * VI_MAD_BLOCK_ROWS)
-
-struct vi_mad_history_info
+// Deinterlacer state. One history per field parity keeps only the real
+// scanlines of that parity (indexed by absolute prescale coordinates), together
+// with the per-pixel temporal change measured when that field was received.
+// The buffers are static to keep the VI hot path free of allocations and are
+// reset for every ROM/session and on every discontinuity.
+struct vi_deint_history_info
 {
     bool valid;
     uint32_t origin_x;
@@ -101,8 +97,6 @@ struct vi_mad_history_info
     uint32_t width;
     uint32_t height;
     uint32_t pitch;
-    uint32_t blocks_x;
-    uint32_t blocks_y;
     int32_t vi_h_start;
     int32_t vi_v_start;
     int32_t vi_hres;
@@ -113,18 +107,12 @@ struct vi_mad_history_info
     bool pal;
 };
 
-// One full-sized history per field parity (about 3.2 MiB total). Only rows
-// belonging to that parity are read or updated. The buffers are static to keep
-// the VI hot path free of allocations and are reset for every ROM/session.
-static struct n64video_pixel vi_mad_history[2][PRESCALE_WIDTH * PRESCALE_HEIGHT];
-static struct vi_mad_history_info vi_mad_history_info[2];
-static uint8_t vi_mad_motion_state[2][VI_MAD_MAX_BLOCKS];
-static uint8_t vi_mad_motion_mask[VI_MAD_MAX_BLOCKS];
-/* Fine mode stores temporal state per source pixel; stale entries are ignored
-   until the corresponding field has been compared and rewritten. */
-static uint8_t vi_mad_pixel_motion_state[2][PRESCALE_WIDTH * PRESCALE_HEIGHT];
-static enum vi_deinterlace_mode vi_mad_active_mode = VI_DEINTERLACE_OFF;
-static int32_t vi_mad_last_parity = -1;
+static struct n64video_pixel vi_deint_history[2][PRESCALE_WIDTH * PRESCALE_HEIGHT];
+static uint8_t vi_deint_delta[2][PRESCALE_WIDTH * PRESCALE_HEIGHT];  /* raw per-pixel change */
+static uint8_t vi_deint_zone[2][PRESCALE_WIDTH * PRESCALE_HEIGHT];   /* dilated motion zone */
+static struct vi_deint_history_info vi_deint_info[2];
+static enum vi_deinterlace_mode vi_deint_active_mode = VI_DEINTERLACE_OFF;
+static int32_t vi_deint_last_parity = -1;
 
 static uint32_t prescale_ptr;
 static int32_t linecount;
@@ -138,12 +126,24 @@ static int32_t v_start;
 static int32_t h_start;
 static int32_t v_current_line;
 
-static void vi_mad_reset_history(void)
+static void vi_deint_reset_history(void)
 {
-    memset(vi_mad_history_info, 0, sizeof(vi_mad_history_info));
-    memset(vi_mad_motion_state, 0, sizeof(vi_mad_motion_state));
-    memset(vi_mad_motion_mask, 0, sizeof(vi_mad_motion_mask));
-    vi_mad_last_parity = -1;
+    memset(vi_deint_info, 0, sizeof(vi_deint_info));
+    vi_deint_last_parity = -1;
+}
+
+/* Effective deinterlacing mode. The legacy boolean selects Bob. */
+static enum vi_deinterlace_mode vi_deint_effective_mode(void)
+{
+    enum vi_deinterlace_mode mode = config.vi.deinterlace_mode;
+
+    if (mode == VI_DEINTERLACE_OFF && config.vi.bob_deinterlace) {
+        mode = VI_DEINTERLACE_BOB;
+    }
+    if ((int)mode < (int)VI_DEINTERLACE_OFF || (int)mode >= (int)VI_DEINTERLACE_NUM) {
+        mode = VI_DEINTERLACE_OFF;
+    }
+    return mode;
 }
 
 static void vi_init(void)
@@ -152,9 +152,10 @@ static void vi_init(void)
     vi_restore_init();
 
     memset(prescale, 0, sizeof(prescale));
-    memset(vi_mad_pixel_motion_state, 0, sizeof(vi_mad_pixel_motion_state));
-    vi_mad_active_mode = VI_DEINTERLACE_OFF;
-    vi_mad_reset_history();
+    memset(vi_deint_delta, 0, sizeof(vi_deint_delta));
+    memset(vi_deint_zone, 0, sizeof(vi_deint_zone));
+    vi_deint_active_mode = VI_DEINTERLACE_OFF;
+    vi_deint_reset_history();
 
     prevvicurrent = 0;
     emucontrolsvicurrent = -1;
@@ -408,9 +409,10 @@ static bool vi_get_prescale_view(const struct n64video_frame_buffer* fb,
     return true;
 }
 
-static bool vi_mad_geometry_matches(const struct vi_mad_history_info* info,
-                                    uint32_t origin_x, uint32_t origin_y,
-                                    uint32_t width, uint32_t height, uint32_t pitch)
+/* Same-parity comparison needs an identical view of the previous field. */
+static bool vi_deint_geometry_matches(const struct vi_deint_history_info* info,
+                                      uint32_t origin_x, uint32_t origin_y,
+                                      uint32_t width, uint32_t height, uint32_t pitch)
 {
     return info->valid && info->origin_x == origin_x && info->origin_y == origin_y &&
            info->width == width && info->height == height && info->pitch == pitch &&
@@ -420,16 +422,53 @@ static bool vi_mad_geometry_matches(const struct vi_mad_history_info* info,
            info->hide_overscan == config.vi.hide_overscan && info->pal == ispal;
 }
 
-static bool vi_mad_source_geometry_matches(const struct vi_mad_history_info* info,
-                                           uint32_t origin_x, uint32_t width,
-                                           uint32_t height, uint32_t pitch)
+/* The opposite field only has to share the horizontal layout; each of its
+   rows is additionally checked against the vertical range it covers. */
+static bool vi_deint_source_geometry_matches(const struct vi_deint_history_info* info,
+                                             uint32_t origin_x, uint32_t width,
+                                             uint32_t pitch)
 {
     return info->valid && info->origin_x == origin_x && info->width == width &&
-           info->height == height && info->pitch == pitch &&
-           info->vi_h_start == h_start && info->vi_v_start == v_start &&
-           info->vi_hres == hres && info->vi_vres == vres &&
+           info->pitch == pitch &&
+           info->vi_h_start == h_start && info->vi_hres == hres &&
            info->vi_min_hpass == minhpass && info->vi_max_hpass == maxhpass &&
            info->hide_overscan == config.vi.hide_overscan && info->pal == ispal;
+}
+
+static void vi_deint_store_field(const struct n64video_frame_buffer* fb,
+                                 uint32_t origin_x, uint32_t origin_y,
+                                 uint32_t parity)
+{
+    const uint32_t width = fb->width;
+    const uint32_t height = fb->height;
+    struct vi_deint_history_info* info = &vi_deint_info[parity];
+
+    /* Save only this field's real samples, indexed by absolute prescale
+       coordinates, so later comparisons are independent of the output crop. */
+    for (uint32_t y = 0; y < height; ++y) {
+        uint32_t absolute_y = origin_y + y;
+        if ((absolute_y & 1u) == parity) {
+            memcpy(&vi_deint_history[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x],
+                   &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x],
+                   (size_t)width * sizeof(struct n64video_pixel));
+        }
+    }
+
+    info->valid = true;
+    info->origin_x = origin_x;
+    info->origin_y = origin_y;
+    info->width = width;
+    info->height = height;
+    info->pitch = fb->pitch;
+    info->vi_h_start = h_start;
+    info->vi_v_start = v_start;
+    info->vi_hres = hres;
+    info->vi_vres = vres;
+    info->vi_min_hpass = minhpass;
+    info->vi_max_hpass = maxhpass;
+    info->hide_overscan = config.vi.hide_overscan;
+    info->pal = ispal;
+    vi_deint_last_parity = (int32_t)parity;
 }
 
 static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
@@ -461,12 +500,7 @@ static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
             const struct n64video_pixel* lower =
                 &prescale[(size_t)(origin_y + lower_y) * PRESCALE_WIDTH + origin_x];
 
-            for (uint32_t x = 0; x < width; ++x) {
-                destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
-                destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
-                destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
-                destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
-            }
+            vi_deint_bob_row(destination, upper, lower, width);
         }
     }
 
@@ -474,136 +508,68 @@ static void vi_deinterlace_bob(struct n64video_frame_buffer* fb)
     fb->pitch = width;
 }
 
-static void vi_deinterlace_motion_adaptive(struct n64video_frame_buffer* fb,
-                                           bool edge_directed)
+static void vi_deinterlace_adaptive(struct n64video_frame_buffer* fb)
 {
     uint32_t origin_x, origin_y;
     const uint32_t width = fb->width;
     const uint32_t height = fb->height;
     const uint32_t parity = lowerfield ? 1u : 0u;
-    const uint32_t opposite_parity = parity ^ 1u;
-    uint32_t blocks_x, blocks_y, block_count;
+    const uint32_t opposite = parity ^ 1u;
     bool sequence_ok;
-    bool same_history_geometry;
     bool can_compare;
     bool can_use_opposite;
-    const struct vi_mad_history_info* old_current_info;
-    const struct vi_mad_history_info* opposite_info;
-    uint8_t raw_motion[VI_MAD_MAX_BLOCKS];
 
     if (!ctrl.serrate || !vi_get_prescale_view(fb, &origin_x, &origin_y) || height < 2u) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         return;
     }
 
     /* A repeated field parity means that at least one temporal field was
        skipped or the VI mode changed. Never weave across that discontinuity. */
-    sequence_ok = vi_mad_last_parity < 0 || vi_mad_last_parity == (int32_t)opposite_parity;
+    sequence_ok = vi_deint_last_parity < 0 || vi_deint_last_parity == (int32_t)opposite;
     if (!sequence_ok) {
-        vi_mad_reset_history();
-        sequence_ok = false;
+        vi_deint_reset_history();
     }
 
-    old_current_info = &vi_mad_history_info[parity];
-    opposite_info = &vi_mad_history_info[opposite_parity];
-    same_history_geometry = vi_mad_geometry_matches(old_current_info,
-                                                     origin_x, origin_y,
-                                                     width, height, fb->pitch);
-    can_compare = sequence_ok && same_history_geometry;
-
-    /* The opposite field must be the immediately preceding field, use the
-       same horizontal crop, and cover the scanline being considered. The
-       vertical crop may legitimately differ by a couple of lines per parity. */
+    can_compare = sequence_ok &&
+                  vi_deint_geometry_matches(&vi_deint_info[parity], origin_x, origin_y,
+                                            width, height, fb->pitch);
     can_use_opposite = sequence_ok &&
-                       vi_mad_source_geometry_matches(opposite_info, origin_x,
-                                                     width, height, fb->pitch);
+                       vi_deint_source_geometry_matches(&vi_deint_info[opposite],
+                                                        origin_x, width, fb->pitch);
 
-    blocks_x = (width + VI_MAD_BLOCK_WIDTH - 1u) / VI_MAD_BLOCK_WIDTH;
-    blocks_y = (height + VI_MAD_BLOCK_HEIGHT - 1u) / VI_MAD_BLOCK_HEIGHT;
-    block_count = blocks_x * blocks_y;
-    if (!blocks_x || !blocks_y || block_count > VI_MAD_MAX_BLOCKS) {
-        vi_mad_reset_history();
-        return;
+    /* Temporal change of every real scanline of this field. When no valid
+       same-parity history exists the change is "unknown" (maximum), which
+       makes the neighbouring reconstructed lines fall back to Bob. */
+    for (uint32_t y = 0; y < height; ++y) {
+        uint32_t absolute_y = origin_y + y;
+        size_t offset = (size_t)absolute_y * PRESCALE_WIDTH + origin_x;
+
+        if ((absolute_y & 1u) != parity) {
+            continue;
+        }
+        vi_deint_motion_row(&vi_deint_delta[parity][offset], &prescale[offset],
+                            can_compare ? &vi_deint_history[parity][offset] : NULL, width);
     }
 
-    memset(raw_motion, 0, block_count);
+    /* Dilate into the motion zone used for decisions. */
+    for (uint32_t y = 0; y < height; ++y) {
+        uint32_t absolute_y = origin_y + y;
+        size_t offset = (size_t)absolute_y * PRESCALE_WIDTH + origin_x;
+        const uint8_t* above = NULL;
+        const uint8_t* below = NULL;
 
-    for (uint32_t by = 0; by < blocks_y; ++by) {
-        for (uint32_t bx = 0; bx < blocks_x; ++bx) {
-            uint32_t changed_samples = 0;
-            uint32_t sample_count = 0;
-            uint32_t maximum_delta = 0;
-            uint32_t x_begin = bx * VI_MAD_BLOCK_WIDTH;
-            uint32_t y_begin = by * VI_MAD_BLOCK_HEIGHT;
-            uint32_t x_end = x_begin + VI_MAD_BLOCK_WIDTH;
-            uint32_t y_end = y_begin + VI_MAD_BLOCK_HEIGHT;
-            uint32_t block_index = by * blocks_x + bx;
-            bool was_moving = can_compare && vi_mad_motion_state[parity][block_index] != 0;
-            uint32_t threshold = was_moving ? VI_MAD_EXIT_THRESHOLD : VI_MAD_ENTER_THRESHOLD;
-
-            if (x_end > width) x_end = width;
-            if (y_end > height) y_end = height;
-
-            if (can_compare) {
-                for (uint32_t y = y_begin; y < y_end; ++y) {
-                    uint32_t absolute_y = origin_y + y;
-                    const struct n64video_pixel* current_row;
-                    const struct n64video_pixel* previous_row;
-
-                    if ((absolute_y & 1u) != parity) {
-                        continue;
-                    }
-
-                    current_row = &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-                    previous_row = &vi_mad_history[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-
-                    for (uint32_t x = x_begin; x < x_end; ++x) {
-                        uint32_t delta = vi_deint_pixel_delta(&current_row[x], &previous_row[x]);
-                        if (delta >= threshold) {
-                            ++changed_samples;
-                        }
-                        if (delta > maximum_delta) {
-                            maximum_delta = delta;
-                        }
-                        ++sample_count;
-                    }
-                }
-            }
-
-            if (!can_compare) {
-                /* History is not ready: Bob is the safe first-field fallback. */
-                raw_motion[block_index] = 1;
-                vi_mad_motion_state[parity][block_index] = 0;
-            } else {
-                uint32_t minimum_changed = sample_count >= 8u ? 2u : 1u;
-                /* Keep isolated but very strong changes (a thin moving edge)
-                   from slipping through the block vote. */
-                bool moving = changed_samples >= minimum_changed ||
-                              (changed_samples == 1u && maximum_delta >= threshold * 2u);
-                raw_motion[block_index] = moving ? 1u : 0u;
-                vi_mad_motion_state[parity][block_index] = moving ? 1u : 0u;
-            }
+        if ((absolute_y & 1u) != parity) {
+            continue;
         }
-    }
-
-    /* Dilate the raw block mask by one block. This protects moving edges from
-       a thin combing fringe without blending two temporal images together. */
-    memset(vi_mad_motion_mask, 0, block_count);
-    for (uint32_t by = 0; by < blocks_y; ++by) {
-        for (uint32_t bx = 0; bx < blocks_x; ++bx) {
-            uint32_t block_index = by * blocks_x + bx;
-            if (raw_motion[block_index]) {
-                uint32_t y0 = by > 0u ? by - 1u : by;
-                uint32_t y1 = by + 1u < blocks_y ? by + 1u : by;
-                uint32_t x0 = bx > 0u ? bx - 1u : bx;
-                uint32_t x1 = bx + 1u < blocks_x ? bx + 1u : bx;
-                for (uint32_t my = y0; my <= y1; ++my) {
-                    for (uint32_t mx = x0; mx <= x1; ++mx) {
-                        vi_mad_motion_mask[my * blocks_x + mx] = 1;
-                    }
-                }
-            }
+        if (y >= 2u) {
+            above = &vi_deint_delta[parity][offset - 2u * PRESCALE_WIDTH];
         }
+        if (y + 2u < height) {
+            below = &vi_deint_delta[parity][offset + 2u * PRESCALE_WIDTH];
+        }
+        vi_deint_zone_row(&vi_deint_zone[parity][offset], &vi_deint_delta[parity][offset],
+                          above, below, width);
     }
 
     for (uint32_t y = 0; y < height; ++y) {
@@ -616,222 +582,31 @@ static void vi_deinterlace_motion_adaptive(struct n64video_frame_buffer* fb,
             /* The current field's real scanline is always retained verbatim. */
             memcpy(destination, source, (size_t)width * sizeof(*destination));
         } else {
-            uint32_t block_y = y / VI_MAD_BLOCK_HEIGHT;
             uint32_t upper_y = y > 0u ? y - 1u : y + 1u;
             uint32_t lower_y = y + 1u < height ? y + 1u : upper_y;
-            const struct n64video_pixel* upper =
-                &prescale[(size_t)(origin_y + upper_y) * PRESCALE_WIDTH + origin_x];
-            const struct n64video_pixel* lower =
-                &prescale[(size_t)(origin_y + lower_y) * PRESCALE_WIDTH + origin_x];
+            size_t upper_off = (size_t)(origin_y + upper_y) * PRESCALE_WIDTH + origin_x;
+            size_t lower_off = (size_t)(origin_y + lower_y) * PRESCALE_WIDTH + origin_x;
+            size_t line_off = (size_t)absolute_y * PRESCALE_WIDTH + origin_x;
             bool opposite_row_valid = can_use_opposite &&
-                absolute_y >= opposite_info->origin_y &&
-                absolute_y < opposite_info->origin_y + opposite_info->height &&
-                ((absolute_y & 1u) == opposite_parity);
+                absolute_y >= vi_deint_info[opposite].origin_y &&
+                absolute_y < vi_deint_info[opposite].origin_y + vi_deint_info[opposite].height;
 
-            for (uint32_t x = 0; x < width; ++x) {
-                uint32_t block_x = x / VI_MAD_BLOCK_WIDTH;
-                bool moving = vi_mad_motion_mask[block_y * blocks_x + block_x] != 0;
-
-                if (opposite_row_valid && !moving) {
-                    /* Static region: use the real opposite-field scanline. */
-                    destination[x] = source[x];
-                } else {
-                    /* Moving/uncertain region: use current-field samples only.
-                       EDI changes only the direction of interpolation; every
-                       real scanline and every static Weave pixel is untouched. */
-                    if (edge_directed && upper_y != lower_y) {
-                        vi_edi_interpolate_pixel(&destination[x], upper, lower, x, width);
-                    } else {
-                        destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
-                        destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
-                        destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
-                        destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
-                    }
-                }
+            if (upper_y == lower_y) {
+                /* Picture edge: only one real neighbour exists. */
+                vi_deint_bob_row(destination, &prescale[upper_off], &prescale[lower_off], width);
+            } else {
+                vi_deint_adaptive_row(destination,
+                                      &prescale[upper_off], &prescale[lower_off],
+                                      &vi_deint_zone[parity][upper_off],
+                                      &vi_deint_zone[parity][lower_off],
+                                      opposite_row_valid ? &vi_deint_history[opposite][line_off] : NULL,
+                                      opposite_row_valid ? &vi_deint_zone[opposite][line_off] : NULL,
+                                      width);
             }
         }
     }
 
-    /* Save only this field's real samples, indexed by absolute prescale
-       coordinates. This makes future comparisons independent of output crop. */
-    for (uint32_t y = 0; y < height; ++y) {
-        uint32_t absolute_y = origin_y + y;
-        if ((absolute_y & 1u) == parity) {
-            const struct n64video_pixel* source =
-                &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-            struct n64video_pixel* history =
-                &vi_mad_history[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-            memcpy(history, source, (size_t)width * sizeof(*history));
-        }
-    }
-
-    vi_mad_history_info[parity].valid = true;
-    vi_mad_history_info[parity].origin_x = origin_x;
-    vi_mad_history_info[parity].origin_y = origin_y;
-    vi_mad_history_info[parity].width = width;
-    vi_mad_history_info[parity].height = height;
-    vi_mad_history_info[parity].pitch = fb->pitch;
-    vi_mad_history_info[parity].blocks_x = blocks_x;
-    vi_mad_history_info[parity].blocks_y = blocks_y;
-    vi_mad_history_info[parity].vi_h_start = h_start;
-    vi_mad_history_info[parity].vi_v_start = v_start;
-    vi_mad_history_info[parity].vi_hres = hres;
-    vi_mad_history_info[parity].vi_vres = vres;
-    vi_mad_history_info[parity].vi_min_hpass = minhpass;
-    vi_mad_history_info[parity].vi_max_hpass = maxhpass;
-    vi_mad_history_info[parity].hide_overscan = config.vi.hide_overscan;
-    vi_mad_history_info[parity].pal = ispal;
-    vi_mad_last_parity = (int32_t)parity;
-
-    fb->pixels = bob_buffer;
-    fb->pitch = width;
-}
-
-/* Fine-grained motion-adaptive mode. Unlike the legacy block detector above,
-   it stores same-parity temporal changes per pixel and tests only the 3x2
-   neighborhood bordering each missing scanline pixel. The legacy modes are
-   intentionally left unchanged so this can be compared independently. */
-static void vi_deinterlace_motion_adaptive_pixel(struct n64video_frame_buffer* fb,
-                                                 bool edge_directed)
-{
-    uint32_t origin_x, origin_y;
-    const uint32_t width = fb->width;
-    const uint32_t height = fb->height;
-    const uint32_t parity = lowerfield ? 1u : 0u;
-    const uint32_t opposite_parity = parity ^ 1u;
-    bool sequence_ok;
-    bool same_history_geometry;
-    bool can_compare;
-    bool can_use_opposite;
-    const struct vi_mad_history_info* old_current_info;
-    const struct vi_mad_history_info* opposite_info;
-
-    if (!ctrl.serrate || !vi_get_prescale_view(fb, &origin_x, &origin_y) || height < 2u) {
-        vi_mad_reset_history();
-        return;
-    }
-
-    /* Never use a field from a discontinuous sequence. The first field after
-       reset is reconstructed entirely from current-field samples (Bob). */
-    sequence_ok = vi_mad_last_parity < 0 ||
-                  vi_mad_last_parity == (int32_t)opposite_parity;
-    if (!sequence_ok) {
-        vi_mad_reset_history();
-        sequence_ok = false;
-    }
-
-    old_current_info = &vi_mad_history_info[parity];
-    opposite_info = &vi_mad_history_info[opposite_parity];
-    same_history_geometry = vi_mad_geometry_matches(old_current_info,
-                                                     origin_x, origin_y,
-                                                     width, height, fb->pitch);
-    can_compare = sequence_ok && same_history_geometry;
-    can_use_opposite = sequence_ok &&
-                       vi_mad_source_geometry_matches(opposite_info, origin_x,
-                                                      width, height, fb->pitch);
-
-    /* Update only real scanlines from the current field. Each entry is 0
-       (static), 1 (new/weak change), or 2 (strong/persistent change). A
-       geometry or cadence reset forces this field to Bob and rewrites its
-       state to zero. */
-    for (uint32_t y = 0; y < height; ++y) {
-        uint32_t absolute_y = origin_y + y;
-        struct n64video_pixel* current_row;
-        const struct n64video_pixel* previous_row;
-        uint8_t* motion_row;
-
-        if ((absolute_y & 1u) != parity) {
-            continue;
-        }
-
-        current_row = &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-        motion_row = &vi_mad_pixel_motion_state[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-
-        if (can_compare) {
-            previous_row = &vi_mad_history[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-            for (uint32_t x = 0; x < width; ++x) {
-                uint32_t delta = vi_deint_pixel_delta(&current_row[x], &previous_row[x]);
-                motion_row[x] = vi_deint_update_motion_state(delta, motion_row[x]);
-            }
-        } else {
-            memset(motion_row, 0, (size_t)width * sizeof(*motion_row));
-        }
-    }
-
-    /* Reconstruct the complete output field. Weave is allowed only when the
-       immediately preceding opposite field is valid and the local temporal
-       support is stable. All uncertain/moving pixels use current-field Bob/ELA. */
-    for (uint32_t y = 0; y < height; ++y) {
-        uint32_t absolute_y = origin_y + y;
-        struct n64video_pixel* destination = &bob_buffer[(size_t)y * width];
-        const struct n64video_pixel* source =
-            &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-
-        if ((absolute_y & 1u) == parity) {
-            memcpy(destination, source, (size_t)width * sizeof(*destination));
-        } else {
-            uint32_t upper_y = y > 0u ? y - 1u : y + 1u;
-            uint32_t lower_y = y + 1u < height ? y + 1u : upper_y;
-            const struct n64video_pixel* upper =
-                &prescale[(size_t)(origin_y + upper_y) * PRESCALE_WIDTH + origin_x];
-            const struct n64video_pixel* lower =
-                &prescale[(size_t)(origin_y + lower_y) * PRESCALE_WIDTH + origin_x];
-            const uint8_t* upper_motion =
-                &vi_mad_pixel_motion_state[parity][(size_t)(origin_y + upper_y) * PRESCALE_WIDTH + origin_x];
-            const uint8_t* lower_motion =
-                &vi_mad_pixel_motion_state[parity][(size_t)(origin_y + lower_y) * PRESCALE_WIDTH + origin_x];
-            bool opposite_row_valid = can_use_opposite &&
-                absolute_y >= opposite_info->origin_y &&
-                absolute_y < opposite_info->origin_y + opposite_info->height &&
-                ((absolute_y & 1u) == opposite_parity);
-
-            for (uint32_t x = 0; x < width; ++x) {
-                bool moving = !can_compare ||
-                    vi_deint_local_motion(upper_motion, lower_motion, x, width);
-
-                if (opposite_row_valid && !moving) {
-                    destination[x] = source[x];
-                } else if (edge_directed && upper_y != lower_y) {
-                    vi_edi_interpolate_pixel(&destination[x], upper, lower, x, width);
-                } else {
-                    destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
-                    destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
-                    destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
-                    destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
-                }
-            }
-        }
-    }
-
-    /* Save the current field for the next same-parity comparison. */
-    for (uint32_t y = 0; y < height; ++y) {
-        uint32_t absolute_y = origin_y + y;
-        if ((absolute_y & 1u) == parity) {
-            const struct n64video_pixel* source =
-                &prescale[(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-            struct n64video_pixel* history =
-                &vi_mad_history[parity][(size_t)absolute_y * PRESCALE_WIDTH + origin_x];
-            memcpy(history, source, (size_t)width * sizeof(*history));
-        }
-    }
-
-    vi_mad_history_info[parity].valid = true;
-    vi_mad_history_info[parity].origin_x = origin_x;
-    vi_mad_history_info[parity].origin_y = origin_y;
-    vi_mad_history_info[parity].width = width;
-    vi_mad_history_info[parity].height = height;
-    vi_mad_history_info[parity].pitch = fb->pitch;
-    vi_mad_history_info[parity].blocks_x = (width + VI_MAD_BLOCK_WIDTH - 1u) / VI_MAD_BLOCK_WIDTH;
-    vi_mad_history_info[parity].blocks_y = (height + VI_MAD_BLOCK_HEIGHT - 1u) / VI_MAD_BLOCK_HEIGHT;
-    vi_mad_history_info[parity].vi_h_start = h_start;
-    vi_mad_history_info[parity].vi_v_start = v_start;
-    vi_mad_history_info[parity].vi_hres = hres;
-    vi_mad_history_info[parity].vi_vres = vres;
-    vi_mad_history_info[parity].vi_min_hpass = minhpass;
-    vi_mad_history_info[parity].vi_max_hpass = maxhpass;
-    vi_mad_history_info[parity].hide_overscan = config.vi.hide_overscan;
-    vi_mad_history_info[parity].pal = ispal;
-    vi_mad_last_parity = (int32_t)parity;
+    vi_deint_store_field(fb, origin_x, origin_y, parity);
 
     fb->pixels = bob_buffer;
     fb->pitch = width;
@@ -839,38 +614,26 @@ static void vi_deinterlace_motion_adaptive_pixel(struct n64video_frame_buffer* f
 
 static void vi_deinterlace(struct n64video_frame_buffer* fb)
 {
-    enum vi_deinterlace_mode mode = config.vi.deinterlace_mode;
+    enum vi_deinterlace_mode mode = vi_deint_effective_mode();
 
-    /* Legacy configs and callers that still set the old bool select Bob. */
-    if (mode == VI_DEINTERLACE_OFF && config.vi.bob_deinterlace) {
-        mode = VI_DEINTERLACE_BOB;
+    /* Do not reuse temporal state when the selected algorithm changes. */
+    if (mode != vi_deint_active_mode) {
+        vi_deint_reset_history();
+        vi_deint_active_mode = mode;
     }
 
-    /* Do not reuse temporal or per-pixel state when the selected algorithm
-       changes. Clearing the larger fine-mode state happens only on a mode
-       transition, never in the per-frame reset path. */
-    if (mode != vi_mad_active_mode) {
-        memset(vi_mad_pixel_motion_state, 0, sizeof(vi_mad_pixel_motion_state));
-        vi_mad_reset_history();
-        vi_mad_active_mode = mode;
-    }
-
-    if (!ctrl.serrate || mode <= VI_DEINTERLACE_OFF || mode >= VI_DEINTERLACE_NUM) {
-        vi_mad_reset_history();
+    if (!ctrl.serrate || mode == VI_DEINTERLACE_OFF) {
+        vi_deint_reset_history();
         return;
     }
 
     if (mode == VI_DEINTERLACE_BOB) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         vi_deinterlace_bob(fb);
-    } else if (mode == VI_DEINTERLACE_MOTION_ADAPTIVE) {
-        vi_deinterlace_motion_adaptive(fb, false);
-    } else if (mode == VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE) {
-        vi_deinterlace_motion_adaptive(fb, true);
-    } else if (mode == VI_DEINTERLACE_MOTION_ADAPTIVE_PIXEL_EDGE) {
-        vi_deinterlace_motion_adaptive_pixel(fb, true);
+    } else if (mode == VI_DEINTERLACE_ADAPTIVE) {
+        vi_deinterlace_adaptive(fb);
     } else {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
     }
 }
 
@@ -880,7 +643,7 @@ static bool vi_process_full(struct n64video_frame_buffer* fb)
     bool validinterlace = !isblank && ctrl.serrate;
 
     if (!validinterlace) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
     }
 
     if (validinterlace) {
@@ -909,7 +672,7 @@ static bool vi_process_full(struct n64video_frame_buffer* fb)
     int32_t hrightblank = PRESCALE_WIDTH - h_end;
 
     if (isblank && prevwasblank) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         return false;
     }
 
@@ -1008,7 +771,7 @@ static bool vi_process_full(struct n64video_frame_buffer* fb)
     }
 
     if (!validh) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         return false;
     }
 
@@ -1029,7 +792,12 @@ static bool vi_process_full(struct n64video_frame_buffer* fb)
         fb->height = vres << ctrl.serrate;
         fb->height_out = (vres << 1) * V_SYNC_NTSC / v_sync;
         int32_t x = h_start + minhpass;
-        int32_t y = (v_start + (emucontrolsvicurrent ? lowerfield : 0)) << ctrl.serrate;
+        /* The native output shifts the window by one field line for the lower
+           field. Deinterlaced output must keep both fields in one fixed
+           window, otherwise the whole picture jumps by one field line every
+           field. */
+        bool field_shift = emucontrolsvicurrent && !(ctrl.serrate && vi_deint_effective_mode() != VI_DEINTERLACE_OFF);
+        int32_t y = (v_start + (field_shift ? lowerfield : 0)) << ctrl.serrate;
         fb->pixels += x + y * fb->pitch;
     } else {
         // use entire prescale buffer
@@ -1221,7 +989,7 @@ void n64video_update_screen(struct n64video_frame_buffer* fb)
 
     // cancel if the frame buffer contains no valid address
     if (!frame_buffer) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         fb->valid = false;
         return;
     }
@@ -1293,7 +1061,7 @@ void n64video_update_screen(struct n64video_frame_buffer* fb)
     vactivelines = v_sync - vstartoffset;
 
     if (vactivelines < 0 || vactivelines > PRESCALE_HEIGHT) {
-        vi_mad_reset_history();
+        vi_deint_reset_history();
         if (vactivelines > PRESCALE_HEIGHT) {
             msg_error("VI_V_SYNC_REG too big");
         }
@@ -1313,7 +1081,7 @@ void n64video_update_screen(struct n64video_frame_buffer* fb)
             fb->valid = vi_process_full(fb);
         } else {
             /* No field pairing is performed by the unfiltered VI path. */
-            vi_mad_reset_history();
+            vi_deint_reset_history();
             fb->valid = vi_process_fast(fb);
         }
     }
@@ -1321,7 +1089,7 @@ void n64video_update_screen(struct n64video_frame_buffer* fb)
 
 static void vi_close(void)
 {
-    vi_mad_reset_history();
+    vi_deint_reset_history();
 }
 
 #endif // N64VIDEO_C

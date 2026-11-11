@@ -108,9 +108,7 @@ INT_PTR CALLBACK config_dialog_proc(HWND hwnd, UINT iMessage, WPARAM wParam, LPA
             char* vi_deinterlace_strings[] = {
                 "Off",               // VI_DEINTERLACE_OFF
                 "Bob",               // VI_DEINTERLACE_BOB
-                "Motion Adaptive",  // VI_DEINTERLACE_MOTION_ADAPTIVE
-                "Motion Adaptive (Edge Directed)", // VI_DEINTERLACE_MOTION_ADAPTIVE_EDGE
-                "Motion Adaptive (Fine Edge Directed)" // VI_DEINTERLACE_MOTION_ADAPTIVE_PIXEL_EDGE
+                "Adaptive"           // VI_DEINTERLACE_ADAPTIVE
             };
 
             dlg_combo_vi_deinterlace = GetDlgItem(hwnd, IDC_COMBO_VI_DEINTERLACE);
@@ -241,6 +239,10 @@ static void config_handle(const char* key, const char* value, const char* sectio
         } else if (!_strcmpi(key, KEY_VI_DEINTERLACE_MODE)) {
             long mode = strtol(value, NULL, 0);
             config_has_deinterlace_mode = true;
+            if (mode == 3 || mode == 4) {
+                /* removed block/edge-directed modes */
+                mode = VI_DEINTERLACE_ADAPTIVE;
+            }
             if (mode < VI_DEINTERLACE_OFF || mode >= VI_DEINTERLACE_NUM) {
                 mode = VI_DEINTERLACE_OFF;
             }

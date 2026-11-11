@@ -288,7 +288,7 @@
                <item>
                 <widget class="QLabel" name="viDeinterlaceLabel">
                  <property name="toolTip">
-                  <string>Only applies in Filtered VI mode with interlaced (SERRATE) output. Motion Adaptive uses Weave for static areas and Bob for movement. Edge-Directed Motion Adaptive uses conservative diagonal interpolation on moving areas. Fine Edge-Directed Motion Adaptive uses per-pixel motion detection and a small local support window.</string>
+                  <string>Only applies in Filtered VI mode with interlaced (SERRATE) output.</string>
                  </property>
                  <property name="text">
                   <string>Deinterlacing</string>
@@ -298,7 +298,7 @@
                <item>
                 <widget class="QComboBox" name="viDeinterlaceComboBox">
                  <property name="toolTip">
-                  <string>Off: native VI output. Bob: vertical interpolation. Motion Adaptive: Weave static areas and Bob moving areas. Edge-Directed Motion Adaptive: same block motion mask, with conservative edge-guided interpolation on moving areas. Fine Edge-Directed Motion Adaptive: per-pixel temporal detection with a 3x2 local motion window, then edge-guided interpolation only near movement.</string>
+                  <string>Off: native VI output. Bob: vertical interpolation of the current field. Adaptive: per-pixel blend between the previous field (full detail where the picture is static) and Bob (where it moves).</string>
                  </property>
                  <item>
                   <property name="text">
@@ -312,17 +312,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Motion Adaptive</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Motion Adaptive (Edge Directed)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Motion Adaptive (Fine Edge Directed)</string>
+                   <string>Adaptive</string>
                   </property>
                  </item>
                 </widget>

@@ -62,6 +62,11 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
         deinterlaceMode = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE)
             ? VI_DEINTERLACE_BOB : VI_DEINTERLACE_OFF;
     }
+    else if (deinterlaceMode == 3 || deinterlaceMode == 4)
+    {
+        // removed block/edge-directed modes
+        deinterlaceMode = VI_DEINTERLACE_ADAPTIVE;
+    }
     else if (deinterlaceMode < VI_DEINTERLACE_OFF || deinterlaceMode >= VI_DEINTERLACE_NUM)
     {
         deinterlaceMode = VI_DEINTERLACE_OFF;

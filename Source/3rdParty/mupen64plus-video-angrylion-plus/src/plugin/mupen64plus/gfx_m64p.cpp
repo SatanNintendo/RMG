@@ -108,7 +108,7 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, config.vi.integer_scaling, "Display upscaled pixels as groups of 1x1, 2x2, 3x3, etc. if True");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_VSYNC, config.vi.vsync, "Enable vsync to prevent tearing");
     ConfigSetDefaultInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE, -1,
-                        "VI deinterlacing (-1=auto-migrate legacy setting, 0=Off, 1=Bob, 2=Motion Adaptive, 3=Motion Adaptive Edge-Directed, 4=Motion Adaptive Fine Edge-Directed)");
+                        "VI deinterlacing (-1=auto-migrate legacy setting, 0=Off, 1=Bob, 2=Adaptive; legacy values 3 and 4 select Adaptive)");
     ConfigSetDefaultBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE, config.vi.bob_deinterlace,
                          "Legacy Bob deinterlacing setting retained for old profiles");
 
@@ -117,6 +117,11 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     if (initial_deinterlace_mode == -1) {
         initial_deinterlace_mode = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_DEINTERLACE)
             ? VI_DEINTERLACE_BOB : VI_DEINTERLACE_OFF;
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE,
+                           M64TYPE_INT, &initial_deinterlace_mode);
+    } else if (initial_deinterlace_mode == 3 || initial_deinterlace_mode == 4) {
+        /* Removed block/edge-directed motion adaptive modes -> Adaptive. */
+        initial_deinterlace_mode = VI_DEINTERLACE_ADAPTIVE;
         ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE,
                            M64TYPE_INT, &initial_deinterlace_mode);
     } else if (initial_deinterlace_mode < VI_DEINTERLACE_OFF ||
@@ -235,6 +240,9 @@ EXPORT int CALL RomOpen (void)
     config.vi.integer_scaling = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING);
     config.vi.vsync = ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_VSYNC);
     int deinterlace_mode = ConfigGetParamInt(configVideoAngrylionPlus, KEY_VI_DEINTERLACE_MODE);
+    if (deinterlace_mode == 3 || deinterlace_mode == 4) {
+        deinterlace_mode = VI_DEINTERLACE_ADAPTIVE;
+    }
     if (deinterlace_mode < VI_DEINTERLACE_OFF || deinterlace_mode >= VI_DEINTERLACE_NUM) {
         deinterlace_mode = VI_DEINTERLACE_OFF;
     }

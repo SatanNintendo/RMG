@@ -3,13 +3,45 @@
 
 #include "../n64video.h"
 #include <stddef.h>
+#include <string.h>
 
-/* Shared thresholds and pixel helpers used by the VI implementation and the
-   standalone tests. Keep this header free of renderer/plugin dependencies. */
-#define VI_MAD_ENTER_THRESHOLD 20u
-#define VI_MAD_EXIT_THRESHOLD 11u
-#define VI_EDI_MIN_COST_GAIN 18u
-#define VI_EDI_MAX_BEST_COST 96u
+/*
+ * Row-level deinterlacing primitives used by vi.c. This header has no
+ * renderer/plugin dependencies.
+ *
+ * Bob:      a missing scanline is the average of the two real scanlines of
+ *           the CURRENT field that border it. Real scanlines are never changed.
+ *
+ * Adaptive: a missing scanline starts from the Bob value (s) and the real
+ *           scanline of the previous (opposite) field (w, "weave"). The result
+ *           is clamp(s, w - B, w + B) per channel, where B is an upper bound of
+ *           how much the picture may have changed at this pixel:
+ *             - B = 0      -> exactly w (static picture, full vertical detail)
+ *             - B >= |s-w| -> exactly s (moving picture, identical to Bob)
+ *           B grows continuously with measured motion, so there is no hard
+ *           switch between two different looks (the cause of visible
+ *           distortion with threshold based detectors).
+ *           B is derived from the "motion zone": the per-pixel temporal change
+ *           (same field parity, t vs t-2) dilated horizontally and over the
+ *           neighbouring real scanlines, taken from the current field and from
+ *           the opposite field one field earlier.
+ */
+
+#define VI_DEINT_DELTA_UNKNOWN 255u
+
+/* Gains are expressed in 1/4 units: B = (value * gain) / 4. */
+#ifndef VI_DEINT_TEMPORAL_GAIN
+#define VI_DEINT_TEMPORAL_GAIN 8u   /* 2.0 x motion (see header comment) */
+#endif
+#ifndef VI_DEINT_OPPOSITE_SHIFT
+#define VI_DEINT_OPPOSITE_SHIFT 0u  /* opposite-field motion shift */
+#endif
+#ifndef VI_DEINT_NOISE_FLOOR
+#define VI_DEINT_NOISE_FLOOR 6u     /* temporal change below this is dither noise */
+#endif
+#ifndef VI_DEINT_ZONE_RADIUS
+#define VI_DEINT_ZONE_RADIUS 3u     /* horizontal dilation of the motion zone */
+#endif
 
 static inline uint32_t vi_deint_abs_difference(uint32_t a, uint32_t b)
 {
@@ -17,7 +49,7 @@ static inline uint32_t vi_deint_abs_difference(uint32_t a, uint32_t b)
 }
 
 /* Temporal difference includes luma and chroma so isoluminant changes are
-   not silently treated as static. */
+   not silently treated as static. Result is in 0..255. */
 static inline uint32_t vi_deint_pixel_delta(const struct n64video_pixel* current,
                                            const struct n64video_pixel* previous)
 {
@@ -36,59 +68,44 @@ static inline uint32_t vi_deint_pixel_delta(const struct n64video_pixel* current
     return luma_delta > chroma_delta ? luma_delta : chroma_delta;
 }
 
-/* Per-pixel motion state for the fine-grained mode:
-   0 = static, 1 = new/weak change, 2 = strong or temporally confirmed change.
-   Hysteresis is applied per sample, not to a large image block. */
-static inline uint8_t vi_deint_update_motion_state(uint32_t delta,
-                                                   uint8_t previous_state)
+/* Per-pixel temporal change of one real scanline against the same scanline of
+   the previous field of the same parity. previous == NULL marks "unknown". */
+static inline void vi_deint_motion_row(uint8_t* delta,
+                                       const struct n64video_pixel* current,
+                                       const struct n64video_pixel* previous,
+                                       uint32_t width)
 {
-    uint32_t threshold = previous_state ? VI_MAD_EXIT_THRESHOLD
-                                        : VI_MAD_ENTER_THRESHOLD;
+    uint32_t x;
 
-    if (delta < threshold) {
-        return 0;
+    if (!previous) {
+        memset(delta, (int)VI_DEINT_DELTA_UNKNOWN, width);
+        return;
     }
-    return (previous_state != 0u || delta >= threshold * 2u) ? 2u : 1u;
+    for (x = 0; x < width; ++x) {
+        uint32_t d = vi_deint_pixel_delta(&current[x], &previous[x]);
+        delta[x] = (uint8_t)(d > 255u ? 255u : d);
+    }
 }
 
-/* Decide whether a missing output pixel is close enough to temporal motion
-   to avoid Weave. The 3x2 support window follows the two current-field rows
-   that border the missing line. A single strong or temporally confirmed
-   change is sufficient; two new weak changes are required to reject isolated
-   dither/noise. */
-static inline bool vi_deint_local_motion(const uint8_t* upper_state,
-                                         const uint8_t* lower_state,
-                                         uint32_t x, uint32_t width)
+static inline void vi_deint_bob_row(struct n64video_pixel* destination,
+                                    const struct n64video_pixel* upper,
+                                    const struct n64video_pixel* lower,
+                                    uint32_t width)
 {
-    uint32_t x0;
-    uint32_t x1;
-    uint32_t changed = 0;
+    uint32_t x;
 
-    if (!upper_state || !lower_state || width == 0u || x >= width) {
-        return false;
+    for (x = 0; x < width; ++x) {
+        destination[x].r = (uint8_t)(((uint16_t)upper[x].r + lower[x].r + 1u) >> 1);
+        destination[x].g = (uint8_t)(((uint16_t)upper[x].g + lower[x].g + 1u) >> 1);
+        destination[x].b = (uint8_t)(((uint16_t)upper[x].b + lower[x].b + 1u) >> 1);
+        destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
     }
-
-    x0 = x > 0u ? x - 1u : x;
-    x1 = x + 1u < width ? x + 1u : x;
-
-    for (uint32_t sample_x = x0; sample_x <= x1; ++sample_x) {
-        uint8_t upper = upper_state[sample_x];
-        uint8_t lower = lower_state[sample_x];
-
-        if (upper >= 2u || lower >= 2u) {
-            return true;
-        }
-        changed += (upper != 0u) ? 1u : 0u;
-        changed += (lower != 0u) ? 1u : 0u;
-    }
-
-    return changed >= 2u;
 }
 
-static inline uint32_t vi_edi_clamp_x(int32_t x, uint32_t width)
+static inline uint32_t vi_deint_clamp_x(int32_t x, uint32_t width)
 {
     if (x < 0) {
-        return 0;
+        return 0u;
     }
     if ((uint32_t)x >= width) {
         return width - 1u;
@@ -96,87 +113,107 @@ static inline uint32_t vi_edi_clamp_x(int32_t x, uint32_t width)
     return (uint32_t)x;
 }
 
-/* Spatial color distance for ELA. Alpha is not part of edge direction. */
-static inline uint32_t vi_edi_color_delta(const struct n64video_pixel* a,
-                                          const struct n64video_pixel* b)
+static inline uint32_t vi_deint_max3(uint32_t a, uint32_t b, uint32_t c)
 {
-    uint32_t dr = vi_deint_abs_difference(a->r, b->r);
-    uint32_t dg = vi_deint_abs_difference(a->g, b->g);
-    uint32_t db = vi_deint_abs_difference(a->b, b->b);
-    uint32_t delta = dr > dg ? dr : dg;
-    return delta > db ? delta : db;
+    uint32_t m = a > b ? a : b;
+    return m > c ? m : c;
 }
 
-static inline uint32_t vi_edi_pair_cost(const struct n64video_pixel* upper,
-                                        const struct n64video_pixel* lower,
-                                        int32_t x, uint32_t width,
-                                        int32_t offset)
+static inline uint8_t vi_deint_clamp_channel(int32_t value, int32_t low, int32_t high)
 {
-    uint32_t upper_x = vi_edi_clamp_x(x + offset, width);
-    uint32_t lower_x = vi_edi_clamp_x(x - offset, width);
-    return vi_edi_color_delta(&upper[upper_x], &lower[lower_x]);
+    if (low < 0) low = 0;
+    if (high > 255) high = 255;
+    if (value < low) value = low;
+    if (value > high) value = high;
+    return (uint8_t)value;
 }
 
-/* Edge-directed interpolation for one missing scanline pixel. Candidate
-   diagonals are accepted only after a three-pixel support check. */
-static inline void vi_edi_interpolate_pixel(struct n64video_pixel* destination,
-                                            const struct n64video_pixel* upper,
-                                            const struct n64video_pixel* lower,
-                                            uint32_t x, uint32_t width)
+/* Motion zone of one real scanline: maximum of the per-pixel temporal change
+   over a horizontal radius and over the same scanline plus the real scanlines
+   directly above and below it (same parity, two rows apart). Missing
+   neighbours are passed as NULL. */
+static inline void vi_deint_zone_row(uint8_t* destination,
+                                     const uint8_t* row,
+                                     const uint8_t* row_above,
+                                     const uint8_t* row_below,
+                                     uint32_t width)
 {
-    static const int32_t offsets[] = { 0, -1, 1, -2, 2 };
-    uint32_t vertical_center;
-    uint32_t best_center;
-    uint32_t vertical_cost;
-    uint32_t best_cost;
-    int32_t best_offset = 0;
-    size_t i;
-    uint32_t upper_x;
-    uint32_t lower_x;
+    uint8_t vertical[1024];
+    uint32_t x;
+    uint32_t radius = VI_DEINT_ZONE_RADIUS;
 
-    if (!destination || !upper || !lower || width == 0u || x >= width) {
+    if (width == 0u || width > sizeof(vertical)) {
+        memset(destination, (int)VI_DEINT_DELTA_UNKNOWN, width);
         return;
     }
 
-    vertical_center = vi_edi_pair_cost(upper, lower, (int32_t)x, width, 0);
-    best_center = vertical_center;
-
-    if (width >= 3u) {
-        for (i = 1; i < sizeof(offsets) / sizeof(offsets[0]); ++i) {
-            uint32_t cost = vi_edi_pair_cost(upper, lower, (int32_t)x,
-                                             width, offsets[i]);
-            if (cost < best_center) {
-                best_center = cost;
-                best_offset = offsets[i];
-            }
+    for (x = 0; x < width; ++x) {
+        uint8_t m = row[x];
+        if (row_above && row_above[x] > m) m = row_above[x];
+        if (row_below && row_below[x] > m) m = row_below[x];
+        vertical[x] = m;
+    }
+    for (x = 0; x < width; ++x) {
+        uint32_t x0 = x > radius ? x - radius : 0u;
+        uint32_t x1 = x + radius < width ? x + radius : width - 1u;
+        uint8_t m = 0u;
+        uint32_t i;
+        for (i = x0; i <= x1; ++i) {
+            if (vertical[i] > m) m = vertical[i];
         }
+        destination[x] = m;
+    }
+}
+
+/*
+ * Reconstruct one missing scanline.
+ *   upper/lower          real rows of the current field bordering the line
+ *   delta_upper/lower    temporal change of those rows (vi_deint_motion_row)
+ *   woven                real row of the opposite field at this line, or NULL
+ *   delta_woven          temporal change of the woven row, or NULL
+ * With woven == NULL the result is exactly Bob.
+ */
+static inline void vi_deint_adaptive_row(struct n64video_pixel* destination,
+                                         const struct n64video_pixel* upper,
+                                         const struct n64video_pixel* lower,
+                                         const uint8_t* delta_upper,
+                                         const uint8_t* delta_lower,
+                                         const struct n64video_pixel* woven,
+                                         const uint8_t* delta_woven,
+                                         uint32_t width)
+{
+    uint32_t x;
+
+    if (!woven || !delta_woven || width == 0u) {
+        vi_deint_bob_row(destination, upper, lower, width);
+        return;
     }
 
-    if (best_offset != 0) {
-        vertical_cost = vertical_center +
-            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, 0) +
-            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, 0);
-        best_cost = best_center +
-            vi_edi_pair_cost(upper, lower, (int32_t)x - 1, width, best_offset) +
-            vi_edi_pair_cost(upper, lower, (int32_t)x + 1, width, best_offset);
+    for (x = 0; x < width; ++x) {
+        uint32_t motion = delta_upper[x];
+        uint32_t opposite = delta_woven[x];
+        uint32_t bound;
+        int32_t s;
+        int32_t b;
 
-        if (best_cost <= VI_EDI_MAX_BEST_COST &&
-            vertical_cost > best_cost + VI_EDI_MIN_COST_GAIN) {
-            upper_x = vi_edi_clamp_x((int32_t)x + best_offset, width);
-            lower_x = vi_edi_clamp_x((int32_t)x - best_offset, width);
-        } else {
-            upper_x = x;
-            lower_x = x;
-        }
-    } else {
-        upper_x = x;
-        lower_x = x;
+        if (delta_lower[x] > motion) motion = delta_lower[x];
+        motion = motion > VI_DEINT_NOISE_FLOOR ? motion - VI_DEINT_NOISE_FLOOR : 0u;
+        opposite = opposite > VI_DEINT_NOISE_FLOOR ? opposite - VI_DEINT_NOISE_FLOOR : 0u;
+
+        bound = (motion * VI_DEINT_TEMPORAL_GAIN) >> 2;
+        opposite = ((opposite >> VI_DEINT_OPPOSITE_SHIFT) * VI_DEINT_TEMPORAL_GAIN) >> 2;
+        if (opposite > bound) bound = opposite;
+        if (bound > 255u) bound = 255u;
+        b = (int32_t)bound;
+
+        s = ((int32_t)upper[x].r + lower[x].r + 1) >> 1;
+        destination[x].r = vi_deint_clamp_channel(s, (int32_t)woven[x].r - b, (int32_t)woven[x].r + b);
+        s = ((int32_t)upper[x].g + lower[x].g + 1) >> 1;
+        destination[x].g = vi_deint_clamp_channel(s, (int32_t)woven[x].g - b, (int32_t)woven[x].g + b);
+        s = ((int32_t)upper[x].b + lower[x].b + 1) >> 1;
+        destination[x].b = vi_deint_clamp_channel(s, (int32_t)woven[x].b - b, (int32_t)woven[x].b + b);
+        destination[x].a = (uint8_t)(((uint16_t)upper[x].a + lower[x].a + 1u) >> 1);
     }
-
-    destination->r = (uint8_t)(((uint16_t)upper[upper_x].r + lower[lower_x].r + 1u) >> 1);
-    destination->g = (uint8_t)(((uint16_t)upper[upper_x].g + lower[lower_x].g + 1u) >> 1);
-    destination->b = (uint8_t)(((uint16_t)upper[upper_x].b + lower[lower_x].b + 1u) >> 1);
-    destination->a = (uint8_t)(((uint16_t)upper[upper_x].a + lower[lower_x].a + 1u) >> 1);
 }
 
 #endif /* ANGRYLION_PLUS_VI_DEINTERLACE_H */
