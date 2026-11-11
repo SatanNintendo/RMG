@@ -200,19 +200,21 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
         hDlg, NULL, g_hDllInst, NULL);
     SetCtrlFont(hPanel, hFont);
 
-    /* Layout matches the good reference screenshot:
-       - two stacked labeled combo groups on the left
+    /* Layout follows the Project64 reference dialog:
+       - plain captions (not framed group boxes) above the two selectors
        - a dedicated narrow Volume group on the right
        - warning text below the backend selector
-       Everything is in dialog units, so DPI scaling is automatic. */
+       The etched outline belongs to the tab page itself; only Volume is a
+       framed subgroup in the reference design. All coordinates are DLUs. */
     const int left = DluX(hDlg, 10);
     const int top  = DluY(hDlg, 8);
     const int leftW = DluX(hDlg, 205);
     const int rightX = DluX(hDlg, 224);
     const int volumeW = DluX(hDlg, 64);
 
-    CreateGroupBox(hPanel, AzText(L"Output Device", L"Устройство вывода"),
-                   left, top, leftW, DluY(hDlg, 40), hFont);
+    CreateLabel(hPanel, AzText(L"Output Device", L"Устройство вывода"),
+                left + DluX(hDlg, 8), top + DluY(hDlg, 1),
+                leftW - DluX(hDlg, 8), DluY(hDlg, 10), hFont);
 
     HWND hDev = CreateWindowW(L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,
@@ -223,8 +225,9 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SendMessageW(hDev, CB_ADDSTRING, 0, (LPARAM)AzText(L"Default", L"По умолчанию"));
     SendMessageW(hDev, CB_SETCURSEL, 0, 0);
 
-    CreateGroupBox(hPanel, AzText(L"Backend Sound Driver", L"Звуковой драйвер"),
-                   left, top + DluY(hDlg, 43), leftW, DluY(hDlg, 43), hFont);
+    CreateLabel(hPanel, AzText(L"Backend Sound Driver", L"Звуковой драйвер"),
+                left + DluX(hDlg, 8), top + DluY(hDlg, 44),
+                leftW - DluX(hDlg, 8), DluY(hDlg, 10), hFont);
 
     HWND hDrv = CreateWindowW(L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,
