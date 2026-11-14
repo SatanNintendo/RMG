@@ -44,6 +44,7 @@
 #include "device/rcp/ai/ai_controller.h"
 #include "device/rcp/vi/vi_controller.h"
 #include "main/main.h"
+#include "plugin/plugin.h"
 #include "main/savestates.h"
 
 
@@ -435,6 +436,11 @@ void nmi_int_handler(void* opaque)
     struct device* dev = (struct device*)opaque;
     struct r4300_core* r4300 = &dev->r4300;
     uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+
+    /* Give video plugins a chance to discard incomplete host-side work.
+     * This is optional and does not reset emulated RCP registers or memories. */
+    if (gfx.softReset != NULL)
+        gfx.softReset();
 
     reset_pif(&dev->pif, 1);
 

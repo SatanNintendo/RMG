@@ -69,6 +69,7 @@ static const gfx_plugin_functions dummy_gfx = {
     dummyvideo_ReadScreen2,
     dummyvideo_SetRenderingCallback,
     dummyvideo_ResizeVideoOutput,
+    NULL, /* optional SoftReset callback */
     dummyvideo_FBRead,
     dummyvideo_FBWrite,
     dummyvideo_FBGetFrameBufferInfo
@@ -198,6 +199,7 @@ static m64p_error plugin_connect_gfx(m64p_dynlib_handle plugin_handle)
 
         /* set function pointers for optional functions */
         gfx.resizeVideoOutput = (ptr_ResizeVideoOutput)osal_dynlib_getproc(plugin_handle, "ResizeVideoOutput");
+        gfx.softReset = (void (*)(void))osal_dynlib_getproc(plugin_handle, "SoftReset");
 
         /* check the version info */
         (*gfx.getVersion)(&PluginType, &PluginVersion, &APIVersion, NULL, NULL);

@@ -295,6 +295,11 @@ EXPORT void CALL ProcessRDPList(void)
     vk_process_commands();
 }
 
+EXPORT void CALL SoftReset(void)
+{
+    vk_soft_reset();
+}
+
 EXPORT int CALL RomOpen(void)
 {
     window_fullscreen = false;

@@ -522,6 +522,17 @@ void vk_process_commands()
 	*GET_GFX_INFO(DPC_STATUS_REG) |= DP_STATUS_CBUF_READY;
 }
 
+void vk_soft_reset()
+{
+	// A soft reset does not close/reopen the video plugin. Finish submitted work
+	// before discarding any incomplete command left in the host-side parser.
+	if (processor)
+		processor->idle();
+
+	cmd_cur = 0;
+	cmd_ptr = 0;
+}
+
 void vk_resize()
 {
 	MupenWSIPlatform* platform = (MupenWSIPlatform*)&wsi->get_platform();

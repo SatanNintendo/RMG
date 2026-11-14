@@ -33,6 +33,7 @@ extern "C"
 
     void vk_rasterize();
     void vk_process_commands();
+    void vk_soft_reset();
     bool vk_init();
     void vk_destroy();
     void vk_resize();
