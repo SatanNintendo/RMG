@@ -1119,10 +1119,9 @@ static bool combiner_uses_texel1(const StaticRasterizationState &state)
 static bool combiner_uses_pipelined_texel1(const StaticRasterizationState &state)
 {
 	// If you access Texel1 in cycle1 mode, you end up reading the next pixel's color for whatever reason.
-	if ((state.flags & RASTERIZATION_MULTI_CYCLE_BIT) == 0)
-		return combiner_accesses_texel1(state.combiner[1]);
-	else
-		return false;
+	// In two-cycle mode the same thing happens in the second cycle: TEXEL1 there is the next pixel's TEXEL0
+	// (angrylion: combiner_2cycle_cycle1 uses nexttexel_color for texel1).
+	return combiner_accesses_texel1(state.combiner[1]);
 }
 
 static bool combiner_uses_lod_frac(const StaticRasterizationState &state)

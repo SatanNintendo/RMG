@@ -229,28 +229,52 @@ bool shade_pixel(int x, int y, uint primitive_index, out ShadedData shaded)
 	}
 
 	// A very awkward mechanism where we peek into the next pixel, or in some cases, the next scanline's first pixel.
+	i16x4 texel_next = i16x4(0);
 	if (uses_pipelined_texel1)
 	{
-		bool valid_line = uint(span_setups.elems[SCALING_FACTOR * span_offsets.offset + (y - SCALING_FACTOR * span_offsets.ylo + 1)].valid_line) != 0u;
-		bool long_span = span_setup.lodlength >= 8;
-		bool end_span = x == (flip ? span_setup.end_x : span_setup.start_x);
-
-		if (end_span && long_span && valid_line)
+		if (multi_cycle)
 		{
-			ivec3 stw = span_setups.elems[SCALING_FACTOR * span_offsets.offset + (y - SCALING_FACTOR * span_offsets.ylo + 1)].stzw.xyw >> 16;
-			if (perspective)
+			// Two-cycle mode: TEXEL1 seen by cycle 1 is the next pixel's TEXEL0 (tile0), see angrylion's
+			// combiner_2cycle_cycle1 (texel1 = nexttexel_color). The next pixel is always the stepped coordinate here,
+			// the first pixel of the next scanline is only peeked into for the next pixel's cycle 0 TEXEL1.
+			ivec2 st_next = interpolate_st_single(span_setup.stzw, attr.dstzw_dx,
+			                                      dx + interpolation_direction * SCALING_FACTOR, perspective);
+
+			uint tile_info_index_next = uint(state_indices.elems[primitive_index].tile_infos[tile0]);
+			TileInfo tile_info_next = load_tile_info(tile_info_index_next);
+#ifdef RASTERIZER_SPEC_CONSTANT
+			if ((STATIC_STATE_FLAGS & RASTERIZATION_USE_STATIC_TEXTURE_SIZE_FORMAT_BIT) != 0)
 			{
-				bool st_overflow;
-				st = perspective_divide(stw, st_overflow);
+				tile_info_next.fmt = u8(TEX_FMT);
+				tile_info_next.size = u8(TEX_SIZE);
 			}
-			else
-				st = no_perspective_divide(stw);
+#endif
+			texel_next = sample_texture(tile_info_next, tmem_instance_index, st_next, tlut, tlut_type,
+			                            sample_quad, mid_texel, false, bilerp0, derived.factors, i16x4(0));
 		}
 		else
-			st = interpolate_st_single(span_setup.stzw, attr.dstzw_dx, dx + interpolation_direction * SCALING_FACTOR, perspective);
+		{
+			bool valid_line = uint(span_setups.elems[SCALING_FACTOR * span_offsets.offset + (y - SCALING_FACTOR * span_offsets.ylo + 1)].valid_line) != 0u;
+			bool long_span = span_setup.lodlength >= 8;
+			bool end_span = x == (flip ? span_setup.end_x : span_setup.start_x);
 
-		tile1 = tile0;
-		uses_texel1 = true;
+			if (end_span && long_span && valid_line)
+			{
+				ivec3 stw = span_setups.elems[SCALING_FACTOR * span_offsets.offset + (y - SCALING_FACTOR * span_offsets.ylo + 1)].stzw.xyw >> 16;
+				if (perspective)
+				{
+					bool st_overflow;
+					st = perspective_divide(stw, st_overflow);
+				}
+				else
+					st = no_perspective_divide(stw);
+			}
+			else
+				st = interpolate_st_single(span_setup.stzw, attr.dstzw_dx, dx + interpolation_direction * SCALING_FACTOR, perspective);
+
+			tile1 = tile0;
+			uses_texel1 = true;
+		}
 	}
 
 	if (uses_texel1)
@@ -302,9 +326,12 @@ bool shade_pixel(int x, int y, uint primitive_index, out ShadedData shaded)
 		// I don't think hardware ever intended for you to access texels in second cycle due to this nature.
 		i16x4 tmp_texel = combined_inputs.texel0;
 		combined_inputs.texel0 = combined_inputs.texel1;
-		// Following the pipelining, texel1 should become texel0 of next pixel,
-		// but let's not go there ...
-		combined_inputs.texel1 = tmp_texel;
+		// Following the pipelining, texel1 becomes TEXEL0 of the next pixel when cycle 1 reads TEXEL1.
+		// Otherwise, keep the old behavior (current TEXEL0), which is only relevant for combiner inputs that don't read it.
+		if (uses_pipelined_texel1)
+			combined_inputs.texel1 = texel_next;
+		else
+			combined_inputs.texel1 = tmp_texel;
 
 		// Resample the noise at some arbitrary other offset.
 		// This only matters if both noise combiner inputs take noise (very weird).
