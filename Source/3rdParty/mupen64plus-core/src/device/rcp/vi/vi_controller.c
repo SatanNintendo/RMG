@@ -27,6 +27,9 @@
 #include "device/memory/memory.h"
 #include "device/r4300/r4300_core.h"
 #include "device/rcp/mi/mi_controller.h"
+#include "device/r4300/cp0.h"
+#include "device/rcp/rdp/rdp_core.h"
+#include "device/rcp/rsp/rsp_core.h"
 #include "main/main.h"
 #include "plugin/plugin.h"
 
@@ -160,9 +163,48 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
     }
 }
 
+/* Post soft-reset heartbeat: once a second for ~20 s after a soft reset it
+ * logs the state of the CPU/RCP so that a black screen can be traced. */
+int g_rmg_diag_active = 0;
+unsigned int g_rmg_diag_vi = 0, g_rmg_diag_sp_gfx = 0, g_rmg_diag_sp_audio = 0, g_rmg_diag_sp_other = 0;
+
+static void rmg_diag_tick(struct vi_controller* vi)
+{
+    static unsigned int lines = 0;
+    struct r4300_core* r4300 = vi->mi->r4300;
+    struct rdp_core* dp = vi->dp;
+    struct rsp_core* sp = dp->sp;
+
+    if (g_rmg_diag_vi == 0)
+        lines = 0;
+
+    g_rmg_diag_vi++;
+    if ((g_rmg_diag_vi % 60) != 0)
+        return;
+
+    DebugMessage(M64MSG_INFO,
+        "Reset heartbeat #%u: vi=%u pc=%08x sp_tasks(gfx/audio/other)=%u/%u/%u SP_STATUS=%08x SP_PC=%08x "
+        "DPC(st/start/end/cur)=%x/%x/%x/%x unfreeze=%u MI(intr/mask)=%x/%x VI(status/origin/hstart)=%x/%x/%x",
+        lines + 1, g_rmg_diag_vi, (unsigned)*r4300_pc(r4300),
+        g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other,
+        (unsigned)sp->regs[SP_STATUS_REG], (unsigned)sp->regs2[SP_PC_REG],
+        (unsigned)dp->dpc_regs[DPC_STATUS_REG], (unsigned)dp->dpc_regs[DPC_START_REG],
+        (unsigned)dp->dpc_regs[DPC_END_REG], (unsigned)dp->dpc_regs[DPC_CURRENT_REG],
+        (unsigned)dp->do_on_unfreeze,
+        (unsigned)vi->mi->regs[MI_INTR_REG], (unsigned)vi->mi->regs[MI_INTR_MASK_REG],
+        (unsigned)vi->regs[VI_STATUS_REG], (unsigned)vi->regs[VI_ORIGIN_REG], (unsigned)vi->regs[VI_H_START_REG]);
+
+    if (++lines >= 20)
+        g_rmg_diag_active = 0;
+}
+
 void vi_vertical_interrupt_event(void* opaque)
 {
     struct vi_controller* vi = (struct vi_controller*)opaque;
+
+    if (g_rmg_diag_active)
+        rmg_diag_tick(vi);
+
     if (vi->dp->do_on_unfreeze & DELAY_DP_INT)
         vi->dp->do_on_unfreeze |= DELAY_UPDATESCREEN;
     else

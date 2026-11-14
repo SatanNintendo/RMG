@@ -323,8 +323,14 @@ void write_rsp_regs2(void* opaque, uint32_t address, uint32_t value, uint32_t ma
         masked_write(&sp->regs2[reg], value, mask);
 }
 
+extern unsigned int g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other;
+
 void do_SP_Task(struct rsp_core* sp)
 {
+    if (sp->mem[0xfc0/4] == 1) g_rmg_diag_sp_gfx++;
+    else if (sp->mem[0xfc0/4] == 2) g_rmg_diag_sp_audio++;
+    else g_rmg_diag_sp_other++;
+
     uint32_t save_pc = sp->regs2[SP_PC_REG] & ~0xfff;
 
     uint32_t sp_delay_time;

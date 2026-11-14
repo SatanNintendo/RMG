@@ -43,6 +43,7 @@
 #include "device/r4300/recomp.h"
 #include "device/rcp/ai/ai_controller.h"
 #include "device/rcp/mi/mi_controller.h"
+#include "device/rcp/rdp/rdp_core.h"
 #include "device/rcp/rsp/rsp_core.h"
 #include "device/rcp/si/si_controller.h"
 #include "device/rcp/vi/vi_controller.h"
@@ -439,6 +440,9 @@ void special_int_handler(void* opaque)
  * Their "busy" flags would then stay set forever, and the restarted game
  * would wait on them until the end of time (typically a black screen).
  * The reset line aborts those transfers on real hardware, so do the same. */
+extern int g_rmg_diag_active;
+extern unsigned int g_rmg_diag_vi, g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other;
+
 static void abort_inflight_rcp_dma(struct device* dev)
 {
     struct rsp_core* sp = &dev->sp;
@@ -468,6 +472,18 @@ static void abort_inflight_rcp_dma(struct device* dev)
 
     /* no RCP interrupt can be pending anymore: the events that raised them are gone */
     dev->mi.regs[MI_INTR_REG] = 0;
+
+    /* RDP: a freeze left over from the previous run would keep swallowing
+     * the delayed "update screen" / DP interrupt of the restarted game */
+    dev->dp.dpc_regs[DPC_STATUS_REG] &= ~DPC_STATUS_FREEZE;
+    dev->dp.do_on_unfreeze = 0;
+
+    /* start the post-reset heartbeat (see vi_controller.c) */
+    g_rmg_diag_active = 1;
+    g_rmg_diag_vi = 0;
+    g_rmg_diag_sp_gfx = 0;
+    g_rmg_diag_sp_audio = 0;
+    g_rmg_diag_sp_other = 0;
 }
 
 void nmi_int_handler(void* opaque)
