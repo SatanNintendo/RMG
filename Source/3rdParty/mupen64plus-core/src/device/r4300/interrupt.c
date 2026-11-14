@@ -42,6 +42,9 @@
 #include "device/r4300/r4300_core.h"
 #include "device/r4300/recomp.h"
 #include "device/rcp/ai/ai_controller.h"
+#include "device/rcp/mi/mi_controller.h"
+#include "device/rcp/rsp/rsp_core.h"
+#include "device/rcp/si/si_controller.h"
 #include "device/rcp/vi/vi_controller.h"
 #include "main/main.h"
 #include "plugin/plugin.h"
@@ -431,6 +434,42 @@ void special_int_handler(void* opaque)
 
 /* XXX: this should only require r4300 struct not device ? */
 /* XXX: This is completly WTF ! */
+/* A soft reset wipes the whole interrupt queue (init_interrupt), so the
+ * completion events of any RCP DMA that was in flight will never fire.
+ * Their "busy" flags would then stay set forever, and the restarted game
+ * would wait on them until the end of time (typically a black screen).
+ * The reset line aborts those transfers on real hardware, so do the same. */
+static void abort_inflight_rcp_dma(struct device* dev)
+{
+    struct rsp_core* sp = &dev->sp;
+    struct si_controller* si = &dev->si;
+    struct ai_controller* ai = &dev->ai;
+
+    DebugMessage(M64MSG_INFO, "Soft reset: SP dma busy=%u full=%u task_locked=%u, SI status=0x%x dma_dir=%u",
+                 (unsigned)sp->regs[SP_DMA_BUSY_REG], (unsigned)sp->regs[SP_DMA_FULL_REG],
+                 (unsigned)sp->rsp_task_locked, (unsigned)si->regs[SI_STATUS_REG], (unsigned)si->dma_dir);
+
+    /* RSP: abort DMA and drop a yielded/locked task */
+    sp->regs[SP_DMA_BUSY_REG] = 0;
+    sp->regs[SP_DMA_FULL_REG] = 0;
+    sp->regs[SP_STATUS_REG] &= ~(SP_STATUS_DMA_BUSY | SP_STATUS_DMA_FULL);
+    memset(sp->fifo, 0, sizeof(sp->fifo));
+    sp->rsp_task_locked = 0;
+    dev->r4300.cp0.interrupt_unsafe_state &= ~INTR_UNSAFE_RSP;
+
+    /* SI: abort DMA */
+    si->dma_dir = SI_NO_DMA;
+    si->regs[SI_STATUS_REG] &= ~(SI_STATUS_DMA_BUSY | SI_STATUS_IO_BUSY | SI_STATUS_INTERRUPT);
+
+    /* AI: drop queued DMA (status register is cleared by the caller) */
+    memset(ai->fifo, 0, sizeof(ai->fifo));
+    ai->last_read = 0;
+    ai->delayed_carry = 0;
+
+    /* no RCP interrupt can be pending anymore: the events that raised them are gone */
+    dev->mi.regs[MI_INTR_REG] = 0;
+}
+
 void nmi_int_handler(void* opaque)
 {
     struct device* dev = (struct device*)opaque;
@@ -453,6 +492,7 @@ void nmi_int_handler(void* opaque)
     cp0_regs[CP0_COUNT_REG] = 0;
     g_gs_vi_counter = 0;
     init_interrupt(&r4300->cp0);
+    abort_inflight_rcp_dma(dev);
 
     add_interrupt_event(&r4300->cp0, VI_INT, dev->vi.delay);
 
