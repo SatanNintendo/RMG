@@ -21,6 +21,8 @@
 
 #define M64P_CORE_PROTOTYPES 1
 
+#include <time.h>
+#include <string.h>
 #include "interrupt.h"
 
 #ifdef __MINGW32__
@@ -442,6 +444,8 @@ void special_int_handler(void* opaque)
  * The reset line aborts those transfers on real hardware, so do the same. */
 extern int g_rmg_diag_active;
 extern unsigned int g_rmg_diag_vi, g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other;
+extern unsigned int g_rmg_diag_ev[6];
+extern clock_t g_rmg_diag_t0;
 
 static void abort_inflight_rcp_dma(struct device* dev)
 {
@@ -449,7 +453,7 @@ static void abort_inflight_rcp_dma(struct device* dev)
     struct si_controller* si = &dev->si;
     struct ai_controller* ai = &dev->ai;
 
-    DebugMessage(M64MSG_INFO, "Soft reset: SP dma busy=%u full=%u task_locked=%u, SI status=0x%x dma_dir=%u",
+    DebugMessage(M64MSG_VERBOSE, "Soft reset: SP dma busy=%u full=%u task_locked=%u, SI status=0x%x dma_dir=%u",
                  (unsigned)sp->regs[SP_DMA_BUSY_REG], (unsigned)sp->regs[SP_DMA_FULL_REG],
                  (unsigned)sp->rsp_task_locked, (unsigned)si->regs[SI_STATUS_REG], (unsigned)si->dma_dir);
 
@@ -484,6 +488,8 @@ static void abort_inflight_rcp_dma(struct device* dev)
     g_rmg_diag_sp_gfx = 0;
     g_rmg_diag_sp_audio = 0;
     g_rmg_diag_sp_other = 0;
+    memset(g_rmg_diag_ev, 0, sizeof(g_rmg_diag_ev));
+    g_rmg_diag_t0 = clock();
 }
 
 void nmi_int_handler(void* opaque)
@@ -641,6 +647,20 @@ void gen_interrupt(struct r4300_core* r4300)
         r4300->cp0.last_addr = dest;
         generic_jump_to(r4300, dest);
         return;
+    }
+
+    if (g_rmg_diag_active)
+    {
+        switch (r4300->cp0.q.first->data.type)
+        {
+            case COMPARE_INT: g_rmg_diag_ev[0]++; break;
+            case SI_INT:      g_rmg_diag_ev[1]++; break;
+            case PI_INT:      g_rmg_diag_ev[2]++; break;
+            case AI_INT:      g_rmg_diag_ev[3]++; break;
+            case SP_INT:      g_rmg_diag_ev[4]++; break;
+            case DP_INT:      g_rmg_diag_ev[5]++; break;
+            default: break;
+        }
     }
 
     switch (r4300->cp0.q.first->data.type)

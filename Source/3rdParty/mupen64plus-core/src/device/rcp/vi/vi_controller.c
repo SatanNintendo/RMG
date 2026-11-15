@@ -28,6 +28,7 @@
 #include "device/memory/memory.h"
 #include "device/r4300/r4300_core.h"
 #include "device/rcp/mi/mi_controller.h"
+#include <time.h>
 #include "device/r4300/cp0.h"
 #include "device/rcp/rdp/rdp_core.h"
 #include "device/rcp/rsp/rsp_core.h"
@@ -168,6 +169,8 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
  * logs the state of the CPU/RCP so that a black screen can be traced. */
 int g_rmg_diag_active = 0;
 unsigned int g_rmg_diag_vi = 0, g_rmg_diag_sp_gfx = 0, g_rmg_diag_sp_audio = 0, g_rmg_diag_sp_other = 0;
+unsigned int g_rmg_diag_ev[6] = {0, 0, 0, 0, 0, 0};
+clock_t g_rmg_diag_t0 = 0;
 
 static void rmg_diag_tick(struct vi_controller* vi)
 {
@@ -183,10 +186,15 @@ static void rmg_diag_tick(struct vi_controller* vi)
     if ((g_rmg_diag_vi % 60) != 0)
         return;
 
-    DebugMessage(M64MSG_INFO,
-        "Reset heartbeat #%u: vi=%u pc=%08x sp_tasks(gfx/audio/other)=%u/%u/%u SP_STATUS=%08x SP_PC=%08x "
+    /* VERBOSE on purpose: INFO/STATUS core messages are shown in the RMG status
+     * bar and a long text there makes the main window grow. */
+    DebugMessage(M64MSG_VERBOSE,
+        "Reset heartbeat #%u: ms=%ld vi=%u pc=%08x ev(cmp/si/pi/ai/sp/dp)=%u/%u/%u/%u/%u/%u "
+        "sp_tasks(gfx/audio/other)=%u/%u/%u SP_STATUS=%08x SP_PC=%08x "
         "DPC(st/start/end/cur)=%x/%x/%x/%x unfreeze=%u MI(intr/mask)=%x/%x VI(status/origin/hstart)=%x/%x/%x",
-        lines + 1, g_rmg_diag_vi, (unsigned)*r4300_pc(r4300),
+        lines + 1, (long)((g_rmg_diag_t0 == 0) ? 0 : (clock() - g_rmg_diag_t0) * 1000 / CLOCKS_PER_SEC),
+        g_rmg_diag_vi, (unsigned)*r4300_pc(r4300),
+        g_rmg_diag_ev[0], g_rmg_diag_ev[1], g_rmg_diag_ev[2], g_rmg_diag_ev[3], g_rmg_diag_ev[4], g_rmg_diag_ev[5],
         g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other,
         (unsigned)sp->regs[SP_STATUS_REG], (unsigned)sp->regs2[SP_PC_REG],
         (unsigned)dp->dpc_regs[DPC_STATUS_REG], (unsigned)dp->dpc_regs[DPC_START_REG],
