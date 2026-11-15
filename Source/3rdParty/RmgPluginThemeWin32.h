@@ -28,8 +28,8 @@ typedef struct RmgPluginThemeActivation
 } RmgPluginThemeActivation;
 
 /* Activate the plugin DLL's embedded Common Controls v6 manifest (resource 2)
-   on the calling thread. This is important for DLL-hosted dialogs because the
-   process executable does not necessarily carry a v6 manifest of its own. */
+   on the calling thread. This matters for DLL-hosted dialogs whose executable
+   host may not have its own v6 manifest. */
 static BOOL RmgPluginThemeActivate(HMODULE module, RmgPluginThemeActivation *activation)
 {
     ACTCTXW context;
@@ -46,7 +46,8 @@ static BOOL RmgPluginThemeActivate(HMODULE module, RmgPluginThemeActivation *act
     if (module == NULL)
         return FALSE;
 
-    pathLength = GetModuleFileNameW(module, modulePath, (DWORD)(sizeof(modulePath) / sizeof(modulePath[0])));
+    pathLength = GetModuleFileNameW(module, modulePath,
+        (DWORD)(sizeof(modulePath) / sizeof(modulePath[0])));
     if (pathLength == 0 || pathLength >= (DWORD)(sizeof(modulePath) / sizeof(modulePath[0])))
         return FALSE;
 
@@ -112,7 +113,7 @@ static HBRUSH RmgPluginThemeDarkInputBrush(void)
     return brush;
 }
 
-static HBRUSH RmgPluginThemeDarkButtonBrush(BOOL pressed, BOOL hot, BOOL disabled)
+static HBRUSH RmgPluginThemeButtonBrush(BOOL pressed, BOOL hot, BOOL disabled)
 {
     static HBRUSH normalBrush = NULL;
     static HBRUSH hotBrush = NULL;
@@ -122,9 +123,9 @@ static HBRUSH RmgPluginThemeDarkButtonBrush(BOOL pressed, BOOL hot, BOOL disable
     if (normalBrush == NULL)
         normalBrush = CreateSolidBrush(RGB(65, 68, 73));
     if (hotBrush == NULL)
-        hotBrush = CreateSolidBrush(RGB(78, 83, 90));
+        hotBrush = CreateSolidBrush(RGB(78, 84, 92));
     if (pressedBrush == NULL)
-        pressedBrush = CreateSolidBrush(RGB(43, 47, 52));
+        pressedBrush = CreateSolidBrush(RGB(43, 47, 53));
     if (disabledBrush == NULL)
         disabledBrush = CreateSolidBrush(RGB(49, 51, 54));
 
@@ -135,46 +136,80 @@ static HBRUSH RmgPluginThemeDarkButtonBrush(BOOL pressed, BOOL hot, BOOL disable
     return hot ? hotBrush : normalBrush;
 }
 
-static HBRUSH RmgPluginThemeDarkBorderBrush(void)
+#define RMG_PLUGIN_DARK_BUTTON_PROPERTY L"RMG.Plugin.DarkButton"
+#define RMG_PLUGIN_DARK_GROUP_PROPERTY  L"RMG.Plugin.DarkGroup"
+#define RMG_PLUGIN_DARK_CHECK_PROPERTY  L"RMG.Plugin.DarkCheck"
+#define RMG_PLUGIN_BUTTON_HOT_PROPERTY L"RMG.Plugin.ButtonHot"
+#define RMG_PLUGIN_DEFAULT_ID_SUPPORT_PROPERTY L"RMG.Plugin.DefaultIdSupport"
+#define RMG_PLUGIN_DWM_PROPERTY        L"RMG.Plugin.DwmApplied"
+
+/* Keep DWM optional: Windows 7 and older SDK/runtime combinations must not
+   acquire a hard import dependency on dwmapi. The attributes are attempted
+   dynamically and ignored when the running Windows version does not support
+   them. */
+typedef HRESULT (WINAPI *RmgDwmSetWindowAttributeFn)(HWND, DWORD, LPCVOID, DWORD);
+
+static void RmgPluginThemeApplyWindowFrame(HWND hwnd, BOOL dark)
 {
-    static HBRUSH brush = NULL;
-    if (brush == NULL)
-        brush = CreateSolidBrush(RGB(105, 105, 105));
-    return brush;
+    HMODULE dwmModule;
+    RmgDwmSetWindowAttributeFn setAttribute;
+    BOOL darkValue = dark;
+    DWORD cornerPreference = dark ? 2u : 0u; /* DWMWCP_ROUND / DWMWCP_DEFAULT */
+    HRESULT result;
+
+    if (hwnd == NULL || !IsWindowVisible(hwnd) ||
+        GetPropW(hwnd, RMG_PLUGIN_DWM_PROPERTY) != NULL)
+        return;
+
+    dwmModule = LoadLibraryW(L"dwmapi.dll");
+    if (dwmModule == NULL)
+    {
+        SetPropW(hwnd, RMG_PLUGIN_DWM_PROPERTY, (HANDLE)(ULONG_PTR)1);
+        return;
+    }
+
+    setAttribute = (RmgDwmSetWindowAttributeFn)GetProcAddress(dwmModule, "DwmSetWindowAttribute");
+    if (setAttribute != NULL)
+    {
+        /* Attribute 20 is used by current Windows 11; 19 is the earlier
+           Windows 10 value. Try the newer value first and fall back. */
+        result = setAttribute(hwnd, 20u, &darkValue, sizeof(darkValue));
+        if (FAILED(result))
+            result = setAttribute(hwnd, 19u, &darkValue, sizeof(darkValue));
+
+        /* Windows 11 only. Older systems simply reject this attribute. */
+        setAttribute(hwnd, 33u, &cornerPreference, sizeof(cornerPreference));
+    }
+
+    FreeLibrary(dwmModule);
+    /* Defer the attempt until the top-level window is visible. In particular,
+       SoftRDP attaches its theme during WM_NCCREATE, before DWM can reliably
+       apply a non-client style. */
+    SetPropW(hwnd, RMG_PLUGIN_DWM_PROPERTY, (HANDLE)(ULONG_PTR)1);
 }
 
-/* Push buttons are converted to owner-draw in dark mode so Windows 7 and
-   classic-theme fallbacks do not leave bright button faces in plugin pages.
-   Store the original style as a window property for text alignment/default
-   button rendering without changing the button's command/notification flow. */
-#define RMG_PLUGIN_DARK_BUTTON_PROPERTY L"RMG.Plugin.DarkButton"
-#define RMG_PLUGIN_DARK_CHECK_PROPERTY L"RMG.Plugin.DarkCheck"
-#define RMG_PLUGIN_DARK_GROUP_PROPERTY L"RMG.Plugin.DarkGroup"
-#define RMG_PLUGIN_DARK_COMBO_PROPERTY L"RMG.Plugin.DarkCombo"
-#define RMG_PLUGIN_DARK_TRACK_PROPERTY L"RMG.Plugin.DarkTrack"
-#define RMG_PLUGIN_DARK_FRAME_PROPERTY L"RMG.Plugin.DarkFrame"
-#define RMG_PLUGIN_DARK_PANEL_PROPERTY L"RMG.Plugin.DarkPanel"
-#define RMG_PLUGIN_TAB_HOT_PROPERTY L"RMG.Plugin.TabHotItem"
-
-static BOOL RmgPluginThemeDrawDarkButton(const DRAWITEMSTRUCT *drawItem)
+/* Draw the decorative surfaces of push buttons, group boxes and tab labels.
+   Their IDs, input handling and notifications remain native. Checkbox/radio
+   controls keep their native check-state behaviour; only dark-mode painting
+   of their face and caption is custom. Combo boxes and TrackBars retain their
+   native painting code. */
+static BOOL RmgPluginThemeDrawButton(const DRAWITEMSTRUCT *drawItem)
 {
     HWND button;
     HDC dc;
-    RECT borderRect;
+    RECT itemRect;
     RECT textRect;
-    wchar_t text[256];
+    wchar_t text[256] = { 0 };
     HANDLE storedStyle;
     LONG_PTR originalStyle;
-    HFONT buttonFont;
+    HFONT font;
+    HPEN borderPen;
     HGDIOBJ oldPen;
     HGDIOBJ oldBrush;
-    HPEN borderPen;
-    HRGN roundedRegion;
     UINT textFlags;
     BOOL disabled;
     BOOL pressed;
     BOOL hot;
-    int borderWidth;
     int savedDC;
 
     if (drawItem == NULL || drawItem->CtlType != ODT_BUTTON || drawItem->hwndItem == NULL)
@@ -187,40 +222,28 @@ static BOOL RmgPluginThemeDrawDarkButton(const DRAWITEMSTRUCT *drawItem)
 
     dc = drawItem->hDC;
     savedDC = SaveDC(dc);
-    borderRect = drawItem->rcItem;
-    textRect = borderRect;
+    itemRect = drawItem->rcItem;
+    textRect = itemRect;
     originalStyle = (LONG_PTR)(ULONG_PTR)storedStyle;
-    buttonFont = (HFONT)SendMessageW(button, WM_GETFONT, 0, 0);
-    if (buttonFont != NULL)
-        SelectObject(dc, buttonFont);
+    font = (HFONT)SendMessageW(button, WM_GETFONT, 0, 0);
+    if (font != NULL)
+        SelectObject(dc, font);
+
     disabled = (drawItem->itemState & ODS_DISABLED) != 0;
     pressed = (drawItem->itemState & ODS_SELECTED) != 0;
-    hot = (drawItem->itemState & ODS_HOTLIGHT) != 0;
+    hot = (drawItem->itemState & ODS_HOTLIGHT) != 0 ||
+        GetPropW(button, RMG_PLUGIN_BUTTON_HOT_PROPERTY) != NULL;
 
-    /* Draw a softly rounded, subtly raised button instead of the flat
-       square fallback used by classic Win32 controls.  Only the painting is
-       replaced; the real button window keeps its original command semantics. */
-    borderWidth = ((originalStyle & BS_TYPEMASK) == BS_DEFPUSHBUTTON) ? 2 : 1;
-    roundedRegion = CreateRoundRectRgn(borderRect.left, borderRect.top,
-        borderRect.right + 1, borderRect.bottom + 1, 10, 10);
-    if (roundedRegion != NULL)
-    {
-        SelectClipRgn(dc, roundedRegion);
-        FillRect(dc, &borderRect, RmgPluginThemeDarkButtonBrush(pressed, hot, disabled));
-        SelectClipRgn(dc, NULL);
-        DeleteObject(roundedRegion);
-    }
-    else
-    {
-        FillRect(dc, &borderRect, RmgPluginThemeDarkButtonBrush(pressed, hot, disabled));
-    }
-
-    borderPen = CreatePen(PS_SOLID, borderWidth,
-        disabled ? RGB(82, 84, 87) :
-        (((originalStyle & BS_TYPEMASK) == BS_DEFPUSHBUTTON) ? RGB(112, 151, 196) : RGB(105, 111, 119)));
+    /* A restrained rounded surface, a fine border and an accent on the
+       default button approximate the Qt/Angrylion visual language without
+       replacing the Win32 input/command behaviour. */
+    borderPen = CreatePen(PS_SOLID, 1,
+        disabled ? RGB(78, 81, 85) :
+        (((originalStyle & BS_TYPEMASK) == BS_DEFPUSHBUTTON)
+            ? RGB(104, 151, 203) : RGB(98, 105, 114)));
     oldPen = SelectObject(dc, borderPen);
-    oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-    RoundRect(dc, borderRect.left, borderRect.top, borderRect.right, borderRect.bottom, 10, 10);
+    oldBrush = SelectObject(dc, RmgPluginThemeButtonBrush(pressed, hot, disabled));
+    RoundRect(dc, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom, 8, 8);
     if (oldBrush != NULL)
         SelectObject(dc, oldBrush);
     if (oldPen != NULL)
@@ -228,32 +251,40 @@ static BOOL RmgPluginThemeDrawDarkButton(const DRAWITEMSTRUCT *drawItem)
     if (borderPen != NULL)
         DeleteObject(borderPen);
 
-    /* A restrained upper highlight and lower edge give the button depth
-       without imitating the old raised Windows 95 bevel. */
-    if (!disabled && !pressed && borderRect.bottom - borderRect.top > 8)
+    /* Subtle upper/lower edge highlights give the flat Fusion-dark surface
+       the same restrained depth as the host's modern Qt controls. */
+    if (!disabled && !pressed && itemRect.right - itemRect.left > 18 &&
+        itemRect.bottom - itemRect.top > 10)
     {
-        HPEN highlightPen = CreatePen(PS_SOLID, 1, hot ? RGB(135, 155, 180) : RGB(91, 97, 105));
-        HGDIOBJ previousPen = SelectObject(dc, highlightPen);
-        MoveToEx(dc, borderRect.left + 7, borderRect.top + 2, NULL);
-        LineTo(dc, borderRect.right - 7, borderRect.top + 2);
+        HPEN edgePen = CreatePen(PS_SOLID, 1,
+            hot ? RGB(126, 143, 164) : RGB(91, 97, 106));
+        HGDIOBJ previousPen = SelectObject(dc, edgePen);
+        MoveToEx(dc, itemRect.left + 8, itemRect.top + 2, NULL);
+        LineTo(dc, itemRect.right - 8, itemRect.top + 2);
         if (previousPen != NULL)
             SelectObject(dc, previousPen);
-        if (highlightPen != NULL)
-            DeleteObject(highlightPen);
-    }
+        if (edgePen != NULL)
+            DeleteObject(edgePen);
 
-    InflateRect(&textRect, -borderWidth, -borderWidth);
+        edgePen = CreatePen(PS_SOLID, 1, RGB(38, 41, 46));
+        previousPen = SelectObject(dc, edgePen);
+        MoveToEx(dc, itemRect.left + 8, itemRect.bottom - 2, NULL);
+        LineTo(dc, itemRect.right - 8, itemRect.bottom - 2);
+        if (previousPen != NULL)
+            SelectObject(dc, previousPen);
+        if (edgePen != NULL)
+            DeleteObject(edgePen);
+    }
 
     if (GetWindowTextW(button, text, (int)(sizeof(text) / sizeof(text[0]))) > 0)
     {
-        /* Keep the horizontal inset small: the N-Rage directional captions
-           (for example, the Russian word "Вправо") are wider than English. */
-        InflateRect(&textRect, -2, -2);
+        /* Keep horizontal inset minimal: several N-Rage mapping buttons are
+           deliberately narrow, and translated captions such as "Вправо"
+           must retain the same usable width as in the native light theme. */
+        InflateRect(&textRect, -1, -1);
         textFlags = DT_VCENTER;
         if ((originalStyle & BS_MULTILINE) != 0)
-        {
             textFlags |= DT_WORDBREAK | DT_CENTER;
-        }
         else
         {
             textFlags |= DT_SINGLELINE | DT_END_ELLIPSIS;
@@ -268,162 +299,83 @@ static BOOL RmgPluginThemeDrawDarkButton(const DRAWITEMSTRUCT *drawItem)
             textFlags |= DT_HIDEPREFIX;
 
         SetBkMode(dc, TRANSPARENT);
-        SetTextColor(dc, disabled ? RGB(145, 145, 145) : RGB(245, 245, 245));
+        SetTextColor(dc, disabled ? RGB(145, 148, 153) : RGB(241, 243, 246));
         DrawTextW(dc, text, -1, &textRect, textFlags);
     }
 
     if ((drawItem->itemState & ODS_FOCUS) != 0 &&
         (drawItem->itemState & ODS_NOFOCUSRECT) == 0)
     {
-        InflateRect(&textRect, 2, 1);
+        InflateRect(&textRect, 1, 1);
         DrawFocusRect(dc, &textRect);
     }
 
     if (savedDC != 0)
         RestoreDC(dc, savedDC);
-
-    return TRUE;
-}
-
-static BOOL RmgPluginThemeDrawTabControl(HWND hwnd)
-{
-    PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
-    RECT clientRect;
-    RECT pageRect;
-    int itemCount;
-    int selectedItem;
-    int hotItem;
-    int i;
-    HFONT font;
-    HGDIOBJ oldFont;
-
-    if (dc == NULL)
-        return FALSE;
-
-    GetClientRect(hwnd, &clientRect);
-    FillRect(dc, &clientRect, RmgPluginThemeDarkBrush());
-
-    pageRect = clientRect;
-    TabCtrl_AdjustRect(hwnd, FALSE, &pageRect);
-    if (pageRect.left < pageRect.right && pageRect.top < pageRect.bottom)
-    {
-        HPEN pagePen = CreatePen(PS_SOLID, 1, RGB(91, 96, 103));
-        HGDIOBJ oldPen = SelectObject(dc, pagePen);
-        HGDIOBJ oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-        RoundRect(dc, pageRect.left, pageRect.top, pageRect.right, pageRect.bottom, 7, 7);
-        if (oldBrush != NULL)
-            SelectObject(dc, oldBrush);
-        if (oldPen != NULL)
-            SelectObject(dc, oldPen);
-        if (pagePen != NULL)
-            DeleteObject(pagePen);
-    }
-
-    itemCount = (int)SendMessageW(hwnd, TCM_GETITEMCOUNT, 0, 0);
-    selectedItem = (int)SendMessageW(hwnd, TCM_GETCURSEL, 0, 0);
-    {
-        HANDLE hotProperty = GetPropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
-        hotItem = hotProperty != NULL ? (int)(INT_PTR)hotProperty - 1 : -1;
-    }
-    font = (HFONT)SendMessageW(hwnd, WM_GETFONT, 0, 0);
-    oldFont = font != NULL ? SelectObject(dc, font) : NULL;
-    SetBkMode(dc, TRANSPARENT);
-
-    for (i = 0; i < itemCount; ++i)
-    {
-        RECT itemRect;
-        RECT textRect;
-        wchar_t caption[128] = { 0 };
-        TCITEMW item;
-        BOOL selected = (i == selectedItem);
-        BOOL hot = (i == hotItem);
-        COLORREF fillColor = selected ? RGB(70, 74, 80) :
-            (hot ? RGB(61, 65, 71) : RGB(43, 46, 51));
-        COLORREF borderColor = selected ? RGB(122, 151, 184) : RGB(86, 91, 98);
-        HPEN itemPen;
-        HBRUSH itemBrush;
-        HGDIOBJ previousPen;
-        HGDIOBJ previousBrush;
-
-        if (!SendMessageW(hwnd, TCM_GETITEMRECT, (WPARAM)i, (LPARAM)&itemRect))
-            continue;
-
-        ZeroMemory(&item, sizeof(item));
-        item.mask = TCIF_TEXT;
-        item.pszText = caption;
-        item.cchTextMax = (int)(sizeof(caption) / sizeof(caption[0]));
-        SendMessageW(hwnd, TCM_GETITEMW, (WPARAM)i, (LPARAM)&item);
-
-        itemBrush = CreateSolidBrush(fillColor);
-        itemPen = CreatePen(PS_SOLID, selected ? 1 : 1, borderColor);
-        previousBrush = SelectObject(dc, itemBrush);
-        previousPen = SelectObject(dc, itemPen);
-        RoundRect(dc, itemRect.left + 1, itemRect.top + 1,
-            itemRect.right - 1, itemRect.bottom + 1, 7, 7);
-        if (previousPen != NULL)
-            SelectObject(dc, previousPen);
-        if (previousBrush != NULL)
-            SelectObject(dc, previousBrush);
-        if (itemPen != NULL)
-            DeleteObject(itemPen);
-        if (itemBrush != NULL)
-            DeleteObject(itemBrush);
-
-        textRect = itemRect;
-        InflateRect(&textRect, -5, -1);
-        SetTextColor(dc, IsWindowEnabled(hwnd) ? RGB(240, 242, 245) : RGB(145, 148, 153));
-        DrawTextW(dc, caption, -1, &textRect,
-            DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
-    }
-
-    if (oldFont != NULL)
-        SelectObject(dc, oldFont);
-    EndPaint(hwnd, &paint);
     return TRUE;
 }
 
 static BOOL RmgPluginThemeDrawDarkCheckbox(HWND hwnd)
 {
     PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
+    HDC dc;
     RECT clientRect;
     RECT indicatorRect;
     RECT textRect;
     wchar_t caption[256] = { 0 };
-    LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
-    LRESULT checkState = SendMessageW(hwnd, BM_GETCHECK, 0, 0);
-    BOOL radio = ((style & BS_TYPEMASK) == BS_RADIOBUTTON ||
-        (style & BS_TYPEMASK) == BS_AUTORADIOBUTTON);
-    BOOL leftText = (style & BS_LEFTTEXT) != 0 || (style & BS_RIGHTBUTTON) != 0;
-    BOOL enabled = IsWindowEnabled(hwnd);
+    LONG_PTR style;
+    LRESULT checkState;
+    BOOL radio;
+    BOOL leftText;
+    BOOL enabled;
+    HFONT font;
     int indicatorSize = 13;
     int savedDC;
-    HFONT font;
 
+    dc = BeginPaint(hwnd, &paint);
     if (dc == NULL)
         return FALSE;
 
     savedDC = SaveDC(dc);
     GetClientRect(hwnd, &clientRect);
+    /* Resource dialogs contain compact 10-13 px controller checkboxes.
+       Fit the mark to the actual client area instead of clipping a fixed
+       13 px indicator at the control edges. */
+    if (indicatorSize > (clientRect.right - clientRect.left - 4))
+        indicatorSize = clientRect.right - clientRect.left - 4;
+    if (indicatorSize > (clientRect.bottom - clientRect.top - 2))
+        indicatorSize = clientRect.bottom - clientRect.top - 2;
+    if (indicatorSize < 5)
+        indicatorSize = 5;
+    style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+    checkState = SendMessageW(hwnd, BM_GETCHECK, 0, 0);
+    radio = ((style & BS_TYPEMASK) == BS_RADIOBUTTON ||
+        (style & BS_TYPEMASK) == BS_AUTORADIOBUTTON);
+    leftText = (style & BS_LEFTTEXT) != 0 || (style & BS_RIGHTBUTTON) != 0;
+    enabled = IsWindowEnabled(hwnd);
+
     FillRect(dc, &clientRect, RmgPluginThemeDarkBrush());
     indicatorRect.left = leftText ? clientRect.right - indicatorSize - 2 : clientRect.left + 2;
-    indicatorRect.top = clientRect.top + (clientRect.bottom - clientRect.top - indicatorSize) / 2;
+    indicatorRect.top = clientRect.top +
+        ((clientRect.bottom - clientRect.top - indicatorSize) / 2);
     indicatorRect.right = indicatorRect.left + indicatorSize;
     indicatorRect.bottom = indicatorRect.top + indicatorSize;
 
     if (radio)
     {
-        HPEN pen = CreatePen(PS_SOLID, 1, enabled ? RGB(130, 137, 146) : RGB(78, 81, 85));
+        HPEN pen = CreatePen(PS_SOLID, 1,
+            enabled ? RGB(143, 151, 161) : RGB(78, 81, 85));
         HGDIOBJ oldPen = SelectObject(dc, pen);
         HGDIOBJ oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
         Ellipse(dc, indicatorRect.left, indicatorRect.top,
             indicatorRect.right, indicatorRect.bottom);
         if (checkState == BST_CHECKED)
         {
-            HBRUSH dotBrush = CreateSolidBrush(enabled ? RGB(121, 169, 218) : RGB(99, 104, 111));
+            HBRUSH dotBrush = CreateSolidBrush(
+                enabled ? RGB(121, 169, 218) : RGB(99, 104, 111));
             RECT dotRect = indicatorRect;
-            InflateRect(&dotRect, -4, -4);
+            int dotInset = indicatorSize / 4;
+            InflateRect(&dotRect, -dotInset, -dotInset);
             FillRect(dc, &dotRect, dotBrush);
             if (dotBrush != NULL)
                 DeleteObject(dotBrush);
@@ -438,18 +390,24 @@ static BOOL RmgPluginThemeDrawDarkCheckbox(HWND hwnd)
     else
     {
         HBRUSH boxBrush = CreateSolidBrush(RGB(29, 31, 34));
-        HPEN boxPen = CreatePen(PS_SOLID, 1, enabled ? RGB(128, 135, 144) : RGB(78, 81, 85));
+        HPEN boxPen = CreatePen(PS_SOLID, 1,
+            enabled ? RGB(143, 151, 161) : RGB(78, 81, 85));
         HGDIOBJ oldPen = SelectObject(dc, boxPen);
         HGDIOBJ oldBrush = SelectObject(dc, boxBrush);
         RoundRect(dc, indicatorRect.left, indicatorRect.top,
             indicatorRect.right, indicatorRect.bottom, 3, 3);
+
         if (checkState == BST_CHECKED)
         {
-            HPEN tickPen = CreatePen(PS_SOLID, 2, enabled ? RGB(221, 231, 242) : RGB(130, 134, 140));
+            HPEN tickPen = CreatePen(PS_SOLID, 2,
+                enabled ? RGB(226, 233, 242) : RGB(130, 134, 140));
             HGDIOBJ previousPen = SelectObject(dc, tickPen);
-            MoveToEx(dc, indicatorRect.left + 3, indicatorRect.top + 7, NULL);
-            LineTo(dc, indicatorRect.left + 6, indicatorRect.top + 10);
-            LineTo(dc, indicatorRect.left + 11, indicatorRect.top + 3);
+            MoveToEx(dc, indicatorRect.left + (indicatorSize / 5),
+                indicatorRect.top + (indicatorSize / 2), NULL);
+            LineTo(dc, indicatorRect.left + (indicatorSize / 2),
+                indicatorRect.top + ((indicatorSize * 3) / 4));
+            LineTo(dc, indicatorRect.right - 2,
+                indicatorRect.top + (indicatorSize / 4));
             if (previousPen != NULL)
                 SelectObject(dc, previousPen);
             if (tickPen != NULL)
@@ -458,9 +416,14 @@ static BOOL RmgPluginThemeDrawDarkCheckbox(HWND hwnd)
         else if (checkState == BST_INDETERMINATE)
         {
             RECT markRect = indicatorRect;
-            InflateRect(&markRect, -3, -4);
-            FillRect(dc, &markRect, RmgPluginThemeDarkBorderBrush());
+            HBRUSH markBrush = CreateSolidBrush(RGB(226, 233, 242));
+            int markInset = indicatorSize / 4;
+            InflateRect(&markRect, -markInset, -markInset);
+            FillRect(dc, &markRect, markBrush);
+            if (markBrush != NULL)
+                DeleteObject(markBrush);
         }
+
         if (oldBrush != NULL)
             SelectObject(dc, oldBrush);
         if (oldPen != NULL)
@@ -482,7 +445,7 @@ static BOOL RmgPluginThemeDrawDarkCheckbox(HWND hwnd)
     if (font != NULL)
         SelectObject(dc, font);
     SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, enabled ? RGB(239, 241, 244) : RGB(145, 148, 153));
+    SetTextColor(dc, enabled ? RGB(239, 242, 246) : RGB(145, 148, 153));
     DrawTextW(dc, caption, -1, &textRect,
         DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
@@ -498,38 +461,43 @@ static BOOL RmgPluginThemeDrawDarkCheckbox(HWND hwnd)
     return TRUE;
 }
 
-static BOOL RmgPluginThemeDrawDarkGroupBox(HWND hwnd)
+static BOOL RmgPluginThemeDrawGroupBox(const DRAWITEMSTRUCT *drawItem)
 {
-    PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
-    RECT clientRect;
+    HWND groupBox;
+    HDC dc;
     RECT frameRect;
     RECT captionRect;
     wchar_t caption[256] = { 0 };
-    HFONT font;
     SIZE captionSize = { 0, 0 };
+    HFONT font;
     HPEN pen;
     HGDIOBJ oldPen;
     HGDIOBJ oldBrush;
+    int savedDC;
 
-    if (dc == NULL)
+    if (drawItem == NULL || drawItem->CtlType != ODT_BUTTON || drawItem->hwndItem == NULL)
         return FALSE;
 
-    GetClientRect(hwnd, &clientRect);
-    FillRect(dc, &clientRect, RmgPluginThemeDarkBrush());
-    GetWindowTextW(hwnd, caption, (int)(sizeof(caption) / sizeof(caption[0])));
-    font = (HFONT)SendMessageW(hwnd, WM_GETFONT, 0, 0);
+    groupBox = drawItem->hwndItem;
+    if (GetPropW(groupBox, RMG_PLUGIN_DARK_GROUP_PROPERTY) == NULL)
+        return FALSE;
+
+    dc = drawItem->hDC;
+    savedDC = SaveDC(dc);
+    frameRect = drawItem->rcItem;
+    frameRect.top += 7;
+    GetWindowTextW(groupBox, caption, (int)(sizeof(caption) / sizeof(caption[0])));
+    font = (HFONT)SendMessageW(groupBox, WM_GETFONT, 0, 0);
     if (font != NULL)
         SelectObject(dc, font);
     if (caption[0] != L'\0')
         GetTextExtentPoint32W(dc, caption, (int)wcslen(caption), &captionSize);
 
-    frameRect = clientRect;
-    frameRect.top += 6;
-    pen = CreatePen(PS_SOLID, 1, RGB(91, 96, 103));
+    pen = CreatePen(PS_SOLID, 1, RGB(91, 98, 108));
     oldPen = SelectObject(dc, pen);
     oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-    RoundRect(dc, frameRect.left, frameRect.top, frameRect.right, frameRect.bottom, 7, 7);
+    RoundRect(dc, frameRect.left, frameRect.top,
+        frameRect.right, frameRect.bottom, 8, 8);
     if (oldBrush != NULL)
         SelectObject(dc, oldBrush);
     if (oldPen != NULL)
@@ -539,241 +507,164 @@ static BOOL RmgPluginThemeDrawDarkGroupBox(HWND hwnd)
 
     if (caption[0] != L'\0')
     {
-        captionRect.left = 9;
-        captionRect.top = 0;
+        captionRect.left = frameRect.left + 10;
+        captionRect.top = drawItem->rcItem.top;
         captionRect.right = captionRect.left + captionSize.cx + 8;
-        captionRect.bottom = captionSize.cy + 2;
+        captionRect.bottom = captionRect.top + captionSize.cy + 3;
         FillRect(dc, &captionRect, RmgPluginThemeDarkBrush());
         SetBkMode(dc, TRANSPARENT);
         SetTextColor(dc, RGB(232, 235, 239));
-        TextOutW(dc, 13, 1, caption, (int)wcslen(caption));
+        TextOutW(dc, captionRect.left + 4, captionRect.top + 1,
+            caption, (int)wcslen(caption));
     }
 
-    EndPaint(hwnd, &paint);
+    if (savedDC != 0)
+        RestoreDC(dc, savedDC);
     return TRUE;
 }
 
-static BOOL RmgPluginThemeDrawDarkPanel(HWND hwnd)
+static BOOL RmgPluginThemeDrawTabItem(const DRAWITEMSTRUCT *drawItem)
 {
-    PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
-    RECT clientRect;
-    HPEN pen;
-    HGDIOBJ oldPen;
-    HGDIOBJ oldBrush;
-
-    if (dc == NULL)
-        return FALSE;
-
-    GetClientRect(hwnd, &clientRect);
-    FillRect(dc, &clientRect, RmgPluginThemeDarkBrush());
-    pen = CreatePen(PS_SOLID, 1, RGB(91, 96, 103));
-    oldPen = SelectObject(dc, pen);
-    oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-    RoundRect(dc, clientRect.left, clientRect.top, clientRect.right, clientRect.bottom, 7, 7);
-    if (oldBrush != NULL)
-        SelectObject(dc, oldBrush);
-    if (oldPen != NULL)
-        SelectObject(dc, oldPen);
-    if (pen != NULL)
-        DeleteObject(pen);
-    EndPaint(hwnd, &paint);
-    return TRUE;
-}
-
-static void RmgPluginThemeDrawDarkFrame(HWND hwnd)
-{
-    HDC dc = GetDC(hwnd);
-    RECT clientRect;
-    HPEN pen;
-    HGDIOBJ oldPen;
-    HGDIOBJ oldBrush;
-
-    if (dc == NULL)
-        return;
-    GetClientRect(hwnd, &clientRect);
-    InflateRect(&clientRect, -1, -1);
-    pen = CreatePen(PS_SOLID, 1, RGB(91, 96, 103));
-    oldPen = SelectObject(dc, pen);
-    oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-    Rectangle(dc, clientRect.left, clientRect.top, clientRect.right, clientRect.bottom);
-    if (oldBrush != NULL)
-        SelectObject(dc, oldBrush);
-    if (oldPen != NULL)
-        SelectObject(dc, oldPen);
-    if (pen != NULL)
-        DeleteObject(pen);
-    ReleaseDC(hwnd, dc);
-}
-
-static BOOL RmgPluginThemeDrawDarkCombo(HWND hwnd)
-{
-    PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
-    RECT clientRect;
+    HWND tab;
+    HDC dc;
+    RECT itemRect;
     RECT textRect;
-    RECT arrowRect;
-    wchar_t caption[256] = { 0 };
-    BOOL enabled = IsWindowEnabled(hwnd);
-    HPEN pen;
-    HGDIOBJ oldPen;
+    wchar_t caption[128] = { 0 };
+    TCITEMW item;
+    BOOL selected;
+    BOOL disabled;
+    COLORREF fillColor;
+    COLORREF borderColor;
+    HBRUSH fillBrush;
+    HPEN borderPen;
     HGDIOBJ oldBrush;
-    POINT arrow[3];
+    HGDIOBJ oldPen;
     HFONT font;
+    int savedDC;
 
-    if (dc == NULL)
+    if (drawItem == NULL || drawItem->CtlType != ODT_TAB || drawItem->hwndItem == NULL)
         return FALSE;
 
-    GetClientRect(hwnd, &clientRect);
-    FillRect(dc, &clientRect, RmgPluginThemeDarkInputBrush());
-    arrowRect = clientRect;
-    arrowRect.left = arrowRect.right - 20;
+    tab = drawItem->hwndItem;
+    dc = drawItem->hDC;
+    itemRect = drawItem->rcItem;
+    selected = (drawItem->itemState & ODS_SELECTED) != 0;
+    disabled = !IsWindowEnabled(tab);
+    fillColor = selected ? RGB(65, 72, 82) : RGB(43, 46, 51);
+    borderColor = selected ? RGB(112, 151, 197) : RGB(82, 88, 97);
+    savedDC = SaveDC(dc);
 
-    pen = CreatePen(PS_SOLID, 1, enabled ? RGB(105, 112, 121) : RGB(73, 76, 81));
-    oldPen = SelectObject(dc, pen);
-    oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
-    RoundRect(dc, clientRect.left, clientRect.top, clientRect.right, clientRect.bottom, 6, 6);
+    fillBrush = CreateSolidBrush(fillColor);
+    borderPen = CreatePen(PS_SOLID, 1, borderColor);
+    oldBrush = SelectObject(dc, fillBrush);
+    oldPen = SelectObject(dc, borderPen);
+    RoundRect(dc, itemRect.left + 1, itemRect.top + 1,
+        itemRect.right - 1, itemRect.bottom, 8, 8);
     if (oldBrush != NULL)
         SelectObject(dc, oldBrush);
     if (oldPen != NULL)
         SelectObject(dc, oldPen);
-    if (pen != NULL)
-        DeleteObject(pen);
+    if (fillBrush != NULL)
+        DeleteObject(fillBrush);
+    if (borderPen != NULL)
+        DeleteObject(borderPen);
 
-    {
-        HPEN separatorPen = CreatePen(PS_SOLID, 1,
-            enabled ? RGB(76, 81, 88) : RGB(59, 62, 67));
-        HGDIOBJ previousPen = SelectObject(dc, separatorPen);
-        MoveToEx(dc, arrowRect.left, arrowRect.top + 3, NULL);
-        LineTo(dc, arrowRect.left, arrowRect.bottom - 3);
-        if (previousPen != NULL)
-            SelectObject(dc, previousPen);
-        if (separatorPen != NULL)
-            DeleteObject(separatorPen);
-    }
-    arrow[0].x = arrowRect.left + 6;
-    arrow[0].y = arrowRect.top + (arrowRect.bottom - arrowRect.top) / 2 - 2;
-    arrow[1].x = arrowRect.left + 14;
-    arrow[1].y = arrow[0].y;
-    arrow[2].x = arrowRect.left + 10;
-    arrow[2].y = arrow[0].y + 5;
-    {
-        HBRUSH arrowBrush = CreateSolidBrush(enabled ? RGB(222, 226, 232) : RGB(132, 136, 142));
-        HGDIOBJ previousBrush = SelectObject(dc, arrowBrush);
-        HGDIOBJ previousPen = SelectObject(dc, GetStockObject(NULL_PEN));
-        Polygon(dc, arrow, 3);
-        if (previousPen != NULL)
-            SelectObject(dc, previousPen);
-        if (previousBrush != NULL)
-            SelectObject(dc, previousBrush);
-        if (arrowBrush != NULL)
-            DeleteObject(arrowBrush);
-    }
+    ZeroMemory(&item, sizeof(item));
+    item.mask = TCIF_TEXT;
+    item.pszText = caption;
+    item.cchTextMax = (int)(sizeof(caption) / sizeof(caption[0]));
+    SendMessageW(tab, TCM_GETITEMW, (WPARAM)drawItem->itemID, (LPARAM)&item);
 
-    GetWindowTextW(hwnd, caption, (int)(sizeof(caption) / sizeof(caption[0])));
-    textRect = clientRect;
-    textRect.left += 7;
-    textRect.right = arrowRect.left - 5;
-    textRect.top += 1;
-    textRect.bottom -= 1;
-    font = (HFONT)SendMessageW(hwnd, WM_GETFONT, 0, 0);
+    font = (HFONT)SendMessageW(tab, WM_GETFONT, 0, 0);
     if (font != NULL)
         SelectObject(dc, font);
+    textRect = itemRect;
+    InflateRect(&textRect, -6, -1);
     SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, enabled ? RGB(239, 241, 244) : RGB(142, 145, 150));
+    SetTextColor(dc, disabled ? RGB(145, 148, 153) : RGB(239, 242, 246));
     DrawTextW(dc, caption, -1, &textRect,
-        DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+        DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
-    EndPaint(hwnd, &paint);
+    if (savedDC != 0)
+        RestoreDC(dc, savedDC);
     return TRUE;
 }
 
-static BOOL RmgPluginThemeDrawDarkTrackbar(HWND hwnd)
+/* Calculate a common owner-drawn tab size from the actual captions/font. */
+static BOOL RmgPluginThemeCalculateTabSize(HWND tab, UINT *width, UINT *height)
 {
-    PAINTSTRUCT paint;
-    HDC dc = BeginPaint(hwnd, &paint);
-    RECT clientRect;
-    RECT channelRect;
-    RECT thumbRect;
-    BOOL vertical;
-    BOOL enabled = IsWindowEnabled(hwnd);
-    int ticCount;
+    HDC dc;
+    HFONT font;
+    HGDIOBJ oldFont = NULL;
+    int itemCount;
+    int maxWidth = 0;
+    int maxHeight = 0;
     int i;
+    wchar_t caption[128];
 
+    if (tab == NULL || width == NULL || height == NULL)
+        return FALSE;
+
+    dc = GetDC(tab);
     if (dc == NULL)
         return FALSE;
 
-    GetClientRect(hwnd, &clientRect);
-    FillRect(dc, &clientRect, RmgPluginThemeDarkBrush());
-    vertical = (GetWindowLongPtrW(hwnd, GWL_STYLE) & TBS_VERT) != 0;
-    SendMessageW(hwnd, TBM_GETCHANNELRECT, 0, (LPARAM)&channelRect);
+    font = (HFONT)SendMessageW(tab, WM_GETFONT, 0, 0);
+    if (font != NULL)
+        oldFont = SelectObject(dc, font);
 
-    if (vertical)
+    itemCount = (int)SendMessageW(tab, TCM_GETITEMCOUNT, 0, 0);
+    for (i = 0; i < itemCount; ++i)
     {
-        int center = (channelRect.left + channelRect.right) / 2;
-        RECT groove = { center - 2, channelRect.top, center + 2, channelRect.bottom };
-        FillRect(dc, &groove, RmgPluginThemeDarkInputBrush());
-    }
-    else
-    {
-        int center = (channelRect.top + channelRect.bottom) / 2;
-        RECT groove = { channelRect.left, center - 2, channelRect.right, center + 2 };
-        FillRect(dc, &groove, RmgPluginThemeDarkInputBrush());
-    }
-
-    {
-        HPEN tickPen = CreatePen(PS_SOLID, 1,
-            enabled ? RGB(135, 141, 149) : RGB(75, 79, 84));
-        HGDIOBJ previousPen = SelectObject(dc, tickPen);
-        ticCount = (int)SendMessageW(hwnd, TBM_GETNUMTICS, 0, 0);
-        for (i = 0; i < ticCount && i < 128; ++i)
+        TCITEMW item;
+        SIZE textSize = { 0, 0 };
+        ZeroMemory(caption, sizeof(caption));
+        ZeroMemory(&item, sizeof(item));
+        item.mask = TCIF_TEXT;
+        item.pszText = caption;
+        item.cchTextMax = (int)(sizeof(caption) / sizeof(caption[0]));
+        if (SendMessageW(tab, TCM_GETITEMW, (WPARAM)i, (LPARAM)&item) &&
+            GetTextExtentPoint32W(dc, caption, (int)wcslen(caption), &textSize))
         {
-            int position = (int)SendMessageW(hwnd, TBM_GETTICPOS, (WPARAM)i, 0);
-            if (position < 0)
-                continue;
-
-            if (vertical)
-            {
-                int x = (GetWindowLongPtrW(hwnd, GWL_STYLE) & TBS_LEFT)
-                    ? channelRect.left - 5 : channelRect.right + 2;
-                MoveToEx(dc, x, position, NULL);
-                LineTo(dc, x + 3, position);
-            }
-            else
-            {
-                int y = (GetWindowLongPtrW(hwnd, GWL_STYLE) & TBS_TOP)
-                    ? channelRect.top - 5 : channelRect.bottom + 2;
-                MoveToEx(dc, position, y, NULL);
-                LineTo(dc, position, y + 3);
-            }
+            if (textSize.cx > maxWidth)
+                maxWidth = textSize.cx;
+            if (textSize.cy > maxHeight)
+                maxHeight = textSize.cy;
         }
-        if (previousPen != NULL)
-            SelectObject(dc, previousPen);
-        if (tickPen != NULL)
-            DeleteObject(tickPen);
     }
 
-    SendMessageW(hwnd, TBM_GETTHUMBRECT, 0, (LPARAM)&thumbRect);
-    {
-        HBRUSH thumbBrush = CreateSolidBrush(
-            enabled ? RGB(166, 173, 182) : RGB(91, 95, 101));
-        HPEN thumbPen = CreatePen(PS_SOLID, 1,
-            enabled ? RGB(211, 216, 223) : RGB(117, 120, 125));
-        HGDIOBJ oldBrush = SelectObject(dc, thumbBrush);
-        HGDIOBJ oldPen = SelectObject(dc, thumbPen);
-        RoundRect(dc, thumbRect.left, thumbRect.top,
-            thumbRect.right, thumbRect.bottom, 7, 7);
-        if (oldPen != NULL)
-            SelectObject(dc, oldPen);
-        if (oldBrush != NULL)
-            SelectObject(dc, oldBrush);
-        if (thumbBrush != NULL)
-            DeleteObject(thumbBrush);
-        if (thumbPen != NULL)
-            DeleteObject(thumbPen);
-    }
+    if (oldFont != NULL)
+        SelectObject(dc, oldFont);
+    ReleaseDC(tab, dc);
 
-    EndPaint(hwnd, &paint);
+    if (maxWidth == 0)
+        maxWidth = 64;
+    if (maxHeight == 0)
+        maxHeight = 16;
+
+    *width = (UINT)(maxWidth + 22);
+    *height = (UINT)(maxHeight + 10);
+    return TRUE;
+}
+
+/* TCS_OWNERDRAWFIXED requires the tab control's parent to provide a common
+   item size. It is sent only once; a later TCM_INSERTITEM can therefore
+   update the size after the first caption becomes available. */
+static BOOL RmgPluginThemeMeasureTabItems(HWND parent, MEASUREITEMSTRUCT *measureItem)
+{
+    HWND tab;
+    UINT width = 0;
+    UINT height = 0;
+
+    if (parent == NULL || measureItem == NULL || measureItem->CtlType != ODT_TAB)
+        return FALSE;
+
+    tab = GetDlgItem(parent, (int)measureItem->CtlID);
+    if (tab == NULL || !RmgPluginThemeCalculateTabSize(tab, &width, &height))
+        return FALSE;
+
+    measureItem->itemWidth = width;
+    measureItem->itemHeight = height;
     return TRUE;
 }
 
@@ -787,139 +678,117 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
 {
     (void)referenceData;
 
-    if (message == WM_PAINT)
-    {
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL)
-        {
-            RmgPluginThemeDrawDarkCheckbox(hwnd);
-            return 0;
-        }
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY) != NULL)
-        {
-            RmgPluginThemeDrawDarkGroupBox(hwnd);
-            return 0;
-        }
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_PANEL_PROPERTY) != NULL)
-        {
-            RmgPluginThemeDrawDarkPanel(hwnd);
-            return 0;
-        }
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_COMBO_PROPERTY) != NULL)
-        {
-            RmgPluginThemeDrawDarkCombo(hwnd);
-            return 0;
-        }
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_TRACK_PROPERTY) != NULL)
-        {
-            RmgPluginThemeDrawDarkTrackbar(hwnd);
-            return 0;
-        }
-        {
-            wchar_t paintClass[64] = { 0 };
-            if (GetClassNameW(hwnd, paintClass, (int)(sizeof(paintClass) / sizeof(paintClass[0]))) > 0 &&
-                wcscmp(paintClass, L"SysTabControl32") == 0)
-            {
-                RmgPluginThemeDrawTabControl(hwnd);
-                return 0;
-            }
-        }
-    }
-
-    if (message == WM_PAINT && GetPropW(hwnd, RMG_PLUGIN_DARK_FRAME_PROPERTY) != NULL)
+    /* Recalculate fixed tab dimensions after each caption is inserted or
+       changed. WM_MEASUREITEM can arrive before the first tab exists. */
+    if (RmgPluginThemeIsDark() &&
+        (message == TCM_INSERTITEMA || message == TCM_INSERTITEMW ||
+         message == TCM_SETITEMA || message == TCM_SETITEMW))
     {
         LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
-        RmgPluginThemeDrawDarkFrame(hwnd);
+        if (result != -1)
+        {
+            wchar_t className[64] = { 0 };
+            if (GetClassNameW(hwnd, className,
+                (int)(sizeof(className) / sizeof(className[0]))) > 0 &&
+                wcscmp(className, L"SysTabControl32") == 0)
+            {
+                UINT width = 0;
+                UINT height = 0;
+                if (RmgPluginThemeCalculateTabSize(hwnd, &width, &height))
+                    SendMessageW(hwnd, TCM_SETITEMSIZE, 0, MAKELPARAM(width, height));
+            }
+        }
         return result;
     }
 
-    if (message == WM_DRAWITEM)
+    if (message == WM_SHOWWINDOW && wParam != 0 && RmgPluginThemeIsDark())
     {
-        if (RmgPluginThemeDrawDarkButton((const DRAWITEMSTRUCT *)lParam))
+        HWND rootWindow = GetAncestor(hwnd, GA_ROOT);
+        if (rootWindow == hwnd &&
+            (GetWindowLongPtrW(rootWindow, GWL_STYLE) & WS_CAPTION) != 0)
+            RmgPluginThemeApplyWindowFrame(rootWindow, TRUE);
+    }
+
+    if (message == WM_MEASUREITEM && lParam != 0 && RmgPluginThemeIsDark())
+    {
+        if (RmgPluginThemeMeasureTabItems(hwnd, (MEASUREITEMSTRUCT *)lParam))
             return TRUE;
     }
 
-    if (message == WM_MOUSEMOVE)
+    if (message == WM_PAINT && RmgPluginThemeIsDark() &&
+        GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL)
     {
-        wchar_t controlClass[64] = { 0 };
-        if (GetClassNameW(hwnd, controlClass, (int)(sizeof(controlClass) / sizeof(controlClass[0]))) > 0 &&
-            wcscmp(controlClass, L"SysTabControl32") == 0)
+        RmgPluginThemeDrawDarkCheckbox(hwnd);
+        return 0;
+    }
+
+    if (message == WM_DRAWITEM && lParam != 0)
+    {
+        const DRAWITEMSTRUCT *drawItem = (const DRAWITEMSTRUCT *)lParam;
+        if (RmgPluginThemeDrawButton(drawItem) ||
+            RmgPluginThemeDrawGroupBox(drawItem) ||
+            RmgPluginThemeDrawTabItem(drawItem))
+            return TRUE;
+    }
+
+    if (RmgPluginThemeIsDark() &&
+        GetPropW(hwnd, RMG_PLUGIN_DARK_BUTTON_PROPERTY) != NULL)
+    {
+        if (message == WM_MOUSEMOVE && GetPropW(hwnd, RMG_PLUGIN_BUTTON_HOT_PROPERTY) == NULL)
         {
             TRACKMOUSEEVENT tracking;
-            TCHITTESTINFO hit;
-            int hotIndex;
             ZeroMemory(&tracking, sizeof(tracking));
             tracking.cbSize = sizeof(tracking);
             tracking.dwFlags = TME_LEAVE;
             tracking.hwndTrack = hwnd;
             TrackMouseEvent(&tracking);
-            hit.pt.x = (short)LOWORD(lParam);
-            hit.pt.y = (short)HIWORD(lParam);
-            hotIndex = (int)SendMessageW(hwnd, TCM_HITTEST, 0, (LPARAM)&hit);
-            {
-                HANDLE oldHotProperty = GetPropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
-                int oldHotIndex = oldHotProperty != NULL ? (int)(INT_PTR)oldHotProperty - 1 : -1;
-                if (hotIndex != oldHotIndex)
-                {
-                    if (hotIndex >= 0)
-                        SetPropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY, (HANDLE)(INT_PTR)(hotIndex + 1));
-                    else
-                        RemovePropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
-                    InvalidateRect(hwnd, NULL, TRUE);
-                }
-            }
+            SetPropW(hwnd, RMG_PLUGIN_BUTTON_HOT_PROPERTY, (HANDLE)(ULONG_PTR)1);
+            InvalidateRect(hwnd, NULL, FALSE);
         }
-    }
-    else if (message == WM_MOUSELEAVE)
-    {
-        if (GetPropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY) != NULL)
+        else if (message == WM_MOUSELEAVE &&
+            GetPropW(hwnd, RMG_PLUGIN_BUTTON_HOT_PROPERTY) != NULL)
         {
-            RemovePropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
-            InvalidateRect(hwnd, NULL, TRUE);
+            RemovePropW(hwnd, RMG_PLUGIN_BUTTON_HOT_PROPERTY);
+            InvalidateRect(hwnd, NULL, FALSE);
         }
     }
 
-    if (message == WM_NOTIFY && lParam != 0)
+    if (message == WM_NOTIFY && lParam != 0 && RmgPluginThemeIsDark())
     {
         LPNMHDR notification = (LPNMHDR)lParam;
         if (notification->code == NM_CUSTOMDRAW && notification->hwndFrom != NULL)
         {
             wchar_t controlClass[64] = { 0 };
             if (GetClassNameW(notification->hwndFrom, controlClass,
-                (int)(sizeof(controlClass) / sizeof(controlClass[0]))) > 0)
+                (int)(sizeof(controlClass) / sizeof(controlClass[0]))) > 0 &&
+                wcscmp(controlClass, L"SysHeader32") == 0)
             {
                 LPNMCUSTOMDRAW customDraw = (LPNMCUSTOMDRAW)lParam;
-                BOOL headerControl = (wcscmp(controlClass, L"SysHeader32") == 0);
-                if (headerControl && customDraw->dwDrawStage == CDDS_PREPAINT)
+                if (customDraw->dwDrawStage == CDDS_PREPAINT)
                     return CDRF_NOTIFYITEMDRAW;
-                if (headerControl && customDraw->dwDrawStage == CDDS_ITEMPREPAINT)
+                if (customDraw->dwDrawStage == CDDS_ITEMPREPAINT)
                 {
                     FillRect(customDraw->hdc, &customDraw->rc, RmgPluginThemeDarkBrush());
-                    SetTextColor(customDraw->hdc, RGB(245, 245, 245));
                     SetBkMode(customDraw->hdc, TRANSPARENT);
+                    SetTextColor(customDraw->hdc, RGB(239, 242, 246));
                     return CDRF_NEWFONT;
                 }
             }
         }
     }
 
-    if (message == WM_ERASEBKGND)
+    if (message == WM_ERASEBKGND && RmgPluginThemeIsDark())
     {
-        if (GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL ||
-            GetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY) != NULL ||
-            GetPropW(hwnd, RMG_PLUGIN_DARK_COMBO_PROPERTY) != NULL ||
-            GetPropW(hwnd, RMG_PLUGIN_DARK_TRACK_PROPERTY) != NULL ||
-            GetPropW(hwnd, RMG_PLUGIN_DARK_PANEL_PROPERTY) != NULL)
-            return 1;
-
         wchar_t className[64] = { 0 };
-        if (GetClassNameW(hwnd, className, (int)(sizeof(className) / sizeof(className[0]))) > 0)
+        if (GetClassNameW(hwnd, className,
+            (int)(sizeof(className) / sizeof(className[0]))) > 0)
         {
             BOOL dialogWindow = (wcscmp(className, L"#32770") == 0);
             BOOL etchedPanel = (wcscmp(className, L"STATIC") == 0 &&
                 (GetWindowLongPtrW(hwnd, GWL_STYLE) & SS_TYPEMASK) == SS_ETCHEDFRAME);
-            BOOL trackbar = (wcscmp(className, L"msctls_trackbar32") == 0);
             BOOL tabControl = (wcscmp(className, L"SysTabControl32") == 0);
-            if (dialogWindow || etchedPanel || trackbar || tabControl)
+            BOOL trackbar = (wcscmp(className, L"msctls_trackbar32") == 0);
+            if (dialogWindow || etchedPanel || tabControl || trackbar)
             {
                 RECT clientRect;
                 if (GetClientRect(hwnd, &clientRect))
@@ -931,45 +800,89 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
         }
     }
 
-    if (message == WM_CTLCOLORDLG || message == WM_CTLCOLORSTATIC ||
-        message == WM_CTLCOLORBTN || message == WM_CTLCOLOREDIT ||
-        message == WM_CTLCOLORLISTBOX || message == WM_CTLCOLORSCROLLBAR ||
-        message == WM_CTLCOLORMSGBOX)
+    /* CTLCOLOR notifications are sent to the parent of the control. In the
+       light theme keep the stock rendering, but make STATIC labels and
+       checkbox/group-box captions transparent. This prevents the parent
+       STATIC page from painting a gray rectangle behind otherwise normal
+       light-theme text without restyling push buttons or input controls. */
+    if (!RmgPluginThemeIsDark() &&
+        (message == WM_CTLCOLORSTATIC || message == WM_CTLCOLORBTN))
+    {
+        HWND control = (HWND)lParam;
+        BOOL transparentButton = FALSE;
+        BOOL textualStatic = FALSE;
+        if (control != NULL && message == WM_CTLCOLORSTATIC)
+        {
+            LONG_PTR staticType = GetWindowLongPtrW(control, GWL_STYLE) & SS_TYPEMASK;
+            textualStatic = staticType == SS_LEFT || staticType == SS_CENTER ||
+                staticType == SS_RIGHT || staticType == SS_SIMPLE ||
+                staticType == SS_LEFTNOWORDWRAP;
+        }
+        if (message == WM_CTLCOLORBTN && control != NULL)
+        {
+            LONG_PTR buttonType = GetWindowLongPtrW(control, GWL_STYLE) & BS_TYPEMASK;
+            transparentButton = buttonType == BS_CHECKBOX || buttonType == BS_AUTOCHECKBOX ||
+                buttonType == BS_3STATE || buttonType == BS_AUTO3STATE ||
+                buttonType == BS_RADIOBUTTON || buttonType == BS_AUTORADIOBUTTON ||
+                buttonType == BS_GROUPBOX;
+        }
+
+        if (textualStatic || transparentButton)
+        {
+            HDC dc = (HDC)wParam;
+            COLORREF foreground = (control != NULL && !IsWindowEnabled(control))
+                ? GetSysColor(COLOR_GRAYTEXT) : GetSysColor(COLOR_WINDOWTEXT);
+            SetTextColor(dc, foreground);
+            SetBkMode(dc, TRANSPARENT);
+            return (LRESULT)GetStockObject(NULL_BRUSH);
+        }
+    }
+
+    if (RmgPluginThemeIsDark() &&
+        (message == WM_CTLCOLORDLG || message == WM_CTLCOLORSTATIC ||
+         message == WM_CTLCOLORBTN || message == WM_CTLCOLOREDIT ||
+         message == WM_CTLCOLORLISTBOX || message == WM_CTLCOLORSCROLLBAR ||
+         message == WM_CTLCOLORMSGBOX))
     {
         HDC dc = (HDC)wParam;
         HWND control = (HWND)lParam;
         BOOL inputControl = (message == WM_CTLCOLOREDIT || message == WM_CTLCOLORLISTBOX);
-        COLORREF background = inputControl ? RGB(25, 25, 25) : RGB(53, 53, 53);
         COLORREF foreground = (control != NULL && !IsWindowEnabled(control))
-            ? RGB(145, 145, 145) : RGB(245, 245, 245);
+            ? RGB(145, 148, 153) : RGB(239, 242, 246);
 
         SetTextColor(dc, foreground);
-        SetBkColor(dc, background);
-        SetBkMode(dc, OPAQUE);
-        return (LRESULT)(inputControl ? RmgPluginThemeDarkInputBrush() : RmgPluginThemeDarkBrush());
+        if (inputControl)
+        {
+            SetBkColor(dc, RGB(25, 25, 25));
+            SetBkMode(dc, OPAQUE);
+            return (LRESULT)RmgPluginThemeDarkInputBrush();
+        }
+
+        SetBkColor(dc, RGB(53, 53, 53));
+        SetBkMode(dc, TRANSPARENT);
+        return (LRESULT)RmgPluginThemeDarkBrush();
     }
 
     if (message == WM_NCDESTROY)
     {
         RemovePropW(hwnd, RMG_PLUGIN_DARK_BUTTON_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY);
         RemovePropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_DARK_COMBO_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_DARK_TRACK_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_DARK_FRAME_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_DARK_PANEL_PROPERTY);
-        RemovePropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
+        RemovePropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY);
+        RemovePropW(hwnd, RMG_PLUGIN_BUTTON_HOT_PROPERTY);
+        RemovePropW(hwnd, RMG_PLUGIN_DEFAULT_ID_SUPPORT_PROPERTY);
+        RemovePropW(hwnd, RMG_PLUGIN_DWM_PROPERTY);
         RemoveWindowSubclass(hwnd, RmgPluginThemeSubclassProc, subclassId);
         return DefSubclassProc(hwnd, message, wParam, lParam);
     }
 
     {
         LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
-        if (message == BM_SETCHECK || message == CB_SETCURSEL ||
-            message == TBM_SETPOS || message == TCM_INSERTITEMW ||
-            message == TCM_DELETEITEM || message == TCM_SETCURSEL ||
-            message == WM_ENABLE || message == WM_SETTEXT)
-            InvalidateRect(hwnd, NULL, TRUE);
+        if (message == BM_SETCHECK || message == WM_SETTEXT ||
+            message == WM_ENABLE || message == WM_SETFOCUS || message == WM_KILLFOCUS)
+        {
+            if (GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL)
+                InvalidateRect(hwnd, NULL, TRUE);
+        }
         return result;
     }
 }
@@ -978,107 +891,101 @@ static void RmgPluginThemeAttach(HWND hwnd)
 {
     BOOL dark;
     wchar_t className[64] = { 0 };
+    HRESULT themeResult;
+    HWND rootWindow;
 
     if (hwnd == NULL || !IsWindow(hwnd))
         return;
 
     dark = RmgPluginThemeIsDark();
-    if (dark)
-    {
-        SetWindowSubclass(hwnd, RmgPluginThemeSubclassProc, (UINT_PTR)0x524D47u, 0);
 
-        if (GetClassNameW(hwnd, className, (int)(sizeof(className) / sizeof(className[0]))) > 0 &&
-            wcscmp(className, L"Button") == 0)
+    /* Attach in light mode too: nested STATIC panels are parents of labels
+       and must return a transparent/system background brush for WM_CTLCOLOR. */
+    SetWindowSubclass(hwnd, RmgPluginThemeSubclassProc, (UINT_PTR)0x524D47u, 0);
+
+    if (GetClassNameW(hwnd, className,
+        (int)(sizeof(className) / sizeof(className[0]))) > 0 && dark)
+    {
+        if (wcscmp(className, L"Button") == 0)
         {
             LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
             LONG_PTR buttonType = style & BS_TYPEMASK;
             if (buttonType == BS_PUSHBUTTON || buttonType == BS_DEFPUSHBUTTON)
             {
-                SetPropW(hwnd, RMG_PLUGIN_DARK_BUTTON_PROPERTY, (HANDLE)(ULONG_PTR)style);
-                SetWindowLongPtrW(hwnd, GWL_STYLE, (style & ~BS_TYPEMASK) | BS_OWNERDRAW);
-                if (buttonType == BS_DEFPUSHBUTTON)
+                HWND root = GetAncestor(hwnd, GA_ROOT);
+                wchar_t rootClass[64] = { 0 };
+                BOOL standardDialog = root != NULL &&
+                    GetClassNameW(root, rootClass,
+                        (int)(sizeof(rootClass) / sizeof(rootClass[0]))) > 0 &&
+                    wcscmp(rootClass, L"#32770") == 0;
+                BOOL supportsDefaultId = standardDialog ||
+                    (root != NULL && GetPropW(root, RMG_PLUGIN_DEFAULT_ID_SUPPORT_PROPERTY) != NULL);
+
+                /* A default push button in a custom window class depends on
+                   IsDialogMessage/DM_GETDEFID. Only replace that style when
+                   its root window implements the default-ID protocol. */
+                if (buttonType == BS_PUSHBUTTON || supportsDefaultId)
                 {
-                    HWND parent = GetParent(hwnd);
-                    wchar_t parentClass[64] = { 0 };
-                    if (parent != NULL &&
-                        GetClassNameW(parent, parentClass,
-                            (int)(sizeof(parentClass) / sizeof(parentClass[0]))) > 0 &&
-                        wcscmp(parentClass, L"#32770") == 0)
-                    {
-                        SendMessageW(parent, DM_SETDEFID, (WPARAM)GetDlgCtrlID(hwnd), 0);
-                    }
+                    SetPropW(hwnd, RMG_PLUGIN_DARK_BUTTON_PROPERTY,
+                        (HANDLE)(ULONG_PTR)style);
+                    SetWindowLongPtrW(hwnd, GWL_STYLE,
+                        (style & ~BS_TYPEMASK) | BS_OWNERDRAW);
+                    if (buttonType == BS_DEFPUSHBUTTON && supportsDefaultId)
+                        SendMessageW(root, DM_SETDEFID, (WPARAM)GetDlgCtrlID(hwnd), 0);
+                    InvalidateRect(hwnd, NULL, TRUE);
                 }
-                InvalidateRect(hwnd, NULL, TRUE);
             }
             else if (buttonType == BS_GROUPBOX)
             {
                 SetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY, (HANDLE)(ULONG_PTR)1);
+                SetWindowLongPtrW(hwnd, GWL_STYLE,
+                    (style & ~BS_TYPEMASK) | BS_OWNERDRAW);
                 InvalidateRect(hwnd, NULL, TRUE);
             }
             else if (buttonType == BS_CHECKBOX || buttonType == BS_AUTOCHECKBOX ||
                 buttonType == BS_3STATE || buttonType == BS_AUTO3STATE ||
                 buttonType == BS_RADIOBUTTON || buttonType == BS_AUTORADIOBUTTON)
             {
-                /* Paint only the checkbox/radio indicator. Keep the original
-                   button type so Windows continues to toggle its check state. */
                 SetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY, (HANDLE)(ULONG_PTR)1);
                 InvalidateRect(hwnd, NULL, TRUE);
             }
         }
-
-        if (wcscmp(className, L"SysListView32") == 0)
-        {
-            SendMessageW(hwnd, LVM_SETBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
-            SendMessageW(hwnd, LVM_SETTEXTCOLOR, 0, (LPARAM)RGB(245, 245, 245));
-            SendMessageW(hwnd, LVM_SETTEXTBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
-        }
-        else if (wcscmp(className, L"STATIC") == 0)
-        {
-            LONG_PTR staticType = GetWindowLongPtrW(hwnd, GWL_STYLE) & SS_TYPEMASK;
-            LONG_PTR extendedStyle = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
-            if (staticType == SS_ETCHEDFRAME || staticType == SS_ETCHEDHORZ || staticType == SS_ETCHEDVERT)
-            {
-                SetPropW(hwnd, RMG_PLUGIN_DARK_PANEL_PROPERTY, (HANDLE)(ULONG_PTR)1);
-                InvalidateRect(hwnd, NULL, TRUE);
-            }
-            else if ((extendedStyle & (WS_EX_STATICEDGE | WS_EX_CLIENTEDGE)) != 0)
-            {
-                /* Remove the system's bright 3-D edge and replace it with a
-                   single dark border after the static text has been painted. */
-                SetPropW(hwnd, RMG_PLUGIN_DARK_FRAME_PROPERTY, (HANDLE)(ULONG_PTR)1);
-                SetWindowLongPtrW(hwnd, GWL_EXSTYLE,
-                    extendedStyle & ~(WS_EX_STATICEDGE | WS_EX_CLIENTEDGE));
-                SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
-                    SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
-                InvalidateRect(hwnd, NULL, TRUE);
-            }
-        }
-        else if (wcscmp(className, L"ComboBox") == 0)
-        {
-            LONG_PTR comboType = GetWindowLongPtrW(hwnd, GWL_STYLE) & 0x0003;
-            if (comboType == CBS_DROPDOWNLIST)
-            {
-                SetPropW(hwnd, RMG_PLUGIN_DARK_COMBO_PROPERTY, (HANDLE)(ULONG_PTR)1);
-                InvalidateRect(hwnd, NULL, TRUE);
-            }
-        }
-        else if (wcscmp(className, L"msctls_trackbar32") == 0)
-        {
-            SetPropW(hwnd, RMG_PLUGIN_DARK_TRACK_PROPERTY, (HANDLE)(ULONG_PTR)1);
-            InvalidateRect(hwnd, NULL, TRUE);
-        }
         else if (wcscmp(className, L"SysTabControl32") == 0)
         {
-            RemovePropW(hwnd, RMG_PLUGIN_TAB_HOT_PROPERTY);
+            LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+            if ((style & TCS_OWNERDRAWFIXED) == 0)
+            {
+                SetWindowLongPtrW(hwnd, GWL_STYLE, style | TCS_OWNERDRAWFIXED);
+                SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
+                    SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
+            }
             InvalidateRect(hwnd, NULL, TRUE);
+        }
+        else if (wcscmp(className, L"SysListView32") == 0)
+        {
+            SendMessageW(hwnd, LVM_SETBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
+            SendMessageW(hwnd, LVM_SETTEXTCOLOR, 0, (LPARAM)RGB(239, 242, 246));
+            SendMessageW(hwnd, LVM_SETTEXTBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
         }
     }
 
-    /* In dark mode do not fall back to the Explorer theme: on older Windows
-       versions it paints native controls with light faces. Disable visual
-       theming and let the custom control painters / CTLCOLOR handlers provide
-       consistent colors. Keep Explorer styling for light mode. */
-    SetWindowTheme(hwnd, dark ? L"" : L"Explorer", dark ? L"" : NULL);
+    /* Change visual-style classes only in dark mode. Light mode is left to
+       the user's normal Windows theme. TrackBars deliberately retain the
+       standard Explorer class: DarkMode_Explorer can hide their channel/ticks
+       on some builds, while their native paint path remains fully functional. */
+    if (dark)
+    {
+        BOOL isTrackbar = wcscmp(className, L"msctls_trackbar32") == 0;
+        const wchar_t *themeClass = isTrackbar ? L"Explorer" : L"DarkMode_Explorer";
+        themeResult = SetWindowTheme(hwnd, themeClass, NULL);
+        if (FAILED(themeResult) && !isTrackbar)
+            SetWindowTheme(hwnd, L"Explorer", NULL);
+    }
+
+    rootWindow = GetAncestor(hwnd, GA_ROOT);
+    if (dark && rootWindow != NULL &&
+        (GetWindowLongPtrW(rootWindow, GWL_STYLE) & WS_CAPTION) != 0)
+        RmgPluginThemeApplyWindowFrame(rootWindow, TRUE);
 
     if (dark)
         InvalidateRect(hwnd, NULL, TRUE);

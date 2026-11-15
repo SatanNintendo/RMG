@@ -103,6 +103,7 @@ struct softrdp_config_gui_state
     HWND cancel;
 
     HWND owner;
+    int default_control_id;
     bool result;
     bool done;
 };
@@ -482,6 +483,19 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
 
     switch (message)
     {
+    case DM_SETDEFID:
+        if (state != NULL)
+        {
+            state->default_control_id = (int)LOWORD(wParam);
+            return TRUE;
+        }
+        return FALSE;
+
+    case DM_GETDEFID:
+        if (state != NULL && state->default_control_id != 0)
+            return MAKELONG(state->default_control_id, DC_HASDEFID);
+        return 0;
+
     case WM_NCCREATE:
     {
         CREATESTRUCTW *create = (CREATESTRUCTW *)lParam;
@@ -489,6 +503,10 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
         state->hwnd = hwnd;
         SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)state);
         RmgPluginThemeAttach(hwnd);
+        /* This custom window participates in the dialog-manager default
+           button protocol so owner-drawn default buttons still activate on
+           Enter when IsDialogMessageW processes the keyboard. */
+        SetPropW(hwnd, RMG_PLUGIN_DEFAULT_ID_SUPPORT_PROPERTY, (HANDLE)(ULONG_PTR)1);
         return TRUE;
     }
 

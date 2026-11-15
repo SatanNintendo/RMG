@@ -2213,7 +2213,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal Name</source>
-            <translation>Внутреннее имя</translation>
+            <translation>Внутреннее название</translation>
         </message>
         <message>
             <source>MD5</source>
@@ -2679,7 +2679,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Internal ROM Name</source>
-            <translation>Внутреннее имя ROM</translation>
+            <translation>Внутреннее название ROM</translation>
         </message>
         <message>
             <source>Japanese Retail 64DD IPL ROM</source>

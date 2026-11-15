@@ -195,7 +195,7 @@ static HWND CreateLabel(HWND parent, const wchar_t *text,
 /* ── Create the "Settings" panel window (child of dialog) ─────────────── */
 static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
+    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SS_ETCHEDFRAME,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
     SetCtrlFont(hPanel, hFont);
@@ -294,36 +294,47 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
    child panel, so the dialog WndProc never sees those notifications unless
    the panel forwards them.  Subclass the panel and relay slider messages to
    the owning dialog so the numeric values can update while dragging. */
-static LRESULT CALLBACK AdvancedPanelProc(HWND hPanel, UINT msg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK AdvancedPanelSubclassProc(
+    HWND hPanel,
+    UINT msg,
+    WPARAM wParam,
+    LPARAM lParam,
+    UINT_PTR subclassId,
+    DWORD_PTR referenceData)
 {
+    (void)subclassId;
+
+    /* Trackbar notifications go to their immediate parent (this panel),
+       then are forwarded to the dialog without replacing the panel WndProc.
+       Using SetWindowSubclass keeps this handler compatible with the shared
+       theme subclass and with the STATIC control's normal painting. */
     if (msg == WM_HSCROLL || msg == WM_VSCROLL)
     {
-        HWND hDlg = GetParent(hPanel);
-        if (hDlg)
+        HWND hDlg = (HWND)referenceData;
+        if (hDlg != NULL)
         {
             SendMessageW(hDlg, msg, wParam, lParam);
             return 0;
         }
     }
 
-    WNDPROC oldProc = (WNDPROC)GetWindowLongPtrW(hPanel, GWLP_USERDATA);
-    if (oldProc)
-        return CallWindowProcW(oldProc, hPanel, msg, wParam, lParam);
+    if (msg == WM_NCDESTROY)
+        RemoveWindowSubclass(hPanel, AdvancedPanelSubclassProc, (UINT_PTR)0x415A4950u);
 
-    return DefWindowProcW(hPanel, msg, wParam, lParam);
+    return DefSubclassProc(hPanel, msg, wParam, lParam);
 }
 
 static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
+    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SS_ETCHEDFRAME,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
-    WNDPROC oldPanelProc = (WNDPROC)SetWindowLongPtrW(
-        hPanel, GWLP_WNDPROC, (LONG_PTR)AdvancedPanelProc);
-    SetWindowLongPtrW(hPanel, GWLP_USERDATA, (LONG_PTR)oldPanelProc);
-    /* Install the panel's theme subclass after AdvancedPanelProc so both
-       procedures remain in the call chain (SetWindowLongPtr replaces WndProc). */
     SetCtrlFont(hPanel, hFont);
+    /* Keep scroll forwarding as an independent subclass. Do not replace the
+       STATIC panel WndProc: that can detach the theme subclass and disrupt
+       child-control painting when the user switches tabs. */
+    SetWindowSubclass(hPanel, AdvancedPanelSubclassProc,
+        (UINT_PTR)0x415A4950u, (DWORD_PTR)hDlg);
 
     const int lx = DluX(hDlg, 8);
     const int rx = DluX(hDlg, 220);
@@ -450,9 +461,19 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 /* ── Show/hide panels based on selected tab ─────────────────────────────── */
 static void SwitchTab(DlgState *st, int newTab)
 {
+    HWND activePanel;
+
     st->currentTab = newTab;
     ShowWindow(st->hSettingsPanel, newTab == 0 ? SW_SHOW : SW_HIDE);
     ShowWindow(st->hAdvancedPanel, newTab == 1 ? SW_SHOW : SW_HIDE);
+    activePanel = (newTab == 0) ? st->hSettingsPanel : st->hAdvancedPanel;
+
+    /* Redraw the page and all of its children together. The previous custom
+       panel painter could leave the page background visible after a tab
+       switch while child controls (including trackbars) remained unpainted. */
+    if (activePanel != NULL)
+        RedrawWindow(activePanel, NULL, NULL,
+            RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
 }
 
 /* ── Read current control values into DlgState ──────────────────────────── */

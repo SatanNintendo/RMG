@@ -203,7 +203,7 @@ TRANSLATIONS = {
     "RAM Area Only": "Только область RAM",
     "Full Disk Copy": "Полная копия диска",
     "Good Name": "Корректное имя",
-    "Internal ROM Name": "Внутреннее имя ROM",
+    "Internal ROM Name": "Внутреннее название ROM",
     "&Use PIF ROM": "&Использовать PIF ROM",
     "NTSC PIF ROM": "PIF ROM (NTSC)",
     "PAL PIF ROM": "PIF ROM (PAL)",
@@ -480,7 +480,7 @@ TRANSLATIONS = {
     # === Newly wrapped strings (tr() added in source) ===
     # RomBrowserWidget.cpp — column headers
     "Name": "Название",
-    "Internal Name": "Внутреннее имя",
+    "Internal Name": "Внутреннее название",
     "MD5": "MD5",
     "Format": "Формат",
     "File Name": "Имя файла",
