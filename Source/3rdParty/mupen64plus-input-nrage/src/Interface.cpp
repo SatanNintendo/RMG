@@ -34,6 +34,8 @@
 #include "International.h"
 #include "M64PConfig.h"	// Mupen64Plus port: config dialog load/save goes through the core config API
 
+extern "C" void RmgNRageAttachDialogTheme(HWND hDlg);
+
 // Prototypes //
 INT_PTR CALLBACK ControllerTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam );
 INT_PTR CALLBACK ControlsTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -139,6 +141,7 @@ INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		{
 			DebugWriteA("Config interface: Open\n");
 			g_ivConfig = (INTERFACEVALUES*)P_malloc( sizeof(INTERFACEVALUES) ); // TODO: CHECK THIS MALLOC!
@@ -430,6 +433,7 @@ INT_PTR CALLBACK ControllerTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		hTabControl = NULL;
 
 		// Tab - Control //
@@ -670,6 +674,7 @@ INT_PTR CALLBACK ControlsTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lP
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		// SetTicks on TrackBar
 		hDlgItem = GetDlgItem( hDlg, IDC_CTRRANGE );
 		SendMessage( hDlgItem, TBM_SETRANGE, (WPARAM) TRUE, (LPARAM) MAKELONG( 0, 100 ));
@@ -899,6 +904,7 @@ INT_PTR CALLBACK XControlsTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
 	switch( uMsg )
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		for( int i = IDC_XC_A; i <= IDC_XC_START; i++ )
 			FillN64ButtonComboBox( hDlg, i );
 		for( int i = IDC_XC_DPAD; i <= IDC_XC_RTS; i++ )
@@ -955,6 +961,7 @@ INT_PTR CALLBACK DevicesTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 
 		// TrackBars
 		hDlgItem = GetDlgItem( hDlg, IDC_DEADZONE );
@@ -1135,6 +1142,7 @@ INT_PTR CALLBACK MoveModifierDialog( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		// TrackBars
 		hDlgItem = GetDlgItem( hDlg, IDC_XMODIFIER );
 
@@ -1246,6 +1254,7 @@ INT_PTR CALLBACK MacroModifierDialog( HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		return FALSE; // don't give it focus
 
 	case WM_USER_UPDATE:
@@ -1308,6 +1317,7 @@ INT_PTR CALLBACK ConfigModifierDialog( HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		return FALSE; // don't give it focus
 
 	case WM_COMMAND:
@@ -1422,6 +1432,7 @@ INT_PTR CALLBACK LunaModifierDialog(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		// DropDown
 		hDlgItem = GetDlgItem(hDlg, IDC_COMBO_LUNA);
 		int i;
@@ -1606,6 +1617,7 @@ INT_PTR CALLBACK ModifierTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lP
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		bScanRunning = false;
 		hModProperties = NULL;
 		bDisplayedProbs = MDT_NONE;
@@ -2007,6 +2019,7 @@ INT_PTR CALLBACK ControllerPakTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		hPakWindow = NULL;
 		bAdaptoidInList = false;
 		bCurrentPak = (BYTE)(-1);
@@ -2184,6 +2197,7 @@ INT_PTR CALLBACK PakProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		PakProc( hDlg, WM_USER_UPDATE, 0, 0 );
 		return FALSE; // don't give it focus
 
@@ -2235,6 +2249,7 @@ INT_PTR CALLBACK MemPakProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam 
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		if( g_bRunning )
 		{
 			EnableWindow( GetDlgItem( hDlg, IDC_CHGDIR ), FALSE );
@@ -2617,6 +2632,7 @@ INT_PTR CALLBACK RumblePakProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		hDlgItem = GetDlgItem( hDlg, IDC_RUMBLESTRENGTH );
 
 		SendMessage( hDlgItem, TBM_SETRANGE, (WPARAM) TRUE, (LPARAM) MAKELONG( 0, 100 ));
@@ -2886,6 +2902,7 @@ INT_PTR CALLBACK TransferPakProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lP
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 		if( g_bRunning )
 		{
 			EnableWindow( GetDlgItem( hDlg, IDC_CHGDIR ), FALSE );
@@ -2971,6 +2988,7 @@ INT_PTR CALLBACK ShortcutsTabProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 
 		bScanRunning = false;
 		iPlayer = 5;
@@ -3207,6 +3225,7 @@ INT_PTR CALLBACK FoldersDialogProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
+		RmgNRageAttachDialogTheme(hDlg);
 
 #if defined(HIDEUNIMPLEMENTED) && !defined(V_TRANSFERPAK)
 		{

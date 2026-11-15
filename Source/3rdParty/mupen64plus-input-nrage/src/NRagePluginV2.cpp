@@ -1,4 +1,4 @@
-﻿/*
+/*
         N-Rage`s Dinput8 Plugin -- Mupen64Plus input plugin
     (C) 2002, 2006  Norbert Wladyka
     (C) 2026        Mupen64Plus port of the Luna x64 fork (2.4.7)
@@ -37,16 +37,11 @@
 #include "International.h"
 #include "Debug.h"
 
-
-/* Apply the active RMG dark palette to every dialog and child page N-Rage
-   creates during its configuration session. The hook is restricted to the
-   current UI thread and is removed as soon as the modal dialog closes. */
-static LRESULT CALLBACK RmgNRateThemeCbtProc(int code, WPARAM wParam, LPARAM lParam)
+/* Shared entry point for the resource dialog procedures in Interface.cpp.
+   The theme helper itself remains private to this translation unit. */
+extern "C" void RmgNRageAttachDialogTheme(HWND hDlg)
 {
-    (void)lParam;
-    if (code == HCBT_CREATEWND && RmgPluginThemeIsDark())
-        RmgPluginThemeAttach((HWND)wParam);
-    return CallNextHookEx(NULL, code, wParam, lParam);
+    RmgPluginThemeAttachTree(hDlg);
 }
 
 // ProtoTypes //
@@ -187,14 +182,10 @@ void OpenConfigurationDialog( HWND hParent )
                 RmgPluginThemeActivation themeActivation = {};
                 RmgPluginThemeActivate((HMODULE)g_hResourceDLL, &themeActivation);
 
-                HHOOK themeHook = NULL;
-                if (RmgPluginThemeIsDark())
-                    themeHook = SetWindowsHookExW(WH_CBT, RmgNRateThemeCbtProc, NULL, GetCurrentThreadId());
-
+                /* Interface.cpp attaches the palette in WM_INITDIALOG, after
+                   each resource dialog and its child controls have completed
+                   creation. A CBT create hook runs too early for subclassing. */
                 int iOK = DialogBox( g_hResourceDLL, MAKEINTRESOURCE( IDD_MAINCFGDIALOG ), hParent, MainDlgProc );
-
-                if (themeHook != NULL)
-                    UnhookWindowsHookEx(themeHook);
                 RmgPluginThemeDeactivate(&themeActivation);
 
                 // If we go into the dialog box, and the user navigates to the Rumble window, our FF device can get unacquired.

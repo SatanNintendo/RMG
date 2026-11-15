@@ -195,10 +195,18 @@ static HWND CreateLabel(HWND parent, const wchar_t *text,
 /* ── Create the "Settings" panel window (child of dialog) ─────────────── */
 static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SS_ETCHEDFRAME,
+    /* Use a plain clipped page surface instead of asking the STATIC control
+       to draw an etched frame around the container. The shared theme bridge
+       paints this page background in both light and dark mode. */
+    HWND hPanel = CreateWindowExW(WS_EX_CONTROLPARENT, L"STATIC", L"",
+        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
-    SetCtrlFont(hPanel, hFont);
+    if (hPanel == NULL)
+        return NULL;
+    if (hFont != NULL)
+        SendMessageW(hPanel, WM_SETFONT, (WPARAM)hFont, TRUE);
+    RmgPluginThemeAttachPagePanel(hPanel);
 
     /* Layout follows the Project64 reference dialog:
        - plain captions (not framed group boxes) above the two selectors
@@ -326,10 +334,18 @@ static LRESULT CALLBACK AdvancedPanelSubclassProc(
 
 static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SS_ETCHEDFRAME,
+    /* Use a plain clipped page surface instead of asking the STATIC control
+       to draw an etched frame around the container. The shared theme bridge
+       paints this page background in both light and dark mode. */
+    HWND hPanel = CreateWindowExW(WS_EX_CONTROLPARENT, L"STATIC", L"",
+        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
-    SetCtrlFont(hPanel, hFont);
+    if (hPanel == NULL)
+        return NULL;
+    if (hFont != NULL)
+        SendMessageW(hPanel, WM_SETFONT, (WPARAM)hFont, TRUE);
+    RmgPluginThemeAttachPagePanel(hPanel);
     /* Keep scroll forwarding as an independent subclass. Do not replace the
        STATIC panel WndProc: that can detach the theme subclass and disrupt
        child-control painting when the user switches tabs. */
@@ -464,16 +480,24 @@ static void SwitchTab(DlgState *st, int newTab)
     HWND activePanel;
 
     st->currentTab = newTab;
-    ShowWindow(st->hSettingsPanel, newTab == 0 ? SW_SHOW : SW_HIDE);
-    ShowWindow(st->hAdvancedPanel, newTab == 1 ? SW_SHOW : SW_HIDE);
     activePanel = (newTab == 0) ? st->hSettingsPanel : st->hAdvancedPanel;
 
-    /* Redraw the page and all of its children together. The previous custom
-       panel painter could leave the page background visible after a tab
-       switch while child controls (including trackbars) remained unpainted. */
+    /* Hide the inactive page first, then explicitly raise the selected page.
+       This prevents one page's STATIC surface from covering the controls of
+       the other page after repeated tab switches. */
+    if (st->hSettingsPanel != NULL && st->hSettingsPanel != activePanel)
+        ShowWindow(st->hSettingsPanel, SW_HIDE);
+    if (st->hAdvancedPanel != NULL && st->hAdvancedPanel != activePanel)
+        ShowWindow(st->hAdvancedPanel, SW_HIDE);
+
     if (activePanel != NULL)
+    {
+        SetWindowPos(activePanel, HWND_TOP, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
         RedrawWindow(activePanel, NULL, NULL,
             RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+    }
+    InvalidateRect(st->hTab, NULL, TRUE);
 }
 
 /* ── Read current control values into DlgState ──────────────────────────── */
@@ -616,7 +640,7 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
         HFONT hDlgFont = (HFONT)SendMessage(hDlg, WM_GETFONT, 0, 0);
 
         HWND hTab = CreateWindowW(WC_TABCONTROLW, L"",
-            WS_CHILD | WS_VISIBLE | TCS_TABS | WS_TABSTOP,
+            WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TCS_TABS | WS_TABSTOP,
             DluX(hDlg, 6), DluY(hDlg, 5),
             rcDlg.right - DluX(hDlg, 12), tabH - DluY(hDlg, 7),
             hDlg, (HMENU)IDC_TAB, g_hDllInst, NULL);
@@ -634,15 +658,11 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
         RECT rcTab;
         GetClientRect(hTab, &rcTab);
         TabCtrl_AdjustRect(hTab, FALSE, &rcTab);
-        /* Map to dialog coords */
-        POINT pt = {rcTab.left, rcTab.top};
-        MapWindowPoints(hTab, hDlg, &pt, 1);
-        RECT rcPanel = {
-            pt.x + 2,
-            pt.y + 2,
-            pt.x + (rcTab.right - rcTab.left) - 2,
-            pt.y + (rcTab.bottom - rcTab.top) - 2
-        };
+        /* Map both corners into dialog coordinates; this also remains correct
+           when the window manager applies a mirrored (RTL) layout. */
+        MapWindowPoints(hTab, hDlg, (POINT*)&rcTab, 2);
+        InflateRect(&rcTab, -2, -2);
+        RECT rcPanel = rcTab;
 
         /* Create both panels (only one shown at a time) */
         st->hSettingsPanel = CreateSettingsPanel(hDlg, &rcPanel, st, hDlgFont);

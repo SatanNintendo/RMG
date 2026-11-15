@@ -502,7 +502,6 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
         state = (struct softrdp_config_gui_state *)create->lpCreateParams;
         state->hwnd = hwnd;
         SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)state);
-        RmgPluginThemeAttach(hwnd);
         /* This custom window participates in the dialog-manager default
            button protocol so owner-drawn default buttons still activate on
            Enter when IsDialogMessageW processes the keyboard. */
@@ -523,6 +522,10 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
         break;
 
     case WM_CREATE:
+        /* The HWND is fully created now. Install the theme subclass before
+           creating children so owner-draw and colour messages are handled by
+           the parent window from the first paint. */
+        RmgPluginThemeAttach(hwnd);
         /* Set the caption explicitly as well as through CreateWindowExW.
            Some embedding hosts create the plugin window before the RMG
            language environment has been inherited by the plugin CRT. */
