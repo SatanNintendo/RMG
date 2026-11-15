@@ -279,7 +279,8 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
             BOOL etchedPanel = (wcscmp(className, L"STATIC") == 0 &&
                 (GetWindowLongPtrW(hwnd, GWL_STYLE) & SS_TYPEMASK) == SS_ETCHEDFRAME);
             BOOL trackbar = (wcscmp(className, L"msctls_trackbar32") == 0);
-            if (dialogWindow || etchedPanel || trackbar)
+            BOOL tabControl = (wcscmp(className, L"SysTabControl32") == 0);
+            if (dialogWindow || etchedPanel || trackbar || tabControl)
             {
                 RECT clientRect;
                 if (GetClientRect(hwnd, &clientRect))
@@ -362,10 +363,6 @@ static void RmgPluginThemeAttach(HWND hwnd)
             SendMessageW(hwnd, LVM_SETBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
             SendMessageW(hwnd, LVM_SETTEXTCOLOR, 0, (LPARAM)RGB(245, 245, 245));
             SendMessageW(hwnd, LVM_SETTEXTBKCOLOR, 0, (LPARAM)RGB(25, 25, 25));
-        }
-        else if (wcscmp(className, L"SysTabControl32") == 0)
-        {
-            SendMessageW(hwnd, TCM_SETBKCOLOR, 0, (LPARAM)RGB(53, 53, 53));
         }
     }
 

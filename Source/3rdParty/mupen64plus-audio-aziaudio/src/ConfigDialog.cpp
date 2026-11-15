@@ -821,7 +821,7 @@ static INT_PTR RunDialog(HINSTANCE hInst, HWND hParent, DlgState *st)
     p += headerWords;
     *p++ = 0; /* no menu */
     *p++ = 0; /* default dialog class */
-    memcpy(p, title, sizeof(title));
+    memcpy(p, title, titleWords * sizeof(*title));
     p += titleWords;
     *p++ = pointSize;
     memcpy(p, fontName, sizeof(fontName));
