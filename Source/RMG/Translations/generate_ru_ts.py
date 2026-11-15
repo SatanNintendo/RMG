@@ -5,9 +5,11 @@ from RMG, RMG-Input, RMG-Audio, and integrated Qt video plugins.
 
 This script:
 1. Parses all .ui files to extract (context, string) pairs
-2. Parses all .cpp files for tr("...") calls
-3. Looks up Russian translations from a built-in dictionary
-4. Outputs a complete .ts file ready for lrelease
+2. Parses C++ files for tr("...") and QCoreApplication::translate() calls
+3. Translates the human-readable parts of AboutDialog rich text without
+   changing markup, links, project names, or placeholders
+4. Looks up Russian translations from a built-in dictionary
+5. Outputs a .ts file ready for lrelease and reports anything unfinished
 
 The translation dictionary covers all UI strings found in the codebase.
 Strings not in the dictionary are output with type="unfinished" and
@@ -38,19 +40,19 @@ TRANSLATIONS = {
     "S&ystem": "С&истема",
     "&Reset": "&Сброс",
     "&Current Save State": "&Текущий слот сохранения",
-    "Speed &Factor": "Скорость &воспроизведения",
+    "Speed &Factor": "Множитель &скорости",
     "Setti&ngs": "Настр&ойки",
     "View": "Вид",
     "He&lp": "Спр&авка",
     "Netplay": "Сетевая игра",
     "toolBar": "Панель инструментов",
     "&Start ROM": "&Запустить ROM",
-    "Start Co&mbo": "Запустить ко&мбо",
-    "S&hutdown": "О&становить",
-    "&Soft Reset": "&Мягкий сброс",
+    "Start Co&mbo": "Запуск-ко&мбо",
+    "S&hutdown": "В&ыключить",
+    "&Soft Reset": "&Сброс",
     "&Hard Reset": "&Жёсткий сброс",
     "&Pause": "&Пауза",
-    "Scree&nshot": "С&нимок экрана",
+    "Scree&nshot": "С&криншот",
     "&Limit FPS": "&Ограничить FPS",
     "Sa&ve State": "Со&хранить состояние",
     "Save As...": "Сохранить как...",
@@ -213,7 +215,7 @@ TRANSLATIONS = {
     "CPU Emulator": "Эмулятор ЦП",
     "Overclocking Factor": "Коэффициент разгона",
     "Current Save State": "Текущий слот сохранения",
-    "Speed Factor": "Скорость",
+    "Speed Factor": "Множитель скорости",
     "System": "Система",
     "Audio": "Звук",
     "Start ROM": "Запустить ROM",
@@ -331,6 +333,10 @@ TRANSLATIONS = {
     # === NetplaySessionBrowserDialog ===
     "Netplay Session Browser": "Браузер сессий сетевой игры",
 
+    # === NetplayCommon ===
+    "Servers have not been configured": "Список серверов не настроен",
+    "You can configure the server list in the netplay tab of the settings dialog": "Настроить список серверов можно на вкладке «Сетевая игра» в окне настроек.",
+
     # === NetplaySessionDialog ===
     "Netplay Session": "Сессия сетевой игры",
     "Game name": "Название игры",
@@ -376,7 +382,7 @@ TRANSLATIONS = {
     "Profile": "Профиль",
     "Input Device": "Устройство ввода",
     "Deadzone: 25%": "Мёртвая зона: 25%",
-    "Digital Pad": "Цифровой крест",
+    "Digital Pad": "Крестовина",
     "Up:": "Вверх:",
     "Down:": "Вниз:",
     "Left:": "Влево:",
@@ -385,8 +391,8 @@ TRANSLATIONS = {
     "-": "-",
     "Analog Stick": "Аналоговый стик",
     "Analog Stick Sensitivity: 100%": "Чувствительность аналогового стика: 100%",
-    "L-Shoulder: ": "Лево-плечо: ",
-    "R-Shoulder: ": "Право-плечо: ",
+    "L-Shoulder: ": "Кнопка L: ",
+    "R-Shoulder: ": "Кнопка R: ",
     "Z-Trigger: ": "Z-триггер: ",
     "Start: ": "Старт: ",
     "C-Buttons": "Кнопки C",
@@ -429,8 +435,8 @@ TRANSLATIONS = {
     "Rosalie's Mupen GUI - Audio Plugin": "Rosalie's Mupen GUI — звуковой плагин",
     "Volume": "Громкость",
     "Mute": "Без звука",
-    "Default frequency": "Базовая частота",
-    "Resampler": "Передискретизатор",
+    "Default frequency": "Частота по умолчанию",
+    "Resampler": "Ресэмплер",
     "trivial": "trivial",
     "Swap left and right channel": "Поменять местами левый и правый каналы",
     "Synchronize": "Синхронизировать",
@@ -441,8 +447,8 @@ TRANSLATIONS = {
 
     # Remaining strings that were unfinished
     "Analog Stick Sensitivity: ": "Чувствительность аналогового стика: ",
-    "L-Shoulder:": "Лево-плечо:",
-    "R-Shoulder:": "Право-плечо:",
+    "L-Shoulder:": "Кнопка L:",
+    "R-Shoulder:": "Кнопка R:",
     "Start:": "Старт:",
     "Z-Trigger:": "Z-триггер:",
     "Form": "Форма",
@@ -711,8 +717,8 @@ TRANSLATIONS = {
     "Bilinear filter": "Билинейный фильтр",
     "Bob": "Bob",
     "Deinterlacer": "Деинтерлейсер",
-    "Downscaling of upscaled buffer": "Даунскейлинг апскейлного буфера",
-    "Force widescreen": "Принудительный widescreen",
+    "Downscaling of upscaled buffer": "Уменьшение увеличенного буфера",
+    "Force widescreen": "Принудительный широкоэкранный режим",
     "Integer scaling": "Целочисленное масштабирование",
     "Low latency mode (exclusive fullscreen)": "Режим низкой задержки (эксклюзивный полный экран)",
     "N64 resolution upscale": "Апскейл разрешения N64",
@@ -721,7 +727,7 @@ TRANSLATIONS = {
     "Overscan": "Оверскан",
     "Reduces input lag by ~1 frame using exclusive fullscreen and a 2-image swapchain. NVIDIA/AMD only (not Intel). On Windows also set GRANITE_EXCLUSIVE_FULL_SCREEN=1 environment variable before launching the emulator.": "Снижает входную задержку примерно на 1 кадр за счёт эксклюзивного полноэкранного режима и цепочки из 2 буферов. Только NVIDIA/AMD (не Intel). На Windows также установите переменную окружения GRANITE_EXCLUSIVE_FULL_SCREEN=1 перед запуском эмулятора.",
     "Screen size": "Размер экрана",
-    "Supersampled RDRAM reads": "Суперсэмплинг чтения RDRAM",
+    "Supersampled RDRAM reads": "Суперсэмплинг при чтении RDRAM",
     "Supersampled dither": "Суперсэмплинг-дизеринг",
     "VI AA": "VI: сглаживание",
     "VI bilinear filtering": "VI: билинейная фильтрация",
@@ -735,7 +741,7 @@ TRANSLATIONS = {
     "paraLLEl-RDP": "paraLLEl-RDP",
 
     # === Angrylion-Plus plugin (MainDialog.ui) ===
-    "16:9 widescreen": "16:9 широкоформатный",
+    "16:9 widescreen": "Широкоэкранный режим 16:9",
     "Angrylion-Plus": "Angrylion-Plus",
     "Bilinear": "Билинейный",
     "Compatibility": "Совместимость",
@@ -750,18 +756,18 @@ TRANSLATIONS = {
     "Enable Vsync": "Включить Vsync",
     "Enable busyloop": "Включить busyloop",
     "Fast": "Быстрый",
-    "Filtered": "Фильтрованный",
+    "Filtered": "С фильтрацией",
     "Hide overscan": "Скрывать оверскан",
     "Hybrid": "Гибридный",
     "Integer pixel scaling": "Целочисленное масштабирование пикселей",
     "Interpolation": "Интерполяция",
     "Moderate": "Умеренный",
     "Multithreaded rendering": "Многопоточный рендеринг",
-    "Nearest-neighbor": "Ближайший сосед",
+    "Nearest-neighbor": "Метод ближайшего соседа",
     "Output Mode": "Режим вывода",
     "Slow": "Медленный",
     "Threads (0 = auto)": "Потоки (0 = авто)",
-    "Unfiltered": "Нефильтрованный",
+    "Unfiltered": "Без фильтрации",
 }
 
 
@@ -818,6 +824,38 @@ def extract_cpp_tr_strings(cpp_path):
     return results
 
 
+
+ABOUT_HTML_REPLACEMENTS = {
+    "is an easy to use &amp; cross-platform mupen64plus front-end written in C++ &amp; Qt.":
+        "— это удобная кроссплатформенная графическая оболочка для mupen64plus, написанная на C++ и Qt.",
+    "Version: {version}": "Версия: {version}",
+    "License: GPLv3": "Лицензия: GPLv3",
+    "Contributors:": "Участники проекта:",
+    "Special thanks:": "Особая благодарность:",
+    "for providing custom cheats": "за предоставленные пользовательские чит-коды",
+    "for making the controller image for RMG-Input": "за создание изображения контроллера для RMG-Input",
+    "It uses the following third party projects:": "Используются следующие сторонние проекты:",
+    "It includes the following third party projects:": "В состав входят следующие сторонние проекты:",
+}
+
+
+def translate_source(context, source):
+    """Return a translation or None when the source still needs review."""
+    if source in TRANSLATIONS:
+        return TRANSLATIONS[source]
+
+    # AboutDialog stores several paragraphs as a single rich-text string.
+    # Translate only the human-readable copy and preserve its HTML, links,
+    # contributor names, project names, and the {version} placeholder.
+    if context == "AboutDialog" and source.startswith("<!DOCTYPE HTML"):
+        translated = source
+        for english, russian in ABOUT_HTML_REPLACEMENTS.items():
+            translated = translated.replace(english, russian)
+        if translated != source:
+            return translated
+
+    return None
+
 def main():
     repo_root = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -857,8 +895,8 @@ def main():
     lines.append('  Generated by generate_ru_ts.py from source code extraction.')
     lines.append('')
     lines.append('  To refresh after changing source strings:')
-    lines.append('      lupdate Source/RMG Source/RMG-Input Source/RMG-Audio -ts Source/RMG/Translations/RMG_ru.ts')
-    lines.append('  Then edit in Qt Linguist to fill in any new unfinished entries.')
+    lines.append('      python Source/RMG/Translations/generate_ru_ts.py > Source/RMG/Translations/RMG_ru.ts')
+    lines.append('  Review any new unfinished entries in Qt Linguist.')
     lines.append('-->')
     lines.append('<TS version="2.1" language="ru_RU">')
 
@@ -872,8 +910,8 @@ def main():
             lines.append(f'        <message>')
             lines.append(f'            <source>{xml_escape(source)}</source>')
 
-            if source in TRANSLATIONS:
-                trans = TRANSLATIONS[source]
+            trans = translate_source(context, source)
+            if trans is not None:
                 lines.append(f'            <translation>{xml_escape(trans)}</translation>')
                 translated_count += 1
             else:

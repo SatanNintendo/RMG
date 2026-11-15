@@ -10,6 +10,7 @@
 #include "NetplayCommon.hpp"
 #include "Utilities/QtMessageBox.hpp"
 
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QByteArray>
 #include <QJsonArray>
@@ -27,7 +28,10 @@ using namespace Utilities;
 
 void NetplayCommon::ShowServerConfigError(QWidget* parent)
 {
-    QtMessageBox::Error(parent, "Servers have not been configured", "You can configure the server list in the netplay tab of the settings dialog");
+    QtMessageBox::Error(
+        parent,
+        QCoreApplication::translate("NetplayCommon", "Servers have not been configured"),
+        QCoreApplication::translate("NetplayCommon", "You can configure the server list in the netplay tab of the settings dialog"));
 }
 
 void NetplayCommon::AddCommonJson(QJsonObject& json)

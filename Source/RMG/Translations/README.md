@@ -11,7 +11,7 @@ the RMG executable as a Qt resource under `:/i18n/RMG_<locale>.qm`.
 | File              | Locale code | Status                                                       |
 |-------------------|-------------|--------------------------------------------------------------|
 | `RMG_en.ts`       | `en`        | **English reference** — source of truth for translators. Every translatable string in RMG appears here, with `<translation>` = `<source>`. |
-| `RMG_ru.ts`       | `ru`        | **Russian** — fully translated (444 of 445 strings; the only unfinished one is the long HTML credits block in AboutDialog). |
+| `RMG_ru.ts`       | `ru`        | **Russian** — fully translated (722 of 722 extracted strings; 0 unfinished entries across 32 contexts). |
 
 ## How the language selector discovers these files
 

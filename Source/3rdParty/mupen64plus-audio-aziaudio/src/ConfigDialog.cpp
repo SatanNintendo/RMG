@@ -255,8 +255,8 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     HWND hCaution = CreateWindowW(L"STATIC",
         AzText(L"Caution: Changing waveOut driver volume\r\n"
                L"changes application volume for all drivers.",
-               L"Внимание: изменение громкости драйвера waveOut\r\n"
-               L"изменяет громкость приложения для всех драйверов."),
+               L"Внимание: waveOut меняет общую громкость\r\n"
+               L"приложения для всех драйверов."),
         WS_CHILD | WS_VISIBLE,
         left + DluX(hDlg, 8), top + DluY(hDlg, 90),
         DluX(hDlg, 205), DluY(hDlg, 26),
@@ -318,11 +318,12 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     HWND hPanel = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
         rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
         hDlg, NULL, g_hDllInst, NULL);
-    SetCtrlFont(hPanel, hFont);
-
     WNDPROC oldPanelProc = (WNDPROC)SetWindowLongPtrW(
         hPanel, GWLP_WNDPROC, (LONG_PTR)AdvancedPanelProc);
     SetWindowLongPtrW(hPanel, GWLP_USERDATA, (LONG_PTR)oldPanelProc);
+    /* Install the panel's theme subclass after AdvancedPanelProc so both
+       procedures remain in the call chain (SetWindowLongPtr replaces WndProc). */
+    SetCtrlFont(hPanel, hFont);
 
     const int lx = DluX(hDlg, 8);
     const int rx = DluX(hDlg, 220);
@@ -332,7 +333,7 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     CreateGroupBox(hPanel, AzText(L"Buffer Options", L"Параметры буфера"), lx, top,
                    DluX(hDlg, 195), DluY(hDlg, 153), hFont);
 
-    HWND hPrev = CreateWindowW(L"BUTTON", AzText(L"Prevent Buffer Overruns", L"Предотвращать переполнение буфера"),
+    HWND hPrev = CreateWindowW(L"BUTTON", AzText(L"Prevent Buffer Overruns", L"Не допускать переполнения"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 18),
         DluX(hDlg, 175), DluY(hDlg, 12),
@@ -340,7 +341,7 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     SetCtrlFont(hPrev, hFont);
     SendMessage(hPrev, BM_SETCHECK, st->preventOverrun ? BST_CHECKED : BST_UNCHECKED, 0);
 
-    HWND hFS = CreateWindowW(L"BUTTON", AzText(L"Force Old Audio Sync", L"Принудительная старая синхронизация звука"),
+    HWND hFS = CreateWindowW(L"BUTTON", AzText(L"Force Old Audio Sync", L"Включить старую синхронизацию"),
         WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
         lx + DluX(hDlg, 10), top + DluY(hDlg, 36),
         DluX(hDlg, 175), DluY(hDlg, 12),
