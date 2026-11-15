@@ -719,6 +719,161 @@ static BOOL RmgPluginThemeDrawCombo(const DRAWITEMSTRUCT *drawItem)
     return TRUE;
 }
 
+/* Draw the closed face of a dark CBS_DROPDOWNLIST control. Owner-draw
+   handles the selected/list items, but Windows still paints the outer combo
+   frame and drop button on some Win7/VxKex theme combinations. Painting this
+   small surface here keeps the field, arrow and list on one palette without
+   changing native mouse/keyboard/drop-down behaviour. */
+static BOOL RmgPluginThemeDrawDarkComboControl(HWND combo)
+{
+    PAINTSTRUCT paint;
+    HDC dc;
+    RECT clientRect;
+    RECT buttonRect;
+    RECT textRect;
+    wchar_t text[256] = { 0 };
+    int selection;
+    int buttonWidth;
+    BOOL enabled;
+    BOOL focused;
+    HFONT font;
+    HGDIOBJ oldFont = NULL;
+    HPEN borderPen;
+    HBRUSH buttonBrush;
+    COLORREF borderColor;
+    POINT arrow[3];
+    int savedDC;
+
+    if (combo == NULL ||
+        GetPropW(combo, RMG_PLUGIN_DARK_COMBO_PROPERTY) == NULL)
+        return FALSE;
+
+    dc = BeginPaint(combo, &paint);
+    if (dc == NULL)
+        return FALSE;
+
+    savedDC = SaveDC(dc);
+    GetClientRect(combo, &clientRect);
+    enabled = IsWindowEnabled(combo);
+    focused = GetFocus() == combo;
+    buttonWidth = GetSystemMetrics(SM_CXVSCROLL);
+    if (buttonWidth < 16)
+        buttonWidth = 16;
+    if (buttonWidth > clientRect.right - clientRect.left)
+        buttonWidth = clientRect.right - clientRect.left;
+
+    FillRect(dc, &clientRect, RmgPluginThemeDarkInputBrush());
+
+    buttonRect = clientRect;
+    buttonRect.left = buttonRect.right - buttonWidth;
+    buttonBrush = RmgPluginThemeButtonBrush(FALSE, focused, !enabled);
+    FillRect(dc, &buttonRect, buttonBrush);
+
+    borderColor = focused ? RGB(121, 169, 218) : RGB(105, 110, 118);
+    borderPen = CreatePen(PS_SOLID, 1, borderColor);
+    {
+        HGDIOBJ oldPen = SelectObject(dc, borderPen);
+        HGDIOBJ oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
+        RoundRect(dc, clientRect.left, clientRect.top,
+            clientRect.right - 1, clientRect.bottom - 1, 4, 4);
+        if (oldBrush != NULL)
+            SelectObject(dc, oldBrush);
+        if (oldPen != NULL)
+            SelectObject(dc, oldPen);
+    }
+    if (borderPen != NULL)
+        DeleteObject(borderPen);
+
+    /* Divider and a compact down-chevron in the button area. */
+    {
+        HPEN dividerPen = CreatePen(PS_SOLID, 1, RGB(73, 77, 84));
+        HGDIOBJ oldPen = SelectObject(dc, dividerPen);
+        MoveToEx(dc, buttonRect.left, buttonRect.top + 3, NULL);
+        LineTo(dc, buttonRect.left, buttonRect.bottom - 3);
+        if (oldPen != NULL)
+            SelectObject(dc, oldPen);
+        if (dividerPen != NULL)
+            DeleteObject(dividerPen);
+    }
+    arrow[0].x = buttonRect.left + (buttonWidth / 2) - 4;
+    arrow[0].y = buttonRect.top + (clientRect.bottom - clientRect.top) / 2 - 1;
+    arrow[1].x = buttonRect.left + (buttonWidth / 2) + 4;
+    arrow[1].y = arrow[0].y;
+    arrow[2].x = buttonRect.left + (buttonWidth / 2);
+    arrow[2].y = arrow[0].y + 4;
+    {
+        HBRUSH arrowBrush = CreateSolidBrush(enabled ? RGB(225, 230, 237) : RGB(135, 139, 145));
+        HPEN arrowPen = CreatePen(PS_SOLID, 1, enabled ? RGB(225, 230, 237) : RGB(135, 139, 145));
+        HGDIOBJ oldPen = SelectObject(dc, arrowPen);
+        HGDIOBJ oldBrush = SelectObject(dc, arrowBrush);
+        Polygon(dc, arrow, 3);
+        if (oldBrush != NULL)
+            SelectObject(dc, oldBrush);
+        if (oldPen != NULL)
+            SelectObject(dc, oldPen);
+        if (arrowPen != NULL)
+            DeleteObject(arrowPen);
+        if (arrowBrush != NULL)
+            DeleteObject(arrowBrush);
+    }
+
+    selection = (int)SendMessageW(combo, CB_GETCURSEL, 0, 0);
+    if (selection >= 0)
+    {
+        if (IsWindowUnicode(combo))
+        {
+            LRESULT length = SendMessageW(combo, CB_GETLBTEXTLEN, (WPARAM)selection, 0);
+            if (length >= 0 && length < (LRESULT)(sizeof(text) / sizeof(text[0])))
+                SendMessageW(combo, CB_GETLBTEXT, (WPARAM)selection, (LPARAM)text);
+        }
+        else
+        {
+            char ansiText[256] = { 0 };
+            LRESULT length = SendMessageA(combo, CB_GETLBTEXTLEN, (WPARAM)selection, 0);
+            if (length >= 0 && length < (LRESULT)sizeof(ansiText))
+            {
+                SendMessageA(combo, CB_GETLBTEXT, (WPARAM)selection, (LPARAM)ansiText);
+                MultiByteToWideChar(CP_ACP, 0, ansiText, -1, text,
+                    (int)(sizeof(text) / sizeof(text[0])));
+            }
+        }
+    }
+    else if (IsWindowUnicode(combo))
+    {
+        GetWindowTextW(combo, text, (int)(sizeof(text) / sizeof(text[0])));
+    }
+    else
+    {
+        char ansiText[256] = { 0 };
+        GetWindowTextA(combo, ansiText, (int)sizeof(ansiText));
+        MultiByteToWideChar(CP_ACP, 0, ansiText, -1, text,
+            (int)(sizeof(text) / sizeof(text[0])));
+    }
+
+    font = (HFONT)SendMessageW(combo, WM_GETFONT, 0, 0);
+    if (font != NULL)
+        oldFont = SelectObject(dc, font);
+    textRect = clientRect;
+    textRect.right = buttonRect.left - 1;
+    InflateRect(&textRect, -7, -1);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, enabled ? RGB(239, 242, 246) : RGB(145, 148, 153));
+    DrawTextW(dc, text, -1, &textRect,
+        DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+    if (focused)
+    {
+        InflateRect(&textRect, 1, 1);
+        DrawFocusRect(dc, &textRect);
+    }
+    if (oldFont != NULL)
+        SelectObject(dc, oldFont);
+
+    if (savedDC != 0)
+        RestoreDC(dc, savedDC);
+    EndPaint(combo, &paint);
+    return TRUE;
+}
+
 static BOOL RmgPluginThemeMeasureComboItem(HWND parent, MEASUREITEMSTRUCT *measureItem)
 {
     HWND combo;
@@ -911,6 +1066,13 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
     }
 
     if (message == WM_PAINT && RmgPluginThemeIsDark() &&
+        GetPropW(hwnd, RMG_PLUGIN_DARK_COMBO_PROPERTY) != NULL)
+    {
+        RmgPluginThemeDrawDarkComboControl(hwnd);
+        return 0;
+    }
+
+    if (message == WM_PAINT && RmgPluginThemeIsDark() &&
         GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL)
     {
         RmgPluginThemeDrawDarkCheckbox(hwnd);
@@ -1078,7 +1240,9 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
     {
         LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
         if (message == BM_SETCHECK || message == WM_SETTEXT ||
-            message == WM_ENABLE || message == WM_SETFOCUS || message == WM_KILLFOCUS)
+            message == WM_ENABLE || message == WM_SETFOCUS || message == WM_KILLFOCUS ||
+            message == WM_LBUTTONDOWN || message == WM_LBUTTONUP ||
+            message == WM_KEYDOWN || message == WM_KEYUP)
         {
             if (GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL)
                 InvalidateRect(hwnd, NULL, TRUE);
@@ -1189,18 +1353,21 @@ static void RmgPluginThemeAttach(HWND hwnd)
         }
     }
 
-    /* Apply theme classes only to controls which still use native painting.
-       Owner-drawn buttons/tabs and our custom checkbox painter must not be
-       themed a second time by UxTheme. TrackBars keep Explorer because the
-       DarkMode_Explorer class hides their channel/ticks on some Windows builds. */
-    if (dark && GetClassNameW(hwnd, className,
+    /* TrackBars use the explicit Explorer class in both palettes. Some
+       Windows 7/VxKex combinations otherwise render a clipped black channel
+       in the light theme, while DarkMode_Explorer can hide the channel/ticks
+       in dark mode. Other native controls are themed only when dark is active. */
+    if (GetClassNameW(hwnd, className,
+        (int)(sizeof(className) / sizeof(className[0]))) > 0 &&
+        wcscmp(className, L"msctls_trackbar32") == 0)
+    {
+        SetWindowTheme(hwnd, L"Explorer", NULL);
+        InvalidateRect(hwnd, NULL, TRUE);
+    }
+    else if (dark && GetClassNameW(hwnd, className,
         (int)(sizeof(className) / sizeof(className[0]))) > 0)
     {
-        if (wcscmp(className, L"msctls_trackbar32") == 0)
-        {
-            SetWindowTheme(hwnd, L"Explorer", NULL);
-        }
-        else if (wcscmp(className, L"ComboBox") == 0 ||
+        if (wcscmp(className, L"ComboBox") == 0 ||
                  wcscmp(className, L"Edit") == 0 ||
                  wcscmp(className, L"ListBox") == 0 ||
                  wcscmp(className, L"SysListView32") == 0 ||

@@ -141,10 +141,15 @@ INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
-		RmgNRageAttachDialogTheme(hDlg);
 		{
 			DebugWriteA("Config interface: Open\n");
-			g_ivConfig = (INTERFACEVALUES*)P_malloc( sizeof(INTERFACEVALUES) ); // TODO: CHECK THIS MALLOC!
+			g_ivConfig = (INTERFACEVALUES*)P_malloc( sizeof(INTERFACEVALUES) );
+			if( g_ivConfig == NULL )
+			{
+				DebugWriteA("Config interface: unable to allocate dialog state\n");
+				EndDialog( hDlg, FALSE );
+				return TRUE;
+			}
 			ZeroMemory( g_ivConfig, sizeof(INTERFACEVALUES) );
 
 			CopyMemory( &g_ivConfig->Shortcuts, &g_scShortcuts ,sizeof(SHORTCUTS) );
@@ -161,7 +166,9 @@ INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 			LeaveCriticalSection( &g_critical );
 
-
+			/* Attach after dialog state is valid. Theme attachment subclasses the
+			   dialog tree and must not run before the configuration object exists. */
+			RmgNRageAttachDialogTheme(hDlg);
 			g_hMainDialog = hDlg;
 
 			// Display Version
@@ -350,21 +357,33 @@ INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		ReleaseEffect( g_pConfigEffect );
 		ReleaseDevice( g_pConfigDevice );
 
-		for( i = 0; i < 4; ++i )
+		if( g_ivConfig != NULL )
 		{
-			freePakData( &g_ivConfig->Controllers[i] );
-			freeModifiers( &g_ivConfig->Controllers[i] );
+			for( i = 0; i < 4; ++i )
+			{
+				freePakData( &g_ivConfig->Controllers[i] );
+				freeModifiers( &g_ivConfig->Controllers[i] );
+			}
+			P_free( g_ivConfig );
+			g_ivConfig = NULL;
 		}
-		P_free( g_ivConfig );
-		g_ivConfig = NULL;
+		if( g_hMainDialog == hDlg )
+			g_hMainDialog = NULL;
 		DebugWriteA("Config interface: Closed\n");
 		LeaveCriticalSection(&g_critical);
 		return TRUE;
 
 	case WM_USER_UPDATE:
+		if( g_ivConfig == NULL )
+		{
+			DebugWriteA("Config interface: ignored update without dialog state\n");
+			return TRUE;
+		}
 #ifdef _UNICODE
 		// filling DropDownlist with languages
 		hDlgItem = GetDlgItem( hDlg, IDC_LANGUAGE );
+		if( hDlgItem == NULL )
+			return TRUE;
 		SendMessage (hDlgItem, CB_RESETCONTENT, 0, 0);
 		
 		{

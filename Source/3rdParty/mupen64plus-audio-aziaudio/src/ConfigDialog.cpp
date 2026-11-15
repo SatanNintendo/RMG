@@ -192,6 +192,40 @@ static HWND CreateLabel(HWND parent, const wchar_t *text,
     return h;
 }
 
+/* Child panels are STATIC windows. Buttons/checkboxes and trackbars send
+   WM_COMMAND/WM_HSCROLL/WM_VSCROLL to their immediate parent, not to the
+   modal dialog. Relay those notifications so the dialog can update its
+   working state and slider labels while the controls remain parented to the
+   page surface. This uses a subclass rather than replacing the STATIC
+   window procedure, so the shared theme subclass remains intact. */
+static LRESULT CALLBACK AziAudioPanelSubclassProc(
+    HWND hPanel,
+    UINT msg,
+    WPARAM wParam,
+    LPARAM lParam,
+    UINT_PTR subclassId,
+    DWORD_PTR referenceData)
+{
+    HWND hDlg = (HWND)referenceData;
+
+    if (hDlg != NULL && (msg == WM_COMMAND || msg == WM_HSCROLL || msg == WM_VSCROLL))
+    {
+        if (msg != WM_COMMAND ||
+            (lParam != 0 && GetParent((HWND)lParam) == hPanel))
+        {
+            SendMessageW(hDlg, msg, wParam, lParam);
+            return 0;
+        }
+    }
+
+    if (msg == WM_NCDESTROY)
+        RemoveWindowSubclass(hPanel, AziAudioPanelSubclassProc, subclassId);
+
+    return DefSubclassProc(hPanel, msg, wParam, lParam);
+}
+
+static const UINT_PTR AZIAUDIO_PANEL_SUBCLASS_ID = (UINT_PTR)0x415A4950u;
+
 /* ── Create the "Settings" panel window (child of dialog) ─────────────── */
 static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
@@ -207,6 +241,8 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     if (hFont != NULL)
         SendMessageW(hPanel, WM_SETFONT, (WPARAM)hFont, TRUE);
     RmgPluginThemeAttachPagePanel(hPanel);
+    SetWindowSubclass(hPanel, AziAudioPanelSubclassProc,
+        AZIAUDIO_PANEL_SUBCLASS_ID, (DWORD_PTR)hDlg);
 
     /* Layout follows the Project64 reference dialog:
        - plain captions (not framed group boxes) above the two selectors
@@ -302,35 +338,7 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
    child panel, so the dialog WndProc never sees those notifications unless
    the panel forwards them.  Subclass the panel and relay slider messages to
    the owning dialog so the numeric values can update while dragging. */
-static LRESULT CALLBACK AdvancedPanelSubclassProc(
-    HWND hPanel,
-    UINT msg,
-    WPARAM wParam,
-    LPARAM lParam,
-    UINT_PTR subclassId,
-    DWORD_PTR referenceData)
-{
-    (void)subclassId;
-
-    /* Trackbar notifications go to their immediate parent (this panel),
-       then are forwarded to the dialog without replacing the panel WndProc.
-       Using SetWindowSubclass keeps this handler compatible with the shared
-       theme subclass and with the STATIC control's normal painting. */
-    if (msg == WM_HSCROLL || msg == WM_VSCROLL)
-    {
-        HWND hDlg = (HWND)referenceData;
-        if (hDlg != NULL)
-        {
-            SendMessageW(hDlg, msg, wParam, lParam);
-            return 0;
-        }
-    }
-
-    if (msg == WM_NCDESTROY)
-        RemoveWindowSubclass(hPanel, AdvancedPanelSubclassProc, (UINT_PTR)0x415A4950u);
-
-    return DefSubclassProc(hPanel, msg, wParam, lParam);
-}
+/* The shared AziAudioPanelSubclassProc above forwards both slider and command notifications for either page. */
 
 static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
@@ -349,8 +357,8 @@ static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
     /* Keep scroll forwarding as an independent subclass. Do not replace the
        STATIC panel WndProc: that can detach the theme subclass and disrupt
        child-control painting when the user switches tabs. */
-    SetWindowSubclass(hPanel, AdvancedPanelSubclassProc,
-        (UINT_PTR)0x415A4950u, (DWORD_PTR)hDlg);
+    SetWindowSubclass(hPanel, AziAudioPanelSubclassProc,
+        AZIAUDIO_PANEL_SUBCLASS_ID, (DWORD_PTR)hDlg);
 
     const int lx = DluX(hDlg, 8);
     const int rx = DluX(hDlg, 220);
@@ -743,6 +751,22 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
     case WM_COMMAND:
     {
         int id = LOWORD(wParam);
+        if (HIWORD(wParam) == BN_CLICKED && lParam != 0 &&
+            (id == IDC_MUTE_CHECK || id == IDC_PREVENT_OVERRUN ||
+             id == IDC_FORCE_SYNC || id == IDC_DISALLOW_DS8 || id == IDC_DISALLOW_XA2))
+        {
+            BOOL checked = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
+            switch (id)
+            {
+            case IDC_MUTE_CHECK:      st->mute = checked != FALSE; break;
+            case IDC_PREVENT_OVERRUN: st->preventOverrun = checked != FALSE; break;
+            case IDC_FORCE_SYNC:      st->forceSync = checked != FALSE; break;
+            case IDC_DISALLOW_DS8:    st->disallowDS8 = checked != FALSE; break;
+            case IDC_DISALLOW_XA2:    st->disallowXA2 = checked != FALSE; break;
+            }
+            InvalidateRect((HWND)lParam, NULL, TRUE);
+            return TRUE;
+        }
         if (id == IDC_OK)
         {
             ReadControls(hDlg, st);

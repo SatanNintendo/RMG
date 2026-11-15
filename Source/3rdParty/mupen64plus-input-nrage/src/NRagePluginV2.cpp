@@ -73,6 +73,7 @@ int g_iFirstController = -1;            // The first controller which is plugged
 
 bool g_bRunning = false;                        // Is the emulator running (i.e. have we opened a ROM)?
 bool g_bConfiguring = false;            // Are we currently in a config menu?
+static volatile LONG g_lConfigDialogActive = 0; // Prevent concurrent modal config dialogs.
 bool g_bExclusiveMouse = true;          // Do we have an exclusive mouse lock? defaults to true unless we have no bound mouse buttons/axes
 CONTROLLER g_pcControllers[4];          // Our four N64 controllers, connected or otherwise
 SHORTCUTS g_scShortcuts;
@@ -161,7 +162,8 @@ void OpenConfigurationDialog( HWND hParent )
                 }
         }
 
-        if( g_pDIHandle && !g_bConfiguring )
+        if( g_pDIHandle &&
+            InterlockedCompareExchange( &g_lConfigDialogActive, 1, 0 ) == 0 )
         {
                 g_bConfiguring = true;
                 if( !bInitCC )
@@ -224,6 +226,7 @@ void OpenConfigurationDialog( HWND hParent )
                 }
 
                 g_bConfiguring = false;
+                InterlockedExchange( &g_lConfigDialogActive, 0 );
         }
         return;
 }
