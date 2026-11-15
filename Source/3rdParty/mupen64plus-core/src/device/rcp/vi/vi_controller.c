@@ -23,6 +23,7 @@
 
 #include <string.h>
 
+#include "api/callbacks.h"
 #include "api/m64p_types.h"
 #include "device/memory/memory.h"
 #include "device/r4300/r4300_core.h"
