@@ -505,6 +505,10 @@ static LRESULT CALLBACK config_wnd_proc(HWND hwnd, UINT message, WPARAM wParam, 
         break;
 
     case WM_CREATE:
+        /* Set the caption explicitly as well as through CreateWindowExW.
+           Some embedding hosts create the plugin window before the RMG
+           language environment has been inherited by the plugin CRT. */
+        SetWindowTextW(hwnd, rmg_text(L"SoftRDP Settings", L"Настройки SoftRDP"));
         create_controls(state);
         SetFocus(state->scale);
         return 0;

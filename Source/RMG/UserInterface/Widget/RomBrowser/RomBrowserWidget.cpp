@@ -9,6 +9,7 @@
  */
 #include "RomBrowserWidget.hpp"
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -130,15 +131,15 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
 
     // set up list view's columns
     QStringList labels;
-    labels << tr("Name");
-    labels << tr("Internal Name");
-    labels << tr("MD5");
-    labels << tr("Format");
-    labels << tr("File Name");
-    labels << tr("File Ext.");
-    labels << tr("File Size");
-    labels << tr("I.D.");
-    labels << tr("Region");
+    labels << QCoreApplication::translate("RomBrowserWidget", "Name");
+    labels << QCoreApplication::translate("RomBrowserWidget", "Internal Name");
+    labels << QCoreApplication::translate("RomBrowserWidget", "MD5");
+    labels << QCoreApplication::translate("RomBrowserWidget", "Format");
+    labels << QCoreApplication::translate("RomBrowserWidget", "File Name");
+    labels << QCoreApplication::translate("RomBrowserWidget", "File Ext.");
+    labels << QCoreApplication::translate("RomBrowserWidget", "File Size");
+    labels << QCoreApplication::translate("RomBrowserWidget", "I.D.");
+    labels << QCoreApplication::translate("RomBrowserWidget", "Region");
     this->listViewModel->setColumnCount(labels.size());
     this->listViewModel->setHorizontalHeaderLabels(labels);
 
@@ -146,12 +147,12 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     this->columnNames << labels.at(0);
     this->columnNames << labels.at(1);
     this->columnNames << labels.at(2);
-    this->columnNames << tr("Game Format");
+    this->columnNames << QCoreApplication::translate("RomBrowserWidget", "Game Format");
     this->columnNames << labels.at(4);
-    this->columnNames << tr("File Extension");
+    this->columnNames << QCoreApplication::translate("RomBrowserWidget", "File Extension");
     this->columnNames << labels.at(6);
-    this->columnNames << tr("Game I.D.");
-    this->columnNames << tr("Game Region");
+    this->columnNames << QCoreApplication::translate("RomBrowserWidget", "Game I.D.");
+    this->columnNames << QCoreApplication::translate("RomBrowserWidget", "Game Region");
 
     // configure grid view widget
     this->gridViewWidget = new Widget::RomBrowserGridViewWidget(this);
@@ -209,35 +210,35 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     this->action_ColumnsMenuEntry = new QAction(this);
 
     // configure context menu contents
-    this->action_PlayGame->setText(tr("Play Game"));
+    this->action_PlayGame->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game"));
     this->action_PlayGame->setIcon(QIcon::fromTheme("gamepad-line"));
-    this->action_PlayGameWith->setText(tr("Play Game with Disk"));
+    this->action_PlayGameWith->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game with Disk"));
     this->action_PlayGameWith->setIcon(QIcon::fromTheme("hard-drive-line"));
-    this->menu_PlayGameWithDisk->menuAction()->setText(tr("Play Game with Disk"));
+    this->menu_PlayGameWithDisk->menuAction()->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game with Disk"));
     this->menu_PlayGameWithDisk->menuAction()->setIcon(QIcon::fromTheme("hard-drive-line"));
-    this->menu_PlayGameWithSlot->menuAction()->setText(tr("Play Game with State"));
+    this->menu_PlayGameWithSlot->menuAction()->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game with State"));
     this->menu_PlayGameWithSlot->menuAction()->setIcon(QIcon::fromTheme("save-3-line"));
-    this->action_RefreshRomList->setText(tr("Refresh ROM List"));
+    this->action_RefreshRomList->setText(QCoreApplication::translate("RomBrowserWidget", "Refresh ROM List"));
     this->action_RefreshRomList->setIcon(QIcon::fromTheme("refresh-line"));
-    this->action_OpenRomDirectory->setText(tr("Open ROM Directory"));
+    this->action_OpenRomDirectory->setText(QCoreApplication::translate("RomBrowserWidget", "Open ROM Directory"));
     this->action_OpenRomDirectory->setIcon(QIcon::fromTheme("folder-open-line"));
-    this->action_ChangeRomDirectory->setText(tr("Change ROM Directory..."));
+    this->action_ChangeRomDirectory->setText(QCoreApplication::translate("RomBrowserWidget", "Change ROM Directory..."));
     this->action_ChangeRomDirectory->setIcon(QIcon::fromTheme("pencil-line"));
-    this->action_RomInformation->setText(tr("ROM Information"));
+    this->action_RomInformation->setText(QCoreApplication::translate("RomBrowserWidget", "ROM Information"));
     this->action_RomInformation->setIcon(QIcon::fromTheme("information-line"));
-    this->action_EditGameSettings->setText(tr("Edit Game Settings"));
+    this->action_EditGameSettings->setText(QCoreApplication::translate("RomBrowserWidget", "Edit Game Settings"));
     this->action_EditGameSettings->setIcon(QIcon::fromTheme("settings-3-line"));
-    this->action_EditGameInputSettings->setText(tr("Edit Game Input Settings"));
+    this->action_EditGameInputSettings->setText(QCoreApplication::translate("RomBrowserWidget", "Edit Game Input Settings"));
     this->action_EditGameInputSettings->setIcon(QIcon::fromTheme("gamepad-line"));
-    this->action_EditCheats->setText(tr("Edit Cheats"));
+    this->action_EditCheats->setText(QCoreApplication::translate("RomBrowserWidget", "Edit Cheats"));
     this->action_EditCheats->setIcon(QIcon::fromTheme("code-box-line"));
-    this->action_ResetColumnSizes->setText(tr("Reset Column Sizes"));
+    this->action_ResetColumnSizes->setText(QCoreApplication::translate("RomBrowserWidget", "Reset Column Sizes"));
     this->action_ResetColumnSizes->setIcon(QIcon::fromTheme("restart-line"));
-    this->menu_Columns->menuAction()->setText(tr("Show/Hide Columns"));
+    this->menu_Columns->menuAction()->setText(QCoreApplication::translate("RomBrowserWidget", "Show/Hide Columns"));
     this->menu_Columns->menuAction()->setIcon(QIcon::fromTheme("eye-line"));
-    this->action_SetCoverImage->setText(tr("Set Cover Image..."));
+    this->action_SetCoverImage->setText(QCoreApplication::translate("RomBrowserWidget", "Set Cover Image..."));
     this->action_SetCoverImage->setIcon(QIcon::fromTheme("file-line"));
-    this->action_RemoveCoverImage->setText(tr("Remove Cover Image"));
+    this->action_RemoveCoverImage->setText(QCoreApplication::translate("RomBrowserWidget", "Remove Cover Image"));
     this->action_RemoveCoverImage->setIcon(QIcon::fromTheme("delete-bin-line"));
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWith, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWith);
@@ -527,16 +528,16 @@ void RomBrowserWidget::addRomData(QString file, CoreRomType type, CoreRomHeader 
     // generate game format to use in UI
     if (type == CoreRomType::Disk)
     {
-        gameFormat = tr("Disk");
+        gameFormat = QCoreApplication::translate("RomBrowserWidget", "Disk");
     }
     else
     {
-        gameFormat = tr("Cartridge");
+        gameFormat = QCoreApplication::translate("RomBrowserWidget", "Cartridge");
     }
 
     // generate file size to use in UI
     fileSize = QFileInfo(file).size()/1048576.0;
-    fileSizeString = tr("%1 MB").arg(QString::number(fileSize, 'f', 2));
+    fileSizeString = QCoreApplication::translate("RomBrowserWidget", "%1 MB").arg(QString::number(fileSize, 'f', 2));
     if (fileSizeString.size() == 7)
     {
         fileSizeString = fileSizeString.prepend("  ");
@@ -724,11 +725,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
     if (hasSelection && data.type == CoreRomType::Disk)
     { // disk selected
-        this->action_PlayGameWith->setText(tr("Play Game with Cartridge..."));
+        this->action_PlayGameWith->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game with Cartridge..."));
     }
     else
     { // cartridge selected
-        this->action_PlayGameWith->setText(tr("Play Game with Disk..."));
+        this->action_PlayGameWith->setText(QCoreApplication::translate("RomBrowserWidget", "Play Game with Disk..."));
     }
 
     if (view == this->listViewWidget)
@@ -740,11 +741,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     { // grid view
         if (data.coverFile.isEmpty())
         {
-            this->action_SetCoverImage->setText(tr("Set Cover Image..."));
+            this->action_SetCoverImage->setText(QCoreApplication::translate("RomBrowserWidget", "Set Cover Image..."));
         }
         else
         {
-            this->action_SetCoverImage->setText(tr("Change Cover Image..."));
+            this->action_SetCoverImage->setText(QCoreApplication::translate("RomBrowserWidget", "Change Cover Image..."));
         }
     }
 
@@ -790,7 +791,7 @@ void RomBrowserWidget::generatePlayWithDiskMenu(void)
         {
             if (count == 0)
             { // only add 'Browse...' action when there are disks
-                this->menu_PlayGameWithDisk->addAction(tr("Browse..."));
+                this->menu_PlayGameWithDisk->addAction(QCoreApplication::translate("RomBrowserWidget", "Browse..."));
                 this->menu_PlayGameWithDisk->addSeparator();
             }
 
@@ -834,7 +835,7 @@ void RomBrowserWidget::generateStateMenu(void)
         QFileInfo saveStateFileInfo(QString::fromStdWString(saveStatePath.wstring()));
         if (!saveStatePath.empty() && saveStateFileInfo.exists())
         {
-            saveStateSlotText = tr("Slot %1 - ").arg(i);
+            saveStateSlotText = QCoreApplication::translate("RomBrowserWidget", "Slot %1 - ").arg(i);
             saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
 
             QAction* slotAction = this->menu_PlayGameWithSlot->addAction(saveStateSlotText);
@@ -1224,7 +1225,7 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
         return;
     }
 
-    sourceFile = QFileDialog::getOpenFileName(this, tr("Open Cover Image"), "", tr("Cover Image (*.png *.jpeg *.jpg)"));
+    sourceFile = QFileDialog::getOpenFileName(this, QCoreApplication::translate("RomBrowserWidget", "Open Cover Image"), "", QCoreApplication::translate("RomBrowserWidget", "Cover Image (*.png *.jpeg *.jpg)"));
     if (sourceFile.isEmpty())
     {
         return;
