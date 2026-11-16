@@ -39,10 +39,31 @@ done
 windeployqt6 --exclude-plugins qpdf,qwebp,qgif,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp \
 				--no-translations "$exe"
 
-# needed by Qt at runtime
-cp "$path/libcrypto-3-x64.dll" "$bin_dir/"
-cp "$path/libssl-3-x64.dll"    "$bin_dir/"
-cp "$path/libjpeg-8.dll"       "$bin_dir/"
+# needed by Qt at runtime (optional TLS/image plugins).
+# Match by wildcard so a new OpenSSL / libjpeg major version in MSYS2 does not
+# break the bundle step; missing optional libraries only produce a warning.
+function copyOptionalDLL() {
+    local found=0
+    local f
+    for f in "$path"/$1
+    do
+        if [ -f "$f" ]
+        then
+            cp "$f" "$bin_dir/"
+            echo "=> Bundled $(basename "$f")"
+            found=1
+        fi
+    done
+    if [ "$found" -eq 0 ]
+    then
+        echo "WARNING: no library matching $1 found in $path, skipping"
+    fi
+    return 0
+}
+
+copyOptionalDLL "libcrypto-*.dll"
+copyOptionalDLL "libssl-*.dll"
+copyOptionalDLL "libjpeg-*.dll"
 
 # remove *.a files
 find "$bin_dir/" -name '*.a' -delete
