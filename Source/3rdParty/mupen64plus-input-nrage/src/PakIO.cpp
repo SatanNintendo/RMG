@@ -31,6 +31,7 @@
 #include "Interface.h"
 #include "FileAccess.h"
 #include "PakIO.h"
+#include "MupenPlusAPI.h"
 #include "GBCart.h"
 
 // ProtoTypes
@@ -87,7 +88,8 @@ bool InitControllerPak( const int iControl )
 
 			if( pcFile == NULL )
 			{ // no Filename specified
-				WarningMessage( IDS_ERR_MEM_NOSPEC, MB_OK | MB_ICONWARNING );
+				// (no modal box: this runs on the emulation thread)
+				M64PDebugMessage( M64MSG_WARNING, "N-Rage: controller %d has no MemPak file specified; Controller Pak disabled", iControl + 1 );
 				g_pcControllers[iControl].PakType = PAK_NONE;
 				break; // memory is freed at the end of this function
 			}
@@ -109,23 +111,15 @@ bool InitControllerPak( const int iControl )
 				hFileHandle = CreateFile( szFullPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, 0, NULL );
 				if( hFileHandle != INVALID_HANDLE_VALUE )
 				{
-					TCHAR tszTitle[DEFAULT_BUFFER], tszText[DEFAULT_BUFFER];
-
-					LoadString( g_hResourceDLL, IDS_DLG_MEM_READONLY, tszText, DEFAULT_BUFFER );
-					LoadString( g_hResourceDLL, IDS_DLG_WARN_TITLE, tszTitle, DEFAULT_BUFFER );
-					wsprintf( szBuffer, tszText, pcFile );
-					MessageBox( g_strEmuInfo.hMainWindow, szBuffer, tszTitle, MB_OK | MB_ICONWARNING );
+					// (no modal box: this runs on the emulation thread)
+					M64PDebugMessage( M64MSG_WARNING, "N-Rage: MemPak file %ls is read-only; Controller Pak data will not be saved", pcFile );
 					mPak->fReadonly = true;
 					DebugWriteA("Ramfile opened in READ ONLY mode.\n");
 				}
 				else
 				{
-					TCHAR tszTitle[DEFAULT_BUFFER], tszText[DEFAULT_BUFFER];
-
-					LoadString( g_hResourceDLL, IDS_ERR_MEMOPEN, tszText, DEFAULT_BUFFER );
-					LoadString( g_hResourceDLL, IDS_DLG_WARN_TITLE, tszTitle, DEFAULT_BUFFER );
-					wsprintf( szBuffer, tszText, pcFile );
-					MessageBox( g_strEmuInfo.hMainWindow, szBuffer, tszTitle, MB_OK | MB_ICONWARNING );
+					// (no modal box: this runs on the emulation thread)
+					M64PDebugMessage( M64MSG_WARNING, "N-Rage: unable to open or create MemPak file %ls (error %lu); Controller Pak disabled", pcFile, (unsigned long)GetLastError() );
 					g_pcControllers[iControl].PakType = PAK_NONE;	// set so that CloseControllerPak doesn't try to close a file that isn't open
 					DebugWrite(_T("Unable to read or create MemPak file %s.\n"), pcFile);
 					break; // memory is freed at the end of this function
@@ -162,6 +156,7 @@ bool InitControllerPak( const int iControl )
 				}
 				else
 				{
+					mPak->aMemPakData = (LPBYTE)P_malloc( sizeof(BYTE) * PAK_MEM_SIZE );
 					FormatMemPak( mPak->aMemPakData );
 					bReturn = true;
 				}
@@ -187,7 +182,13 @@ bool InitControllerPak( const int iControl )
 				// if it's a dexsave, move the pakdata pointer forward so it points to where the actual mempak data starts
 				// we need to make sure to move it back when we UnmapViewOfFile
 				if (mPak->aMemPakData == NULL)
-					ErrorMessage(IDS_ERR_MAPVIEW, GetLastError(), false);
+				{
+					M64PDebugMessage( M64MSG_ERROR, "N-Rage: MapViewOfFile failed for the MemPak file (error %lu); Controller Pak disabled", (unsigned long)GetLastError() );
+					CloseHandle( mPak->hMemPakHandle );
+					mPak->hMemPakHandle = NULL;
+					g_pcControllers[iControl].PakType = PAK_NONE;
+					break; // memory is freed at the end of the function
+				}
 
 				if ( mPak->fDexSave )
 					mPak->aMemPakData += PAK_MEM_DEXOFFSET;
