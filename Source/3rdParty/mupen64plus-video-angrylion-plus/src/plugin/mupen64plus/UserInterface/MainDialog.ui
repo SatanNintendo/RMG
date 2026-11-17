@@ -202,6 +202,42 @@
           </layout>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="viDeinterlaceLayout">
+           <item>
+            <widget class="QLabel" name="viDeinterlaceLabel">
+             <property name="toolTip">
+              <string>Only applies in Filtered VI mode with interlaced (SERRATE) output.</string>
+             </property>
+             <property name="text">
+              <string>Deinterlacing</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="viDeinterlaceComboBox">
+             <property name="toolTip">
+              <string>Off: native VI output. Bob: vertical interpolation of the current field. Adaptive: per-pixel blend between the previous field (full detail where the picture is static) and Bob (where it moves).</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Off</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Bob</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Adaptive</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_8">
            <property name="leftMargin">
             <number>0</number>
@@ -281,43 +317,7 @@
                <property name="text">
                 <string>Enable Vsync</string>
                </property>
-             </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="viDeinterlaceLayout">
-               <item>
-                <widget class="QLabel" name="viDeinterlaceLabel">
-                 <property name="toolTip">
-                  <string>Only applies in Filtered VI mode with interlaced (SERRATE) output.</string>
-                 </property>
-                 <property name="text">
-                  <string>Deinterlacing</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="viDeinterlaceComboBox">
-                 <property name="toolTip">
-                  <string>Off: native VI output. Bob: vertical interpolation of the current field. Adaptive: per-pixel blend between the previous field (full detail where the picture is static) and Bob (where it moves).</string>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>Off</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Bob</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Adaptive</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
+              </widget>
              </item>
             </layout>
            </item>
