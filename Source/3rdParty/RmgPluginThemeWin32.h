@@ -746,7 +746,9 @@ static BOOL RmgPluginThemeDrawGroupBox(const DRAWITEMSTRUCT *drawItem)
 
     dc = drawItem->hDC;
     savedDC = SaveDC(dc);
-    FillRect(dc, &drawItem->rcItem, RmgPluginThemeDarkBrush());
+    /* Only the frame and the caption are painted. The interior is the page
+       background and holds sibling controls (check boxes, sliders, combos);
+       filling it would wipe them out whenever the group box is repainted. */
     frameRect = drawItem->rcItem;
     frameRect.top += 7;
     GetWindowTextW(groupBox, caption, (int)(sizeof(caption) / sizeof(caption[0])));
@@ -1214,6 +1216,10 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
     if (dark)
     {
         if (message == WM_ERASEBKGND &&
+            GetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY) != NULL)
+            return 1;
+
+        if (message == WM_ERASEBKGND &&
             (GetPropW(hwnd, RMG_PLUGIN_DARK_CHECK_PROPERTY) != NULL ||
              GetPropW(hwnd, RMG_PLUGIN_DARK_HEADER_PROPERTY) != NULL))
         {
@@ -1496,7 +1502,7 @@ static void RmgPluginThemeAttach(HWND hwnd)
                 {
                     SetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY, (HANDLE)(ULONG_PTR)1);
                     SetWindowLongPtrW(hwnd, GWL_STYLE,
-                        (style & ~BS_TYPEMASK) | BS_OWNERDRAW);
+                        ((style & ~BS_TYPEMASK) | BS_OWNERDRAW) | WS_CLIPSIBLINGS);
                 }
                 InvalidateRect(hwnd, NULL, TRUE);
             }
