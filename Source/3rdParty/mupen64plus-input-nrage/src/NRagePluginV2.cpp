@@ -71,7 +71,8 @@ int g_iFirstController = -1;            // The first controller which is plugged
                                                                         // Normally controllers are scanned all at once in sequence, 1-4.  We only want to scan devices once per pass;
                                                                         // this is so we get consistent sample rates on our mouse.
 
-bool g_bRunning = false;                        // Is the emulator running (i.e. have we opened a ROM)?
+bool g_bRunning = false;
+static CONTROL *g_pCoreControls = NULL;          // the core's CONTROL[4] array, kept so it can be refreshed after a late device setup                        // Is the emulator running (i.e. have we opened a ROM)?
 bool g_bConfiguring = false;            // Are we currently in a config menu?
 static volatile LONG g_lConfigDialogActive = 0; // Prevent concurrent modal config dialogs.
 bool g_bExclusiveMouse = true;          // Do we have an exclusive mouse lock? defaults to true unless we have no bound mouse buttons/axes
@@ -366,16 +367,25 @@ EXPORT void CALL InitiateControllers ( CONTROL_INFO ControlInfo )
         HWND hWindow = ResolveEmulatorWindowHandle();
         g_strEmuInfo.hMainWindow = hWindow;
 
+        g_pCoreControls = ControlInfo.Controls;
+
         if( !prepareHeap())
+        {
+                M64PDebugMessage(M64MSG_ERROR, "N-Rage: InitiateControllers could not create its heap; no controller will be reported");
                 return;
+        }
 
         // The emulator expects us to tell what controllers are plugged in and what their paks are at this point.
         // NOTE: on SDL console front-ends the video window may not exist yet
         // at this point; SetupControllerSubsystem degrades gracefully and
         // RomOpen repeats the device setup once a window is available.
-        SetupControllerSubsystem( hWindow );
+        bool bSetupOk = SetupControllerSubsystem( hWindow );
 
         FillControls( ControlInfo.Controls );
+
+        M64PDebugMessage(M64MSG_INFO, "N-Rage: InitiateControllers window=%p setup=%s devices=%d controller1: plugged=%d pak=%d raw=%d",
+                (void*)hWindow, bSetupOk ? "ok" : "DEFERRED", g_nDevices,
+                (int)g_pcControllers[0].fPlugged, (int)g_pcControllers[0].PakType, (int)g_pcControllers[0].fRawData);
 
         return;
 } // end InitiateControllers
@@ -393,21 +403,22 @@ EXPORT int CALL RomOpen (void)
 
         XInputEnable( TRUE );   // enables xinput --tecnicors
 
-        if( !g_strEmuInfo.fInitialisedPlugin )
-        {
-                ErrorMessage(IDS_ERR_NOINIT, 0, false);
-                return 1;       // nothing we can do; keep the core happy
-        }
-
         // The video window definitely exists by now (gfx.romOpen() has run
         // before input.romOpen()), so refresh our window binding in case
         // InitiateControllers ran before the window was created (this
         // happens on SDL console front-ends).
+        //
+        // This recovery MUST run before the "plugin initialised" test below:
+        // when InitiateControllers could not open DirectInput (no window
+        // yet) the plugin is not initialised, and this is the place that
+        // fixes it. (The test used to come first, so the recovery was never
+        // reached in exactly the case it was written for.)
         {
                 HWND hWindow = ResolveEmulatorWindowHandle();
                 if (hWindow != NULL)
                 {
-                        bool bDevicelessSetup = (g_pDIHandle == NULL) || (g_nDevices == 0);
+                        bool bDevicelessSetup = !g_strEmuInfo.fInitialisedPlugin ||
+                                                (g_pDIHandle == NULL) || (g_nDevices == 0);
 
                         if (hWindow != g_strEmuInfo.hMainWindow)
                                 g_strEmuInfo.hMainWindow = hWindow;
@@ -416,11 +427,16 @@ EXPORT int CALL RomOpen (void)
                         {
                                 // No DirectInput device could be opened without a window;
                                 // re-run the whole controller setup now that we have one.
-                                // (The CONTROL array is unaffected: it only carries
-                                // config state, which has not changed.)
                                 g_iFirstController = -1;
-                                SetupControllerSubsystem( hWindow );
-                                DebugWriteA("RomOpen: recovered device setup, g_nDevices=%d\n", g_nDevices);
+                                bool bSetupOk = SetupControllerSubsystem( hWindow );
+
+                                // The config was (re)loaded: tell the core what is really plugged in.
+                                if (bSetupOk && g_pCoreControls != NULL)
+                                        FillControls( g_pCoreControls );
+
+                                M64PDebugMessage(M64MSG_INFO, "N-Rage: RomOpen recovered device setup (%s), window=%p devices=%d controller1: plugged=%d pak=%d raw=%d",
+                                        bSetupOk ? "ok" : "FAILED", (void*)hWindow, g_nDevices,
+                                        (int)g_pcControllers[0].fPlugged, (int)g_pcControllers[0].PakType, (int)g_pcControllers[0].fRawData);
                         }
                         else if (g_bRunning)
                         {
@@ -431,6 +447,15 @@ EXPORT int CALL RomOpen (void)
                                 LeaveCriticalSection( &g_critical );
                         }
                 }
+        }
+
+        if( !g_strEmuInfo.fInitialisedPlugin )
+        {
+                // Never open a modal box here: this runs on the emulation
+                // thread, and a box hidden behind the emulator window would
+                // freeze the game at start-up with no visible reason.
+                M64PDebugMessage(M64MSG_ERROR, "N-Rage: plugin is not initialised (DirectInput unavailable); controller input is disabled");
+                return 1;       // nothing we can do; keep the core happy
         }
 
         EnterCriticalSection( &g_critical );
@@ -579,6 +604,9 @@ EXPORT void CALL ReadController( int Control, unsigned char * Command )
                 return;
         }
 
+        if( Control < 0 || Control >= 4 || Command == NULL )
+                return;         // never index the controller table / PIF buffer out of range
+
         EnterCriticalSection( &g_critical );
 
         if( !g_pcControllers[Control].fPlugged )
@@ -624,7 +652,15 @@ EXPORT void CALL ReadController( int Control, unsigned char * Command )
                 }
                 else
                 {
-                        if( !g_bConfiguring && InitControllerPak( Control ) && g_pcControllers[Control].pPakData )
+                        static bool s_bPakInitLogged[4] = { false, false, false, false };
+                        bool bPakInitOk = ( !g_bConfiguring && InitControllerPak( Control ) && g_pcControllers[Control].pPakData );
+                        if( !s_bPakInitLogged[Control] )
+                        {
+                                s_bPakInitLogged[Control] = true;
+                                M64PDebugMessage(M64MSG_INFO, "N-Rage: controller %d first status poll, pak type %d initialised: %s",
+                                        Control + 1, (int)g_pcControllers[Control].PakType, bPakInitOk ? "yes" : "NO");
+                        }
+                        if( bPakInitOk )
                         {
                                 g_pcControllers[Control].fPakInitialized = 1;
 
