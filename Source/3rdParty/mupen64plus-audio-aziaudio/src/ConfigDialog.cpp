@@ -192,57 +192,75 @@ static HWND CreateLabel(HWND parent, const wchar_t *text,
     return h;
 }
 
-/* Child panels are STATIC windows. Buttons/checkboxes and trackbars send
-   WM_COMMAND/WM_HSCROLL/WM_VSCROLL to their immediate parent, not to the
-   modal dialog. Relay those notifications so the dialog can update its
-   working state and slider labels while the controls remain parented to the
-   page surface. This uses a subclass rather than replacing the STATIC
-   window procedure, so the shared theme subclass remains intact. */
-static LRESULT CALLBACK AziAudioPanelSubclassProc(
-    HWND hPanel,
-    UINT msg,
-    WPARAM wParam,
-    LPARAM lParam,
-    UINT_PTR subclassId,
-    DWORD_PTR referenceData)
-{
-    HWND hDlg = (HWND)referenceData;
+/* Tab pages are windows of a private class, NOT plain STATIC controls.
+   A STATIC control answers WM_NCHITTEST with HTTRANSPARENT unless SS_NOTIFY
+   is set, so mouse input aimed at the check boxes, sliders and combo boxes
+   living on such a page can fall through to whatever lies beneath it: the
+   controls are drawn but never react (check boxes do not toggle, the
+   Frequency list does not drop down). A private class uses the default hit
+   test, so its children receive the mouse normally.
 
-    if (hDlg != NULL && (msg == WM_COMMAND || msg == WM_HSCROLL || msg == WM_VSCROLL))
+   Buttons/check boxes and trackbars send WM_COMMAND/WM_HSCROLL/WM_VSCROLL to
+   their immediate parent, i.e. to the page, not to the modal dialog. The page
+   procedure relays those notifications to the dialog so it can update its
+   working state and the slider value labels. The shared theme bridge is
+   attached with SetWindowSubclass on top of this procedure, so painting and
+   WM_CTLCOLOR* handling stay in the theme code. */
+#define AZIAUDIO_PAGE_CLASS L"RmgAziAudioPluginPage"
+
+/* Module the page class is registered for (set by RunDialog). */
+static HINSTANCE s_pageInstance = NULL;
+
+static LRESULT CALLBACK AziAudioPageProc(HWND hPage, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (msg == WM_COMMAND || msg == WM_HSCROLL || msg == WM_VSCROLL)
     {
-        if (msg != WM_COMMAND ||
-            (lParam != 0 && GetParent((HWND)lParam) == hPanel))
+        HWND hDlg = GetParent(hPage);
+        if (hDlg != NULL && (msg != WM_COMMAND ||
+            (lParam != 0 && GetParent((HWND)lParam) == hPage)))
         {
             SendMessageW(hDlg, msg, wParam, lParam);
             return 0;
         }
     }
-
-    if (msg == WM_NCDESTROY)
-        RemoveWindowSubclass(hPanel, AziAudioPanelSubclassProc, subclassId);
-
-    return DefSubclassProc(hPanel, msg, wParam, lParam);
+    return DefWindowProcW(hPage, msg, wParam, lParam);
 }
 
-static const UINT_PTR AZIAUDIO_PANEL_SUBCLASS_ID = (UINT_PTR)0x415A4950u;
+static bool RegisterPageClass(HINSTANCE hInst)
+{
+    WNDCLASSEXW wc;
+    ZeroMemory(&wc, sizeof(wc));
+    wc.cbSize        = sizeof(wc);
+    wc.lpfnWndProc   = AziAudioPageProc;
+    wc.hInstance     = hInst;
+    wc.hCursor       = LoadCursorW(NULL, (LPCWSTR)IDC_ARROW);
+    wc.hbrBackground = NULL;   /* the theme bridge erases the page background */
+    wc.lpszClassName = AZIAUDIO_PAGE_CLASS;
+    if (RegisterClassExW(&wc) != 0)
+        return true;
+    return GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
+}
+
+static HWND CreatePageWindow(HWND hDlg, const RECT *rc, HFONT hFont)
+{
+    HWND hPage = CreateWindowExW(WS_EX_CONTROLPARENT, AZIAUDIO_PAGE_CLASS, L"",
+        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+        rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
+        hDlg, NULL, s_pageInstance, NULL);
+    if (hPage == NULL)
+        return NULL;
+    if (hFont != NULL)
+        SendMessageW(hPage, WM_SETFONT, (WPARAM)hFont, TRUE);
+    RmgPluginThemeAttachPagePanel(hPage);
+    return hPage;
+}
 
 /* ── Create the "Settings" panel window (child of dialog) ─────────────── */
 static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    /* Use a plain clipped page surface instead of asking the STATIC control
-       to draw an etched frame around the container. The shared theme bridge
-       paints this page background in both light and dark mode. */
-    HWND hPanel = CreateWindowExW(WS_EX_CONTROLPARENT, L"STATIC", L"",
-        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-        rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
-        hDlg, NULL, g_hDllInst, NULL);
+    HWND hPanel = CreatePageWindow(hDlg, rc, hFont);
     if (hPanel == NULL)
         return NULL;
-    if (hFont != NULL)
-        SendMessageW(hPanel, WM_SETFONT, (WPARAM)hFont, TRUE);
-    RmgPluginThemeAttachPagePanel(hPanel);
-    SetWindowSubclass(hPanel, AziAudioPanelSubclassProc,
-        AZIAUDIO_PANEL_SUBCLASS_ID, (DWORD_PTR)hDlg);
 
     /* Layout follows the Project64 reference dialog:
        - plain captions (not framed group boxes) above the two selectors
@@ -338,27 +356,13 @@ static HWND CreateSettingsPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
    child panel, so the dialog WndProc never sees those notifications unless
    the panel forwards them.  Subclass the panel and relay slider messages to
    the owning dialog so the numeric values can update while dragging. */
-/* The shared AziAudioPanelSubclassProc above forwards both slider and command notifications for either page. */
+/* AziAudioPageProc above forwards both slider and command notifications for either page. */
 
 static HWND CreateAdvancedPanel(HWND hDlg, RECT *rc, DlgState *st, HFONT hFont)
 {
-    /* Use a plain clipped page surface instead of asking the STATIC control
-       to draw an etched frame around the container. The shared theme bridge
-       paints this page background in both light and dark mode. */
-    HWND hPanel = CreateWindowExW(WS_EX_CONTROLPARENT, L"STATIC", L"",
-        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-        rc->left, rc->top, rc->right - rc->left, rc->bottom - rc->top,
-        hDlg, NULL, g_hDllInst, NULL);
+    HWND hPanel = CreatePageWindow(hDlg, rc, hFont);
     if (hPanel == NULL)
         return NULL;
-    if (hFont != NULL)
-        SendMessageW(hPanel, WM_SETFONT, (WPARAM)hFont, TRUE);
-    RmgPluginThemeAttachPagePanel(hPanel);
-    /* Keep scroll forwarding as an independent subclass. Do not replace the
-       STATIC panel WndProc: that can detach the theme subclass and disrupt
-       child-control painting when the user switches tabs. */
-    SetWindowSubclass(hPanel, AziAudioPanelSubclassProc,
-        AZIAUDIO_PANEL_SUBCLASS_ID, (DWORD_PTR)hDlg);
 
     const int lx = DluX(hDlg, 8);
     const int rx = DluX(hDlg, 220);
@@ -905,12 +909,25 @@ static INT_PTR RunDialog(HINSTANCE hInst, HWND hParent, DlgState *st)
         return -1;
     }
 
-    return DialogBoxIndirectParamW(
+    s_pageInstance = (g_hDllInst != NULL) ? g_hDllInst : hInst;
+    if (!RegisterPageClass(s_pageInstance))
+    {
+        DebugMessage(M64MSG_ERROR,
+            "AziAudio-Plus: could not register the settings page window class (error %lu)",
+            (unsigned long)GetLastError());
+        return -1;
+    }
+
+    INT_PTR result = DialogBoxIndirectParamW(
         hInst,
         reinterpret_cast<const DLGTEMPLATE*>(templateBuf),
         hParent,
         DlgProc,
         (LPARAM)st);
+
+    /* Every window of the class is gone once the modal loop has returned. */
+    UnregisterClassW(AZIAUDIO_PAGE_CLASS, s_pageInstance);
+    return result;
 }
 
 /* ── Public entry point ──────────────────────────────────────────────────── */
