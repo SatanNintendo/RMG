@@ -227,7 +227,15 @@ static void AziAudioDiagLog(HWND hPage, UINT msg, WPARAM wParam, LPARAM lParam)
         POINT pt;
         pt.x = (short)LOWORD(lParam);
         pt.y = (short)HIWORD(lParam);
-        child = ChildWindowFromPointEx(hPage, pt, CWP_SKIPTRANSPARENT);
+        /* WindowFromPoint (unlike ChildWindowFromPointEx) honours HTTRANSPARENT,
+           so it reports the window that really received the click. */
+        {
+            POINT screenPt = pt;
+            ClientToScreen(hPage, &screenPt);
+            child = WindowFromPoint(screenPt);
+            if (child != NULL && GetParent(child) != hPage)
+                child = NULL;
+        }
         if (child != NULL && child != hPage)
         {
             GetClassNameA(child, cls, (int)sizeof(cls));

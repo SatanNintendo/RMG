@@ -168,6 +168,7 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
 /* Post soft-reset heartbeat: once a second for ~20 s after a soft reset it
  * logs the state of the CPU/RCP so that a black screen can be traced. */
 int g_rmg_diag_active = 0;
+unsigned int g_rmg_diag_pif_lines = 0;
 unsigned int g_rmg_diag_vi = 0, g_rmg_diag_sp_gfx = 0, g_rmg_diag_sp_audio = 0, g_rmg_diag_sp_other = 0;
 unsigned int g_rmg_diag_ev[6] = {0, 0, 0, 0, 0, 0};
 clock_t g_rmg_diag_t0 = 0;

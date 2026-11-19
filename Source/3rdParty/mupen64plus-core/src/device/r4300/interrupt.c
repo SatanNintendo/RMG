@@ -443,6 +443,7 @@ void special_int_handler(void* opaque)
  * would wait on them until the end of time (typically a black screen).
  * The reset line aborts those transfers on real hardware, so do the same. */
 extern int g_rmg_diag_active;
+extern unsigned int g_rmg_diag_pif_lines;
 extern unsigned int g_rmg_diag_vi, g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other;
 extern unsigned int g_rmg_diag_ev[6];
 extern clock_t g_rmg_diag_t0;
@@ -484,6 +485,7 @@ static void abort_inflight_rcp_dma(struct device* dev)
 
     /* start the post-reset heartbeat (see vi_controller.c) */
     g_rmg_diag_active = 1;
+    g_rmg_diag_pif_lines = 0;
     g_rmg_diag_vi = 0;
     g_rmg_diag_sp_gfx = 0;
     g_rmg_diag_sp_audio = 0;

@@ -48,6 +48,7 @@ extern "C" void RmgNRageAttachDialogTheme(HWND hDlg)
 bool prepareHeap();
 void FillControls(CONTROL Controls[]);
 void InitiatePaks( bool bInitialize );
+BYTE DataCRC( LPCBYTE Data, const int iLength );   // PakIO.cpp
 void DoShortcut( int iPlayer, int iShortcut );
 DWORD WINAPI MsgThreadFunction( LPVOID lpParam );
 DWORD WINAPI DelayedShortcut(LPVOID lpParam);
@@ -733,8 +734,15 @@ EXPORT void CALL ReadController( int Control, unsigned char * Command )
                 {
                         DebugWriteA("Tried to read, but pak wasn't initialized!!\n");
                         // InitControllerPak( Control );
-                        Command[1] |= RD_ERROR;
-                        //ZeroMemory( &Command[5], 32 );
+                        // RMG: answer like a controller WITHOUT a pak (what the core's built-in
+                        // controller does and what real hardware does): the transfer succeeds,
+                        // the data CRC just does not match. Flagging RD_ERROR here tells the
+                        // game that the whole controller stopped answering, which some titles
+                        // (e.g. Monster Truck Madness 64 after a soft reset) never recover from.
+                        if( (Command[0] & 0x3F) == 3 && (Command[1] & 0x3F) == 33 )    // well-formed read: Tx=3, Rx=33
+                                Command[37] = (BYTE)~DataCRC( &Command[5], 32 );
+                        else
+                                Command[1] |= RD_ERROR;
                 }
 #ifdef ENABLE_RAWPAK_DEBUG
                 WriteDatasA( "ReadPak-PostProcessing", Control, Command, 0);
@@ -753,7 +761,11 @@ EXPORT void CALL ReadController( int Control, unsigned char * Command )
                 {
                         DebugWriteA("Tried to write, but pak wasn't initialized! (paktype was %u)\n", g_pcControllers[Control].PakType);
                         // InitControllerPak( Control );
-                        Command[1] |= RD_ERROR;
+                        // RMG: same as the read case above - behave like "no pak inserted".
+                        if( (Command[0] & 0x3F) == 35 && (Command[1] & 0x3F) == 1 )    // well-formed write: Tx=35, Rx=1
+                                Command[37] = (BYTE)~DataCRC( &Command[5], 32 );
+                        else
+                                Command[1] |= RD_ERROR;
                 }
 #ifdef ENABLE_PAK_WRITES_DEBUG
                 WriteDatasA( "WritePak-PostProcessing", Control, Command, 0);

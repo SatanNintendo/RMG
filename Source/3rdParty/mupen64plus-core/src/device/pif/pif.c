@@ -62,6 +62,10 @@ void print_pif(struct pif* pif)
 }
 #endif
 
+/* RMG-DIAG (temporary): defined in device/rcp/vi/vi_controller.c / interrupt.c */
+extern int g_rmg_diag_active;
+extern unsigned int g_rmg_diag_pif_lines;
+
 static void process_channel(struct pif_channel* channel)
 {
     /* don't process channel if it has been disabled */
@@ -393,6 +397,19 @@ void update_pif_ram(struct pif* pif)
     /* perform PIF/Channel communications */
     for (k = 0; k < PIF_CHANNELS_COUNT; ++k) {
         process_channel(&pif->channels[k]);
+
+        /* RMG-DIAG (temporary): during the post-soft-reset window log what each
+         * joybus channel answered, identically for every input plugin, so the
+         * exchange of N-Rage can be compared with the built-in controller.
+         * VERBOSE level, at most 400 lines per reset. */
+        if (g_rmg_diag_active && g_rmg_diag_pif_lines < 400 && pif->channels[k].tx != NULL) {
+            const struct pif_channel* c = &pif->channels[k];
+            ++g_rmg_diag_pif_lines;
+            DebugMessage(M64MSG_VERBOSE,
+                "PIF ch%u: tx=%02x rx=%02x cmd=%02x data=%02x %02x %02x %02x",
+                (unsigned)k, (unsigned)c->tx[0], (unsigned)c->rx[0], (unsigned)c->tx_buf[0],
+                (unsigned)c->rx_buf[0], (unsigned)c->rx_buf[1], (unsigned)c->rx_buf[2], (unsigned)c->rx_buf[3]);
+        }
     }
 
     /* Zilmar-Spec plugin expect a call with control_id = -1 when RAM processing is done */

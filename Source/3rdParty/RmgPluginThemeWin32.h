@@ -1187,6 +1187,17 @@ static LRESULT CALLBACK RmgPluginThemeSubclassProc(
     BOOL dark = RmgPluginThemeIsDark();
     (void)referenceData;
 
+    /* A native group box answers WM_NCHITTEST with HTTRANSPARENT, so the mouse
+       goes to the check boxes, sliders and combo boxes drawn inside its frame.
+       The dark theme turns the group box into an owner-drawn button, which has
+       a normal hit test. A child window created first sits ABOVE the siblings
+       created after it, so the converted group box swallowed every click aimed
+       at the controls inside it (they were drawn but never reacted). Keep the
+       owner-drawn group box invisible to the mouse exactly like the native one. */
+    if (message == WM_NCHITTEST &&
+        GetPropW(hwnd, RMG_PLUGIN_DARK_GROUP_PROPERTY) != NULL)
+        return HTTRANSPARENT;
+
     if (message == WM_SHOWWINDOW && wParam != 0 && dark)
     {
         HWND rootWindow = GetAncestor(hwnd, GA_ROOT);
