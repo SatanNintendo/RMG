@@ -214,6 +214,20 @@ static void rmg_diag_tick(struct vi_controller* vi)
         (unsigned)cp0r[CP0_STATUS_REG], (unsigned)cp0r[CP0_CAUSE_REG], (unsigned)cp0r[CP0_COMPARE_REG],
         (unsigned)cp0r[CP0_COUNT_REG], (unsigned)cp0r[CP0_EPC_REG]);
 
+    /* RMG-DIAG (temporary): TLB/exception details and a few GPRs, to see what the
+     * guest dereferenced when it crashed after a reset. Remove with the heartbeat. */
+    {
+        const int64_t* gpr = r4300_regs(r4300);
+        DebugMessage(M64MSG_VERBOSE,
+            "Reset heartbeat #%u CP0b: badvaddr=%x context=%x entryhi=%x index=%x wired=%x random=%x errorepc=%x "
+            "GPR(sp/ra/a0/v0)=%08x/%08x/%08x/%08x",
+            lines + 1,
+            (unsigned)cp0r[CP0_BADVADDR_REG], (unsigned)cp0r[CP0_CONTEXT_REG], (unsigned)cp0r[CP0_ENTRYHI_REG],
+            (unsigned)cp0r[CP0_INDEX_REG], (unsigned)cp0r[CP0_WIRED_REG], (unsigned)cp0r[CP0_RANDOM_REG],
+            (unsigned)cp0r[CP0_ERROREPC_REG],
+            (unsigned)gpr[29], (unsigned)gpr[31], (unsigned)gpr[4], (unsigned)gpr[2]);
+    }
+
     if (++lines >= 20)
         g_rmg_diag_active = 0;
 }
