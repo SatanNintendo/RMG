@@ -167,7 +167,9 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
 
 /* Post soft-reset heartbeat: once a second for ~20 s after a soft reset it
  * logs the state of the CPU/RCP so that a black screen can be traced. */
-int g_rmg_diag_active = 0;
+/* Armed from power-on as well (not only after a soft reset), so that a cold-boot
+ * hang can be traced with the same PIF/heartbeat lines. A soft reset re-arms it. */
+int g_rmg_diag_active = 1;
 unsigned int g_rmg_diag_pif_lines = 0;
 unsigned int g_rmg_diag_vi = 0, g_rmg_diag_sp_gfx = 0, g_rmg_diag_sp_audio = 0, g_rmg_diag_sp_other = 0;
 unsigned int g_rmg_diag_ev[6] = {0, 0, 0, 0, 0, 0};
@@ -181,7 +183,11 @@ static void rmg_diag_tick(struct vi_controller* vi)
     struct rsp_core* sp = dp->sp;
 
     if (g_rmg_diag_vi == 0)
+    {
         lines = 0;
+        if (g_rmg_diag_t0 == 0)
+            g_rmg_diag_t0 = clock();   /* cold boot: start the timer at the first VI */
+    }
 
     g_rmg_diag_vi++;
     if ((g_rmg_diag_vi % 60) != 0)

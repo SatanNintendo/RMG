@@ -211,58 +211,8 @@ static HWND CreateLabel(HWND parent, const wchar_t *text,
 /* Module the page class is registered for (set by RunDialog). */
 static HINSTANCE s_pageInstance = NULL;
 
-/* RMG-DIAG (temporary, remove once the dark-theme click problem is solved):
-   logs which child window really receives a mouse click on a page, and which
-   notifications reach the page. At most 60 lines per process. */
-static void AziAudioDiagLog(HWND hPage, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    static LONG s_diagCount = 0;
-    char cls[64] = { 0 };
-    HWND child = NULL;
-    int id = 0;
-
-    if (msg == WM_PARENTNOTIFY &&
-        (LOWORD(wParam) == WM_LBUTTONDOWN || LOWORD(wParam) == WM_RBUTTONDOWN))
-    {
-        POINT pt;
-        pt.x = (short)LOWORD(lParam);
-        pt.y = (short)HIWORD(lParam);
-        /* WindowFromPoint (unlike ChildWindowFromPointEx) honours HTTRANSPARENT,
-           so it reports the window that really received the click. */
-        {
-            POINT screenPt = pt;
-            ClientToScreen(hPage, &screenPt);
-            child = WindowFromPoint(screenPt);
-            if (child != NULL && GetParent(child) != hPage)
-                child = NULL;
-        }
-        if (child != NULL && child != hPage)
-        {
-            GetClassNameA(child, cls, (int)sizeof(cls));
-            id = GetDlgCtrlID(child);
-            if (InterlockedIncrement(&s_diagCount) <= 60)
-                DebugMessage(M64MSG_INFO,
-                    "AziAudio DIAG: click at (%d,%d) -> child id=%d class=%s enabled=%d visible=%d",
-                    (int)pt.x, (int)pt.y, id, cls,
-                    (int)IsWindowEnabled(child), (int)IsWindowVisible(child));
-        }
-        return;
-    }
-    if (msg == WM_COMMAND && lParam != 0)
-    {
-        child = (HWND)lParam;
-        GetClassNameA(child, cls, (int)sizeof(cls));
-        if (InterlockedIncrement(&s_diagCount) <= 60)
-            DebugMessage(M64MSG_INFO,
-                "AziAudio DIAG: WM_COMMAND id=%d code=%d class=%s",
-                (int)LOWORD(wParam), (int)HIWORD(wParam), cls);
-    }
-}
-
 static LRESULT CALLBACK AziAudioPageProc(HWND hPage, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (msg == WM_PARENTNOTIFY || msg == WM_COMMAND)
-        AziAudioDiagLog(hPage, msg, wParam, lParam);
     if (msg == WM_COMMAND || msg == WM_HSCROLL || msg == WM_VSCROLL)
     {
         HWND hDlg = GetParent(hPage);
