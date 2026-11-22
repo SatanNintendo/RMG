@@ -21,6 +21,15 @@
 
 #define M64P_CORE_PROTOTYPES 1
 
+#include <stdio.h>
+#include <stdlib.h>
+#ifdef _WIN32
+#include <direct.h>
+#define RMG_GETCWD _getcwd
+#else
+#include <unistd.h>
+#define RMG_GETCWD getcwd
+#endif
 #include <time.h>
 #include <string.h>
 #include "interrupt.h"
@@ -494,6 +503,33 @@ static void abort_inflight_rcp_dma(struct device* dev)
     g_rmg_diag_t0 = clock();
 }
 
+/* RMG-EXP (temporary EXPERIMENT, off by default): after a soft reset upstream (and
+ * this fork) immediately restarts the VI interrupt with the delay the previous run had
+ * programmed, so VI interrupts run at 60 Hz from the NMI on, whereas after a cold boot
+ * none exist until the game programs VI_V_INTR/VI_V_SYNC. Monster Truck Madness 64
+ * crashes deliberately after a soft reset (tick watchdog, see the session history), so
+ * this switch lets that difference be tested without rebuilding: set the environment
+ * variable RMG_EXP_NO_VI_AFTER_RESET, or create an empty file named
+ * rmg_exp_no_vi_after_reset.txt in the working directory of the process. When on, the
+ * VI interrupt is not restarted by the reset; it starts again when the game writes
+ * VI_V_INTR (set_vi_vertical_interrupt). Remove together with the other diagnostics. */
+static int rmg_exp_no_vi_after_reset(void)
+{
+    char cwd[512];
+    FILE* f;
+    int on = (getenv("RMG_EXP_NO_VI_AFTER_RESET") != NULL);
+
+    if (RMG_GETCWD(cwd, sizeof(cwd)) == NULL)
+        cwd[0] = 0;
+    if (!on && (f = fopen("rmg_exp_no_vi_after_reset.txt", "rb")) != NULL)
+    {
+        fclose(f);
+        on = 1;
+    }
+    DebugMessage(M64MSG_VERBOSE, "RMG-EXP: no VI interrupt after soft reset: %s (cwd=%s)", on ? "ON" : "off", cwd);
+    return on;
+}
+
 void nmi_int_handler(void* opaque)
 {
     struct device* dev = (struct device*)opaque;
@@ -518,7 +554,8 @@ void nmi_int_handler(void* opaque)
     init_interrupt(&r4300->cp0);
     abort_inflight_rcp_dma(dev);
 
-    add_interrupt_event(&r4300->cp0, VI_INT, dev->vi.delay);
+    if (!rmg_exp_no_vi_after_reset())
+        add_interrupt_event(&r4300->cp0, VI_INT, dev->vi.delay);
 
     // clear the audio status register so that subsequent write_ai() calls will work properly
     dev->ai.regs[AI_STATUS_REG] = 0;

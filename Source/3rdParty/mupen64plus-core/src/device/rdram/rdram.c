@@ -252,22 +252,29 @@ void read_rdram_dram(void* opaque, uint32_t address, uint32_t* value)
     }
 }
 
-/* RMG-DIAG (temporary, logging only): watch the single guest word at physical
- * 0x143fc8 (= thread object 0x80143d60 + 0x268, the value that is NULL when Monster
- * Truck Madness 64 crashes after a soft reset). Logs every CPU store and every cart
- * (PI) DMA that touches it, with the guest pc, so the cold boot and the post-reset
- * run can be compared. SP/SI DMA are not watched. Max 200 lines (session 8 watched
- * 0x143fcc too, which is a message-queue link written twice per frame and used up
- * the 200 lines in the cold boot: fixed). Remove with the other RMG-DIAG code. */
-#define RMG_DIAG_WATCH_WORD UINT32_C(0x50ff2)
+/* RMG-DIAG (temporary, logging only), sessions 8-10.
+ * (1) WATCH: CPU stores to three words of the MTM64 manager-thread object
+ *     (thread 0x80143d60): +0x264 (0x80143fc4), +0x350 (0x801440b0), +0x35c
+ *     (0x801440bc). Rarely written, so the cap is enough. (+0x268 is the "current
+ *     request" pointer, written twice per controller poll: noise, no longer watched.)
+ * (2) PIDMA: every cart (PI) DMA with cart/dram address, length and guest pc, so
+ *     that the cold boot and the post-reset run can be compared line by line.
+ * Both are capped per epoch (a new epoch = g_rmg_diag_vi went backwards, i.e. a
+ * soft reset re-armed the heartbeat). Remove with the other RMG-DIAG code. */
 extern unsigned int g_rmg_diag_vi;
-static unsigned int rmg_diag_watch_lines = 0;
+static unsigned int rmg_diag_watch_lines = 0, rmg_diag_watch_last_vi = 0;
+static unsigned int rmg_diag_pi_lines = 0, rmg_diag_pi_last_vi = 0;
+
+#define RMG_DIAG_WATCHED(a) ((a) == UINT32_C(0x50ff1) || (a) == UINT32_C(0x5102c) || (a) == UINT32_C(0x5102f))
 
 static void rmg_diag_watch_cpu(struct rdram* rdram, uint32_t address, uint32_t value, uint32_t mask, uint32_t old)
 {
     const int64_t* g = r4300_regs(rdram->r4300);
 
-    if (rmg_diag_watch_lines >= 200)
+    if (g_rmg_diag_vi < rmg_diag_watch_last_vi)
+        rmg_diag_watch_lines = 0;
+    rmg_diag_watch_last_vi = g_rmg_diag_vi;
+    if (rmg_diag_watch_lines >= 60)
         return;
     ++rmg_diag_watch_lines;
     DebugMessage(M64MSG_VERBOSE,
@@ -277,21 +284,19 @@ static void rmg_diag_watch_cpu(struct rdram* rdram, uint32_t address, uint32_t v
         (unsigned)*r4300_pc(rdram->r4300), (unsigned)g[31], (unsigned)g[29], g_rmg_diag_vi);
 }
 
-void rmg_diag_watch_rdram_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr)
+void rmg_diag_pi_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr)
 {
-    const int64_t* g;
-
-    if (dram_addr >= UINT32_C(0x143fcc) || (uint64_t)dram_addr + length <= UINT32_C(0x143fc8))
+    if (g_rmg_diag_vi < rmg_diag_pi_last_vi)
+        rmg_diag_pi_lines = 0;
+    rmg_diag_pi_last_vi = g_rmg_diag_vi;
+    if (rmg_diag_pi_lines >= 450)
         return;
-    if (rmg_diag_watch_lines >= 200)
-        return;
-    ++rmg_diag_watch_lines;
-    g = r4300_regs(rdram->r4300);
+    ++rmg_diag_pi_lines;
     DebugMessage(M64MSG_VERBOSE,
-        "WATCH pi dma dram=%08x len=%08x cart=%08x now=%08x pc=%08x ra=%08x vi=%u",
-        (unsigned)dram_addr, (unsigned)length, (unsigned)cart_addr,
-        (unsigned)rdram->dram[RMG_DIAG_WATCH_WORD],
-        (unsigned)*r4300_pc(rdram->r4300), (unsigned)g[31], g_rmg_diag_vi);
+        "PIDMA #%u cart=%08x dram=%08x len=%06x pc=%08x vi=%u%s",
+        rmg_diag_pi_lines, (unsigned)cart_addr, (unsigned)dram_addr, (unsigned)length,
+        (unsigned)*r4300_pc(rdram->r4300), g_rmg_diag_vi,
+        (dram_addr < UINT32_C(0x1440c0) && (uint64_t)dram_addr + length > UINT32_C(0x143fc4)) ? " TOUCHES-WATCH" : "");
 }
 
 void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t mask)
@@ -303,7 +308,7 @@ void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t m
     {
         uint32_t rmg_old = rdram->dram[addr];
         masked_write(&rdram->dram[addr], value, mask);
-        if (addr == RMG_DIAG_WATCH_WORD)
+        if (RMG_DIAG_WATCHED(addr))
             rmg_diag_watch_cpu(rdram, address, value, mask, rmg_old);
     }
 }

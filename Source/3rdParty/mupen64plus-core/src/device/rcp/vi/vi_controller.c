@@ -178,7 +178,7 @@ clock_t g_rmg_diag_t0 = 0;
 
 static void rmg_diag_tick(struct vi_controller* vi)
 {
-    static unsigned int lines = 0;
+    static unsigned int lines = 0, tick_lines = 0;
     struct r4300_core* r4300 = vi->mi->r4300;
     struct rdp_core* dp = vi->dp;
     struct rsp_core* sp = dp->sp;
@@ -187,11 +187,29 @@ static void rmg_diag_tick(struct vi_controller* vi)
     if (g_rmg_diag_vi == 0)
     {
         lines = 0;
+        tick_lines = 0;
         if (g_rmg_diag_t0 == 0)
             g_rmg_diag_t0 = clock();   /* cold boot: start the timer at the first VI */
     }
 
     g_rmg_diag_vi++;
+
+    /* RMG-DIAG (temporary): every 10th VI the manager-thread object of MTM64
+     * (thread 0x80143d60): the tick counter at +0x330 (the game's watchdog crashes
+     * deliberately when it reaches 0xf0 with no request pending), the flag at +0x35c,
+     * the request pointers at +0x264/+0x268 and the message-queue head. */
+    if ((g_rmg_diag_vi % 10) == 0 && tick_lines < 80 && r4300->rdram->dram_size > 0x1440c0)
+    {
+        const uint32_t* d = r4300->rdram->dram;
+        ++tick_lines;
+        DebugMessage(M64MSG_VERBOSE,
+            "TICK vi=%u count=%08x pc=%08x s0+25c..268=%08x %08x %08x %08x s0+328/32c/330=%08x %08x %08x s0+350=%08x s0+35c=%08x queue=%08x",
+            g_rmg_diag_vi, (unsigned)cp0r[CP0_COUNT_REG], (unsigned)*r4300_pc(r4300),
+            (unsigned)d[0x143fbc / 4], (unsigned)d[0x143fc0 / 4], (unsigned)d[0x143fc4 / 4], (unsigned)d[0x143fc8 / 4],
+            (unsigned)d[0x144088 / 4], (unsigned)d[0x14408c / 4], (unsigned)d[0x144090 / 4],
+            (unsigned)d[0x1440b0 / 4], (unsigned)d[0x1440bc / 4], (unsigned)d[0x143fcc / 4]);
+    }
+
     if ((g_rmg_diag_vi % 60) != 0)
         return;
 

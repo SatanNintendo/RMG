@@ -26,6 +26,15 @@
 #include "r4300_core.h"
 #include "new_dynarec/new_dynarec.h"
 #include "recomp.h"
+#include <stdio.h>
+#include <stdint.h>
+#ifdef _WIN32
+#include <direct.h>
+#define RMG_GETCWD _getcwd
+#else
+#include <unistd.h>
+#define RMG_GETCWD getcwd
+#endif
 #include "api/callbacks.h"
 #include "api/m64p_types.h"
 #include "device/rdram/rdram.h"
@@ -240,6 +249,52 @@ static void rmg_diag_dump_code(struct r4300_core* r4300, const char* label, uint
     }
 }
 
+/* RMG-DIAG (temporary): write the whole RDRAM (big-endian bytes, as on the N64) to
+ * rmg_rdram_at_fault.bin in the process working directory, once, at the first TLB
+ * exception on an address below 0x10000 (a NULL dereference). Lets the guest code
+ * and data be analysed offline. A failure to open the file is only logged. */
+static void rmg_diag_dump_rdram(struct r4300_core* r4300)
+{
+    static int done = 0;
+    static uint8_t buf[65536];
+    char cwd[512];
+    const char* name = "rmg_rdram_at_fault.bin";
+    const uint32_t* dram = r4300->rdram->dram;
+    const size_t size = r4300->rdram->dram_size;
+    size_t off, i, n;
+    FILE* f;
+
+    if (done)
+        return;
+    done = 1;
+    if (RMG_GETCWD(cwd, sizeof(cwd)) == NULL)
+        cwd[0] = 0;
+    f = fopen(name, "wb");
+    if (f == NULL)
+    {
+        DebugMessage(M64MSG_VERBOSE, "RDRAM dump: cannot create %s (cwd=%s)", name, cwd);
+        return;
+    }
+    for (off = 0; off < size; off += sizeof(buf))
+    {
+        n = size - off;
+        if (n > sizeof(buf))
+            n = sizeof(buf);
+        for (i = 0; i < n / 4; ++i)
+        {
+            const uint32_t w = dram[off / 4 + i];
+            buf[4 * i] = (uint8_t)(w >> 24);
+            buf[4 * i + 1] = (uint8_t)(w >> 16);
+            buf[4 * i + 2] = (uint8_t)(w >> 8);
+            buf[4 * i + 3] = (uint8_t)w;
+        }
+        if (fwrite(buf, 1, n, f) != n)
+            break;
+    }
+    fclose(f);
+    DebugMessage(M64MSG_VERBOSE, "RDRAM dump: wrote %s (%u bytes) in cwd=%s", name, (unsigned)size, cwd);
+}
+
 /* RMG-DIAG (temporary, logging only): record the first TLB exceptions of a run
  * (cause, EPC, delay-slot state, the guest instructions around the faulting PC,
  * all GPRs and the libultra scheduler globals) to find which guest instruction
@@ -255,6 +310,9 @@ static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, i
     const size_t size = r4300->rdram->dram_size;
     uint32_t phys;
     uint32_t rt;
+
+    if (address < 0x10000u)
+        rmg_diag_dump_rdram(r4300);
 
     if (count >= 12)
         return;
@@ -331,6 +389,11 @@ static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, i
         rmg_diag_dump_code(r4300, "pc", pc - 0x90, 56);
         rmg_diag_dump_code(r4300, "ra", (uint32_t)g[31] - 0x60, 32);
         rmg_diag_dump_code(r4300, "init", 0x800b61f0u, 40);
+        /* fallback if the RDRAM dump file cannot be written: the rest of the manager
+         * thread (message handlers, request set/clear at 800b6dec/800b6ad0) */
+        rmg_diag_dump_code(r4300, "h0", 0x800b6780u, 24);
+        rmg_diag_dump_code(r4300, "h68a8", 0x800b68a8u, 152);
+        rmg_diag_dump_code(r4300, "h6d", 0x800b6d80u, 48);
         phys = sp & 0x1ffffffcu;
         if (sp >= 0x80000000u && sp < 0xa0000000u && phys + 0x40 <= size)
         {

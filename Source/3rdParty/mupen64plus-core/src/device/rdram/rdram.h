@@ -82,7 +82,7 @@ void write_rdram_regs(void* opaque, uint32_t address, uint32_t value, uint32_t m
 void read_rdram_dram(void* opaque, uint32_t address, uint32_t* value);
 void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t mask);
 
-/* RMG-DIAG (temporary): watch of one guest word, see rdram.c */
-void rmg_diag_watch_rdram_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr);
+/* RMG-DIAG (temporary): PI DMA trace and word watch, see rdram.c */
+void rmg_diag_pi_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr);
 
 #endif
