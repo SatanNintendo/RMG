@@ -26,6 +26,9 @@
 #include "r4300_core.h"
 #include "new_dynarec/new_dynarec.h"
 #include "recomp.h"
+#include "api/callbacks.h"
+#include "api/m64p_types.h"
+#include "device/rdram/rdram.h"
 
 #ifdef COMPARE_CORE
 #include "api/debugger.h"
@@ -211,10 +214,84 @@ static void exception_epilog(struct r4300_core* r4300)
 }
 
 
+
+/* RMG-DIAG (temporary, logging only): record the first TLB exceptions of a run
+ * (cause, EPC, delay-slot state, the guest instructions around the faulting PC,
+ * all GPRs and the libultra scheduler globals) to find which guest instruction
+ * dereferences NULL after a soft reset. Remove together with the other
+ * RMG-DIAG heartbeat code once the reset problem is solved. */
+static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, int w,
+                                   uint32_t pc, unsigned int ds)
+{
+    static unsigned int count = 0;
+    const uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    const int64_t* g = r4300_regs(r4300);
+    const uint32_t* dram = r4300->rdram->dram;
+    const size_t size = r4300->rdram->dram_size;
+    uint32_t phys;
+    uint32_t rt;
+
+    if (count >= 12)
+        return;
+    count++;
+
+    DebugMessage(M64MSG_VERBOSE,
+        "TLB exc #%u: w=%d addr=%08x pc=%08x delay_slot=%u emumode=%u -> cause=%08x epc=%08x status=%08x",
+        count, w, (unsigned)address, (unsigned)pc, ds, (unsigned)r4300->emumode,
+        (unsigned)cp0_regs[CP0_CAUSE_REG], (unsigned)cp0_regs[CP0_EPC_REG],
+        (unsigned)cp0_regs[CP0_STATUS_REG]);
+
+    phys = pc & 0x1ffffffcu;
+    if (pc >= 0x80000000u && pc < 0xc0000000u && phys >= 0x10 && (size_t)phys + 0x10 <= size)
+    {
+        const uint32_t* c = &dram[(phys - 0x10) / 4];
+        DebugMessage(M64MSG_VERBOSE,
+            "TLB exc #%u CODE from=%08x: %08x %08x %08x %08x %08x %08x %08x %08x",
+            count, (unsigned)(pc & ~3u) - 0x10,
+            (unsigned)c[0], (unsigned)c[1], (unsigned)c[2], (unsigned)c[3],
+            (unsigned)c[4], (unsigned)c[5], (unsigned)c[6], (unsigned)c[7]);
+    }
+
+    DebugMessage(M64MSG_VERBOSE,
+        "TLB exc #%u GPR1-31: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
+        "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
+        count,
+        (unsigned)g[1], (unsigned)g[2], (unsigned)g[3], (unsigned)g[4], (unsigned)g[5], (unsigned)g[6],
+        (unsigned)g[7], (unsigned)g[8], (unsigned)g[9], (unsigned)g[10], (unsigned)g[11], (unsigned)g[12],
+        (unsigned)g[13], (unsigned)g[14], (unsigned)g[15], (unsigned)g[16], (unsigned)g[17], (unsigned)g[18],
+        (unsigned)g[19], (unsigned)g[20], (unsigned)g[21], (unsigned)g[22], (unsigned)g[23], (unsigned)g[24],
+        (unsigned)g[25], (unsigned)g[26], (unsigned)g[27], (unsigned)g[28], (unsigned)g[29], (unsigned)g[30],
+        (unsigned)g[31]);
+
+    /* libultra data (this ROM): 80010070.. = ?, RunQueue, ActiveQueue, RunningThread, FaultedThread */
+    if (size >= 0x10090)
+    {
+        const uint32_t* q = &dram[0x10070 / 4];
+        DebugMessage(M64MSG_VERBOSE,
+            "TLB exc #%u OSQ[80010070..8001008c]: %08x %08x %08x %08x %08x %08x %08x %08x",
+            count, (unsigned)q[0], (unsigned)q[1], (unsigned)q[2], (unsigned)q[3],
+            (unsigned)q[4], (unsigned)q[5], (unsigned)q[6], (unsigned)q[7]);
+
+        rt = dram[0x10080 / 4];
+        phys = rt & 0x1ffffffcu;
+        if (rt >= 0x80000000u && rt < 0xa0000000u && (size_t)phys + 0x20 <= size)
+        {
+            const uint32_t* t = &dram[phys / 4];
+            DebugMessage(M64MSG_VERBOSE,
+                "TLB exc #%u RunningThread %08x: %08x %08x %08x %08x %08x %08x %08x %08x",
+                count, (unsigned)rt,
+                (unsigned)t[0], (unsigned)t[1], (unsigned)t[2], (unsigned)t[3],
+                (unsigned)t[4], (unsigned)t[5], (unsigned)t[6], (unsigned)t[7]);
+        }
+    }
+}
+
 void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
 {
     uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     int usual_handler = 0, i;
+    const uint32_t rmg_pc = *r4300_pc(r4300);
+    const unsigned int rmg_ds = r4300->delay_slot;
 
     if (r4300->emumode != EMUMODE_DYNAREC && w != 2) {
         cp0_update_count(r4300);
@@ -289,6 +366,8 @@ void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
     if (w != 2) {
         cp0_regs[CP0_EPC_REG] -= 4;
     }
+
+    rmg_diag_tlb_exception(r4300, address, w, rmg_pc, rmg_ds);
 
     r4300->cp0.last_addr = *r4300_pc(r4300);
 
