@@ -284,6 +284,36 @@ static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, i
                 (unsigned)t[4], (unsigned)t[5], (unsigned)t[6], (unsigned)t[7]);
         }
     }
+
+    /* first fault only: the object in s0 around +0x268 and the top of the stack */
+    if (count == 1)
+    {
+        const uint32_t s0 = (uint32_t)g[16];
+        const uint32_t sp = (uint32_t)g[29];
+
+        phys = s0 & 0x1ffffffcu;
+        if (s0 >= 0x80000000u && s0 < 0xa0000000u && phys + 0x290 <= size)
+        {
+            const uint32_t* o = &dram[(phys + 0x250) / 4];
+            DebugMessage(M64MSG_VERBOSE,
+                "TLB exc #%u s0+0x250: %08x %08x %08x %08x | s0+0x260: %08x %08x %08x %08x | s0+0x270: %08x %08x %08x %08x",
+                count, (unsigned)o[0], (unsigned)o[1], (unsigned)o[2], (unsigned)o[3],
+                (unsigned)o[4], (unsigned)o[5], (unsigned)o[6], (unsigned)o[7],
+                (unsigned)o[8], (unsigned)o[9], (unsigned)o[10], (unsigned)o[11]);
+        }
+        phys = sp & 0x1ffffffcu;
+        if (sp >= 0x80000000u && sp < 0xa0000000u && phys + 0x40 <= size)
+        {
+            const uint32_t* k = &dram[phys / 4];
+            DebugMessage(M64MSG_VERBOSE,
+                "TLB exc #%u stack@%08x: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
+                count, (unsigned)sp,
+                (unsigned)k[0], (unsigned)k[1], (unsigned)k[2], (unsigned)k[3],
+                (unsigned)k[4], (unsigned)k[5], (unsigned)k[6], (unsigned)k[7],
+                (unsigned)k[8], (unsigned)k[9], (unsigned)k[10], (unsigned)k[11],
+                (unsigned)k[12], (unsigned)k[13], (unsigned)k[14], (unsigned)k[15]);
+        }
+    }
 }
 
 void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)

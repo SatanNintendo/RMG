@@ -252,6 +252,47 @@ void read_rdram_dram(void* opaque, uint32_t address, uint32_t* value)
     }
 }
 
+/* RMG-DIAG (temporary, logging only): watch the guest words at physical
+ * 0x143fc8..0x143fcf (= thread object 0x80143d60 + 0x268, the pointer that is NULL
+ * when Monster Truck Madness 64 crashes after a soft reset). Logs every CPU store
+ * and every cart (PI) DMA that touches them, with the guest pc, so the cold boot
+ * and the post-reset run can be compared. SP/SI DMA are not watched. Max 200 lines.
+ * Remove together with the other RMG-DIAG code. */
+#define RMG_DIAG_WATCH_WORD UINT32_C(0x50ff2)
+extern unsigned int g_rmg_diag_vi;
+static unsigned int rmg_diag_watch_lines = 0;
+
+static void rmg_diag_watch_cpu(struct rdram* rdram, uint32_t address, uint32_t value, uint32_t mask, uint32_t old)
+{
+    const int64_t* g = r4300_regs(rdram->r4300);
+
+    if (rmg_diag_watch_lines >= 200)
+        return;
+    ++rmg_diag_watch_lines;
+    DebugMessage(M64MSG_VERBOSE,
+        "WATCH cpu store addr=%08x value=%08x mask=%08x old=%08x new=%08x pc=%08x ra=%08x sp=%08x vi=%u",
+        (unsigned)(address | 0x80000000u), (unsigned)value, (unsigned)mask, (unsigned)old,
+        (unsigned)rdram->dram[rdram_dram_address(address)],
+        (unsigned)*r4300_pc(rdram->r4300), (unsigned)g[31], (unsigned)g[29], g_rmg_diag_vi);
+}
+
+void rmg_diag_watch_rdram_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr)
+{
+    const int64_t* g;
+
+    if (dram_addr >= UINT32_C(0x143fd0) || (uint64_t)dram_addr + length <= UINT32_C(0x143fc8))
+        return;
+    if (rmg_diag_watch_lines >= 200)
+        return;
+    ++rmg_diag_watch_lines;
+    g = r4300_regs(rdram->r4300);
+    DebugMessage(M64MSG_VERBOSE,
+        "WATCH pi dma dram=%08x len=%08x cart=%08x now=%08x %08x pc=%08x ra=%08x vi=%u",
+        (unsigned)dram_addr, (unsigned)length, (unsigned)cart_addr,
+        (unsigned)rdram->dram[RMG_DIAG_WATCH_WORD], (unsigned)rdram->dram[RMG_DIAG_WATCH_WORD + 1],
+        (unsigned)*r4300_pc(rdram->r4300), (unsigned)g[31], g_rmg_diag_vi);
+}
+
 void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t mask)
 {
     struct rdram* rdram = (struct rdram*)opaque;
@@ -259,6 +300,9 @@ void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t m
 
     if (address < rdram->dram_size)
     {
+        uint32_t rmg_old = rdram->dram[addr];
         masked_write(&rdram->dram[addr], value, mask);
+        if ((addr & ~UINT32_C(1)) == RMG_DIAG_WATCH_WORD)
+            rmg_diag_watch_cpu(rdram, address, value, mask, rmg_old);
     }
 }
