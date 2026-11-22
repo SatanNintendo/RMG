@@ -21,15 +21,6 @@
 
 #define M64P_CORE_PROTOTYPES 1
 
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef _WIN32
-#include <direct.h>
-#define RMG_GETCWD _getcwd
-#else
-#include <unistd.h>
-#define RMG_GETCWD getcwd
-#endif
 #include <time.h>
 #include <string.h>
 #include "interrupt.h"
@@ -38,6 +29,16 @@
 #define _CRT_RAND_S
 #endif
 #include <stdlib.h>
+/* RMG-EXP helper includes: must stay AFTER the _CRT_RAND_S define and <stdlib.h> above,
+ * otherwise rand_s() is not declared on MinGW. */
+#include <stdio.h>
+#ifdef _WIN32
+#include <direct.h>
+#define RMG_GETCWD _getcwd
+#else
+#include <unistd.h>
+#define RMG_GETCWD getcwd
+#endif
 
 #include <assert.h>
 #include <stddef.h>
