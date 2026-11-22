@@ -229,6 +229,18 @@ static void rmg_diag_tick(struct vi_controller* vi)
             (unsigned)gpr[29], (unsigned)gpr[31], (unsigned)gpr[4], (unsigned)gpr[2]);
     }
 
+    /* RMG-DIAG (temporary): value of the watched guest word 0x80143fc8 (and the
+     * thread object header at 0x80143d60) once per heartbeat, catches any writer. */
+    if (r4300->rdram->dram_size > 0x144000)
+    {
+        const uint32_t* d = r4300->rdram->dram;
+        DebugMessage(M64MSG_VERBOSE,
+            "Reset heartbeat #%u WATCHVAL 80143fc8=%08x 80143fcc=%08x thread80143d60: %08x %08x %08x %08x %08x %08x",
+            lines + 1, (unsigned)d[0x143fc8 / 4], (unsigned)d[0x143fcc / 4],
+            (unsigned)d[0x143d60 / 4], (unsigned)d[0x143d64 / 4], (unsigned)d[0x143d68 / 4],
+            (unsigned)d[0x143d6c / 4], (unsigned)d[0x143d70 / 4], (unsigned)d[0x143d74 / 4]);
+    }
+
     /* RMG-DIAG (temporary): once per distinct EPC, log the 16 instruction words that
      * end 0x0c after EPC (read-only, straight from RDRAM) and all GPRs, so the guest
      * code that faulted can be decoded. Remove with the heartbeat. */

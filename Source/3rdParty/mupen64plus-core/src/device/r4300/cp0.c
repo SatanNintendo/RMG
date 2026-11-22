@@ -215,6 +215,31 @@ static void exception_epilog(struct r4300_core* r4300)
 
 
 
+/* RMG-DIAG (temporary): print nwords guest words from the kseg0/1 address base,
+ * 8 per line, so that whole functions around a fault can be disassembled offline. */
+static void rmg_diag_dump_code(struct r4300_core* r4300, const char* label, uint32_t base, unsigned int nwords)
+{
+    const uint32_t* dram = r4300->rdram->dram;
+    const size_t size = r4300->rdram->dram_size;
+    unsigned int i;
+
+    base &= ~3u;
+    if (base < 0x80000000u || base >= 0xc0000000u)
+        return;
+    for (i = 0; i < nwords; i += 8)
+    {
+        const uint32_t phys = (base + i * 4) & 0x1fffffffu;
+        if ((size_t)phys + 0x20 > size)
+            return;
+        DebugMessage(M64MSG_VERBOSE,
+            "TLB exc CODEWIN %s %08x: %08x %08x %08x %08x %08x %08x %08x %08x",
+            label, (unsigned)(base + i * 4),
+            (unsigned)dram[phys / 4], (unsigned)dram[phys / 4 + 1], (unsigned)dram[phys / 4 + 2],
+            (unsigned)dram[phys / 4 + 3], (unsigned)dram[phys / 4 + 4], (unsigned)dram[phys / 4 + 5],
+            (unsigned)dram[phys / 4 + 6], (unsigned)dram[phys / 4 + 7]);
+    }
+}
+
 /* RMG-DIAG (temporary, logging only): record the first TLB exceptions of a run
  * (cause, EPC, delay-slot state, the guest instructions around the faulting PC,
  * all GPRs and the libultra scheduler globals) to find which guest instruction
@@ -301,6 +326,11 @@ static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, i
                 (unsigned)o[4], (unsigned)o[5], (unsigned)o[6], (unsigned)o[7],
                 (unsigned)o[8], (unsigned)o[9], (unsigned)o[10], (unsigned)o[11]);
         }
+        /* whole functions: around the faulting pc, around ra, and the init function that
+         * clears 0x80143fc8 (800b6238, seen in the session 8 watch log) */
+        rmg_diag_dump_code(r4300, "pc", pc - 0x90, 56);
+        rmg_diag_dump_code(r4300, "ra", (uint32_t)g[31] - 0x60, 32);
+        rmg_diag_dump_code(r4300, "init", 0x800b61f0u, 40);
         phys = sp & 0x1ffffffcu;
         if (sp >= 0x80000000u && sp < 0xa0000000u && phys + 0x40 <= size)
         {
