@@ -28,6 +28,7 @@
 #include "device/memory/memory.h"
 #include "device/r4300/r4300_core.h"
 #include "device/rcp/mi/mi_controller.h"
+#include "device/rdram/rdram.h"
 #include <time.h>
 #include "device/r4300/cp0.h"
 #include "device/rcp/rdp/rdp_core.h"
@@ -226,6 +227,41 @@ static void rmg_diag_tick(struct vi_controller* vi)
             (unsigned)cp0r[CP0_INDEX_REG], (unsigned)cp0r[CP0_WIRED_REG], (unsigned)cp0r[CP0_RANDOM_REG],
             (unsigned)cp0r[CP0_ERROREPC_REG],
             (unsigned)gpr[29], (unsigned)gpr[31], (unsigned)gpr[4], (unsigned)gpr[2]);
+    }
+
+    /* RMG-DIAG (temporary): once per distinct EPC, log the 16 instruction words that
+     * end 0x0c after EPC (read-only, straight from RDRAM) and all GPRs, so the guest
+     * code that faulted can be decoded. Remove with the heartbeat. */
+    {
+        static uint32_t last_epc = 0;
+        const uint32_t epc = cp0r[CP0_EPC_REG];
+        const uint32_t phys = epc & 0x1ffffffc;
+
+        if (epc != last_epc && epc >= 0x80000000u && epc < 0xc0000000u
+            && phys >= 0x30 && (size_t)phys + 0x10 <= r4300->rdram->dram_size)
+        {
+            const uint32_t* w = &r4300->rdram->dram[(phys - 0x30) / 4];
+            const int64_t* g = r4300_regs(r4300);
+            last_epc = epc;
+            DebugMessage(M64MSG_VERBOSE,
+                "Reset heartbeat #%u CODE epc=%08x from=%08x: %08x %08x %08x %08x %08x %08x %08x %08x "
+                "%08x %08x %08x %08x %08x %08x %08x %08x",
+                lines + 1, (unsigned)epc, (unsigned)(epc & ~3u) - 0x30,
+                (unsigned)w[0], (unsigned)w[1], (unsigned)w[2], (unsigned)w[3],
+                (unsigned)w[4], (unsigned)w[5], (unsigned)w[6], (unsigned)w[7],
+                (unsigned)w[8], (unsigned)w[9], (unsigned)w[10], (unsigned)w[11],
+                (unsigned)w[12], (unsigned)w[13], (unsigned)w[14], (unsigned)w[15]);
+            DebugMessage(M64MSG_VERBOSE,
+                "Reset heartbeat #%u GPR1-31: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
+                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
+                lines + 1,
+                (unsigned)g[1], (unsigned)g[2], (unsigned)g[3], (unsigned)g[4], (unsigned)g[5], (unsigned)g[6],
+                (unsigned)g[7], (unsigned)g[8], (unsigned)g[9], (unsigned)g[10], (unsigned)g[11], (unsigned)g[12],
+                (unsigned)g[13], (unsigned)g[14], (unsigned)g[15], (unsigned)g[16], (unsigned)g[17], (unsigned)g[18],
+                (unsigned)g[19], (unsigned)g[20], (unsigned)g[21], (unsigned)g[22], (unsigned)g[23], (unsigned)g[24],
+                (unsigned)g[25], (unsigned)g[26], (unsigned)g[27], (unsigned)g[28], (unsigned)g[29], (unsigned)g[30],
+                (unsigned)g[31]);
+        }
     }
 
     if (++lines >= 20)
