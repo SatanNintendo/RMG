@@ -26,18 +26,6 @@
 #include "r4300_core.h"
 #include "new_dynarec/new_dynarec.h"
 #include "recomp.h"
-#include <stdio.h>
-#include <stdint.h>
-#ifdef _WIN32
-#include <direct.h>
-#define RMG_GETCWD _getcwd
-#else
-#include <unistd.h>
-#define RMG_GETCWD getcwd
-#endif
-#include "api/callbacks.h"
-#include "api/m64p_types.h"
-#include "device/rdram/rdram.h"
 
 #ifdef COMPARE_CORE
 #include "api/debugger.h"
@@ -223,198 +211,10 @@ static void exception_epilog(struct r4300_core* r4300)
 }
 
 
-
-/* RMG-DIAG (temporary): print nwords guest words from the kseg0/1 address base,
- * 8 per line, so that whole functions around a fault can be disassembled offline. */
-static void rmg_diag_dump_code(struct r4300_core* r4300, const char* label, uint32_t base, unsigned int nwords)
-{
-    const uint32_t* dram = r4300->rdram->dram;
-    const size_t size = r4300->rdram->dram_size;
-    unsigned int i;
-
-    base &= ~3u;
-    if (base < 0x80000000u || base >= 0xc0000000u)
-        return;
-    for (i = 0; i < nwords; i += 8)
-    {
-        const uint32_t phys = (base + i * 4) & 0x1fffffffu;
-        if ((size_t)phys + 0x20 > size)
-            return;
-        DebugMessage(M64MSG_VERBOSE,
-            "TLB exc CODEWIN %s %08x: %08x %08x %08x %08x %08x %08x %08x %08x",
-            label, (unsigned)(base + i * 4),
-            (unsigned)dram[phys / 4], (unsigned)dram[phys / 4 + 1], (unsigned)dram[phys / 4 + 2],
-            (unsigned)dram[phys / 4 + 3], (unsigned)dram[phys / 4 + 4], (unsigned)dram[phys / 4 + 5],
-            (unsigned)dram[phys / 4 + 6], (unsigned)dram[phys / 4 + 7]);
-    }
-}
-
-/* RMG-DIAG (temporary): write the whole RDRAM (big-endian bytes, as on the N64) to
- * rmg_rdram_at_fault.bin in the process working directory, once, at the first TLB
- * exception on an address below 0x10000 (a NULL dereference). Lets the guest code
- * and data be analysed offline. A failure to open the file is only logged. */
-static void rmg_diag_dump_rdram(struct r4300_core* r4300)
-{
-    static int done = 0;
-    static uint8_t buf[65536];
-    char cwd[512];
-    const char* name = "rmg_rdram_at_fault.bin";
-    const uint32_t* dram = r4300->rdram->dram;
-    const size_t size = r4300->rdram->dram_size;
-    size_t off, i, n;
-    FILE* f;
-
-    if (done)
-        return;
-    done = 1;
-    if (RMG_GETCWD(cwd, sizeof(cwd)) == NULL)
-        cwd[0] = 0;
-    f = fopen(name, "wb");
-    if (f == NULL)
-    {
-        DebugMessage(M64MSG_VERBOSE, "RDRAM dump: cannot create %s (cwd=%s)", name, cwd);
-        return;
-    }
-    for (off = 0; off < size; off += sizeof(buf))
-    {
-        n = size - off;
-        if (n > sizeof(buf))
-            n = sizeof(buf);
-        for (i = 0; i < n / 4; ++i)
-        {
-            const uint32_t w = dram[off / 4 + i];
-            buf[4 * i] = (uint8_t)(w >> 24);
-            buf[4 * i + 1] = (uint8_t)(w >> 16);
-            buf[4 * i + 2] = (uint8_t)(w >> 8);
-            buf[4 * i + 3] = (uint8_t)w;
-        }
-        if (fwrite(buf, 1, n, f) != n)
-            break;
-    }
-    fclose(f);
-    DebugMessage(M64MSG_VERBOSE, "RDRAM dump: wrote %s (%u bytes) in cwd=%s", name, (unsigned)size, cwd);
-}
-
-/* RMG-DIAG (temporary, logging only): record the first TLB exceptions of a run
- * (cause, EPC, delay-slot state, the guest instructions around the faulting PC,
- * all GPRs and the libultra scheduler globals) to find which guest instruction
- * dereferences NULL after a soft reset. Remove together with the other
- * RMG-DIAG heartbeat code once the reset problem is solved. */
-static void rmg_diag_tlb_exception(struct r4300_core* r4300, uint32_t address, int w,
-                                   uint32_t pc, unsigned int ds)
-{
-    static unsigned int count = 0;
-    const uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
-    const int64_t* g = r4300_regs(r4300);
-    const uint32_t* dram = r4300->rdram->dram;
-    const size_t size = r4300->rdram->dram_size;
-    uint32_t phys;
-    uint32_t rt;
-
-    if (address < 0x10000u)
-        rmg_diag_dump_rdram(r4300);
-
-    if (count >= 12)
-        return;
-    count++;
-
-    DebugMessage(M64MSG_VERBOSE,
-        "TLB exc #%u: w=%d addr=%08x pc=%08x delay_slot=%u emumode=%u -> cause=%08x epc=%08x status=%08x",
-        count, w, (unsigned)address, (unsigned)pc, ds, (unsigned)r4300->emumode,
-        (unsigned)cp0_regs[CP0_CAUSE_REG], (unsigned)cp0_regs[CP0_EPC_REG],
-        (unsigned)cp0_regs[CP0_STATUS_REG]);
-
-    phys = pc & 0x1ffffffcu;
-    if (pc >= 0x80000000u && pc < 0xc0000000u && phys >= 0x10 && (size_t)phys + 0x10 <= size)
-    {
-        const uint32_t* c = &dram[(phys - 0x10) / 4];
-        DebugMessage(M64MSG_VERBOSE,
-            "TLB exc #%u CODE from=%08x: %08x %08x %08x %08x %08x %08x %08x %08x",
-            count, (unsigned)(pc & ~3u) - 0x10,
-            (unsigned)c[0], (unsigned)c[1], (unsigned)c[2], (unsigned)c[3],
-            (unsigned)c[4], (unsigned)c[5], (unsigned)c[6], (unsigned)c[7]);
-    }
-
-    DebugMessage(M64MSG_VERBOSE,
-        "TLB exc #%u GPR1-31: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
-        "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
-        count,
-        (unsigned)g[1], (unsigned)g[2], (unsigned)g[3], (unsigned)g[4], (unsigned)g[5], (unsigned)g[6],
-        (unsigned)g[7], (unsigned)g[8], (unsigned)g[9], (unsigned)g[10], (unsigned)g[11], (unsigned)g[12],
-        (unsigned)g[13], (unsigned)g[14], (unsigned)g[15], (unsigned)g[16], (unsigned)g[17], (unsigned)g[18],
-        (unsigned)g[19], (unsigned)g[20], (unsigned)g[21], (unsigned)g[22], (unsigned)g[23], (unsigned)g[24],
-        (unsigned)g[25], (unsigned)g[26], (unsigned)g[27], (unsigned)g[28], (unsigned)g[29], (unsigned)g[30],
-        (unsigned)g[31]);
-
-    /* libultra data (this ROM): 80010070.. = ?, RunQueue, ActiveQueue, RunningThread, FaultedThread */
-    if (size >= 0x10090)
-    {
-        const uint32_t* q = &dram[0x10070 / 4];
-        DebugMessage(M64MSG_VERBOSE,
-            "TLB exc #%u OSQ[80010070..8001008c]: %08x %08x %08x %08x %08x %08x %08x %08x",
-            count, (unsigned)q[0], (unsigned)q[1], (unsigned)q[2], (unsigned)q[3],
-            (unsigned)q[4], (unsigned)q[5], (unsigned)q[6], (unsigned)q[7]);
-
-        rt = dram[0x10080 / 4];
-        phys = rt & 0x1ffffffcu;
-        if (rt >= 0x80000000u && rt < 0xa0000000u && (size_t)phys + 0x20 <= size)
-        {
-            const uint32_t* t = &dram[phys / 4];
-            DebugMessage(M64MSG_VERBOSE,
-                "TLB exc #%u RunningThread %08x: %08x %08x %08x %08x %08x %08x %08x %08x",
-                count, (unsigned)rt,
-                (unsigned)t[0], (unsigned)t[1], (unsigned)t[2], (unsigned)t[3],
-                (unsigned)t[4], (unsigned)t[5], (unsigned)t[6], (unsigned)t[7]);
-        }
-    }
-
-    /* first fault only: the object in s0 around +0x268 and the top of the stack */
-    if (count == 1)
-    {
-        const uint32_t s0 = (uint32_t)g[16];
-        const uint32_t sp = (uint32_t)g[29];
-
-        phys = s0 & 0x1ffffffcu;
-        if (s0 >= 0x80000000u && s0 < 0xa0000000u && phys + 0x290 <= size)
-        {
-            const uint32_t* o = &dram[(phys + 0x250) / 4];
-            DebugMessage(M64MSG_VERBOSE,
-                "TLB exc #%u s0+0x250: %08x %08x %08x %08x | s0+0x260: %08x %08x %08x %08x | s0+0x270: %08x %08x %08x %08x",
-                count, (unsigned)o[0], (unsigned)o[1], (unsigned)o[2], (unsigned)o[3],
-                (unsigned)o[4], (unsigned)o[5], (unsigned)o[6], (unsigned)o[7],
-                (unsigned)o[8], (unsigned)o[9], (unsigned)o[10], (unsigned)o[11]);
-        }
-        /* whole functions: around the faulting pc, around ra, and the init function that
-         * clears 0x80143fc8 (800b6238, seen in the session 8 watch log) */
-        rmg_diag_dump_code(r4300, "pc", pc - 0x90, 56);
-        rmg_diag_dump_code(r4300, "ra", (uint32_t)g[31] - 0x60, 32);
-        rmg_diag_dump_code(r4300, "init", 0x800b61f0u, 40);
-        /* fallback if the RDRAM dump file cannot be written: the rest of the manager
-         * thread (message handlers, request set/clear at 800b6dec/800b6ad0) */
-        rmg_diag_dump_code(r4300, "h0", 0x800b6780u, 24);
-        rmg_diag_dump_code(r4300, "h68a8", 0x800b68a8u, 152);
-        rmg_diag_dump_code(r4300, "h6d", 0x800b6d80u, 48);
-        phys = sp & 0x1ffffffcu;
-        if (sp >= 0x80000000u && sp < 0xa0000000u && phys + 0x40 <= size)
-        {
-            const uint32_t* k = &dram[phys / 4];
-            DebugMessage(M64MSG_VERBOSE,
-                "TLB exc #%u stack@%08x: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
-                count, (unsigned)sp,
-                (unsigned)k[0], (unsigned)k[1], (unsigned)k[2], (unsigned)k[3],
-                (unsigned)k[4], (unsigned)k[5], (unsigned)k[6], (unsigned)k[7],
-                (unsigned)k[8], (unsigned)k[9], (unsigned)k[10], (unsigned)k[11],
-                (unsigned)k[12], (unsigned)k[13], (unsigned)k[14], (unsigned)k[15]);
-        }
-    }
-}
-
 void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
 {
     uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     int usual_handler = 0, i;
-    const uint32_t rmg_pc = *r4300_pc(r4300);
-    const unsigned int rmg_ds = r4300->delay_slot;
 
     if (r4300->emumode != EMUMODE_DYNAREC && w != 2) {
         cp0_update_count(r4300);
@@ -489,8 +289,6 @@ void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
     if (w != 2) {
         cp0_regs[CP0_EPC_REG] -= 4;
     }
-
-    rmg_diag_tlb_exception(r4300, address, w, rmg_pc, rmg_ds);
 
     r4300->cp0.last_addr = *r4300_pc(r4300);
 

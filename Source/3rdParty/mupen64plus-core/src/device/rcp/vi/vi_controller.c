@@ -23,16 +23,10 @@
 
 #include <string.h>
 
-#include "api/callbacks.h"
 #include "api/m64p_types.h"
 #include "device/memory/memory.h"
 #include "device/r4300/r4300_core.h"
 #include "device/rcp/mi/mi_controller.h"
-#include "device/rdram/rdram.h"
-#include <time.h>
-#include "device/r4300/cp0.h"
-#include "device/rcp/rdp/rdp_core.h"
-#include "device/rcp/rsp/rsp_core.h"
 #include "main/main.h"
 #include "plugin/plugin.h"
 
@@ -166,145 +160,9 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
     }
 }
 
-/* Post soft-reset heartbeat: once a second for ~20 s after a soft reset it
- * logs the state of the CPU/RCP so that a black screen can be traced. */
-/* Armed from power-on as well (not only after a soft reset), so that a cold-boot
- * hang can be traced with the same PIF/heartbeat lines. A soft reset re-arms it. */
-int g_rmg_diag_active = 1;
-unsigned int g_rmg_diag_pif_lines = 0;
-unsigned int g_rmg_diag_vi = 0, g_rmg_diag_sp_gfx = 0, g_rmg_diag_sp_audio = 0, g_rmg_diag_sp_other = 0;
-unsigned int g_rmg_diag_ev[6] = {0, 0, 0, 0, 0, 0};
-clock_t g_rmg_diag_t0 = 0;
-
-static void rmg_diag_tick(struct vi_controller* vi)
-{
-    static unsigned int lines = 0, tick_lines = 0;
-    struct r4300_core* r4300 = vi->mi->r4300;
-    struct rdp_core* dp = vi->dp;
-    struct rsp_core* sp = dp->sp;
-    const uint32_t* cp0r = r4300_cp0_regs(&r4300->cp0);
-
-    if (g_rmg_diag_vi == 0)
-    {
-        lines = 0;
-        tick_lines = 0;
-        if (g_rmg_diag_t0 == 0)
-            g_rmg_diag_t0 = clock();   /* cold boot: start the timer at the first VI */
-    }
-
-    g_rmg_diag_vi++;
-
-    /* RMG-DIAG (temporary): every 10th VI the manager-thread object of MTM64
-     * (thread 0x80143d60): the tick counter at +0x330 (the game's watchdog crashes
-     * deliberately when it reaches 0xf0 with no request pending), the flag at +0x35c,
-     * the request pointers at +0x264/+0x268 and the message-queue head. */
-    if ((g_rmg_diag_vi % 10) == 0 && tick_lines < 80 && r4300->rdram->dram_size > 0x1440c0)
-    {
-        const uint32_t* d = r4300->rdram->dram;
-        ++tick_lines;
-        DebugMessage(M64MSG_VERBOSE,
-            "TICK vi=%u count=%08x pc=%08x s0+25c..268=%08x %08x %08x %08x s0+328/32c/330=%08x %08x %08x s0+350=%08x s0+35c=%08x queue=%08x",
-            g_rmg_diag_vi, (unsigned)cp0r[CP0_COUNT_REG], (unsigned)*r4300_pc(r4300),
-            (unsigned)d[0x143fbc / 4], (unsigned)d[0x143fc0 / 4], (unsigned)d[0x143fc4 / 4], (unsigned)d[0x143fc8 / 4],
-            (unsigned)d[0x144088 / 4], (unsigned)d[0x14408c / 4], (unsigned)d[0x144090 / 4],
-            (unsigned)d[0x1440b0 / 4], (unsigned)d[0x1440bc / 4], (unsigned)d[0x143fcc / 4]);
-    }
-
-    if ((g_rmg_diag_vi % 60) != 0)
-        return;
-
-    /* VERBOSE on purpose: INFO/STATUS core messages are shown in the RMG status
-     * bar and a long text there makes the main window grow. */
-    DebugMessage(M64MSG_VERBOSE,
-        "Reset heartbeat #%u: ms=%ld vi=%u pc=%08x ev(cmp/si/pi/ai/sp/dp)=%u/%u/%u/%u/%u/%u "
-        "sp_tasks(gfx/audio/other)=%u/%u/%u SP_STATUS=%08x SP_PC=%08x "
-        "DPC(st/start/end/cur)=%x/%x/%x/%x unfreeze=%u MI(intr/mask)=%x/%x VI(status/origin/hstart)=%x/%x/%x "
-        "CP0(status/cause/compare/count/epc)=%x/%x/%x/%x/%x",
-        lines + 1, (long)((g_rmg_diag_t0 == 0) ? 0 : (clock() - g_rmg_diag_t0) * 1000 / CLOCKS_PER_SEC),
-        g_rmg_diag_vi, (unsigned)*r4300_pc(r4300),
-        g_rmg_diag_ev[0], g_rmg_diag_ev[1], g_rmg_diag_ev[2], g_rmg_diag_ev[3], g_rmg_diag_ev[4], g_rmg_diag_ev[5],
-        g_rmg_diag_sp_gfx, g_rmg_diag_sp_audio, g_rmg_diag_sp_other,
-        (unsigned)sp->regs[SP_STATUS_REG], (unsigned)sp->regs2[SP_PC_REG],
-        (unsigned)dp->dpc_regs[DPC_STATUS_REG], (unsigned)dp->dpc_regs[DPC_START_REG],
-        (unsigned)dp->dpc_regs[DPC_END_REG], (unsigned)dp->dpc_regs[DPC_CURRENT_REG],
-        (unsigned)dp->do_on_unfreeze,
-        (unsigned)vi->mi->regs[MI_INTR_REG], (unsigned)vi->mi->regs[MI_INTR_MASK_REG],
-        (unsigned)vi->regs[VI_STATUS_REG], (unsigned)vi->regs[VI_ORIGIN_REG], (unsigned)vi->regs[VI_H_START_REG],
-        (unsigned)cp0r[CP0_STATUS_REG], (unsigned)cp0r[CP0_CAUSE_REG], (unsigned)cp0r[CP0_COMPARE_REG],
-        (unsigned)cp0r[CP0_COUNT_REG], (unsigned)cp0r[CP0_EPC_REG]);
-
-    /* RMG-DIAG (temporary): TLB/exception details and a few GPRs, to see what the
-     * guest dereferenced when it crashed after a reset. Remove with the heartbeat. */
-    {
-        const int64_t* gpr = r4300_regs(r4300);
-        DebugMessage(M64MSG_VERBOSE,
-            "Reset heartbeat #%u CP0b: badvaddr=%x context=%x entryhi=%x index=%x wired=%x random=%x errorepc=%x "
-            "GPR(sp/ra/a0/v0)=%08x/%08x/%08x/%08x",
-            lines + 1,
-            (unsigned)cp0r[CP0_BADVADDR_REG], (unsigned)cp0r[CP0_CONTEXT_REG], (unsigned)cp0r[CP0_ENTRYHI_REG],
-            (unsigned)cp0r[CP0_INDEX_REG], (unsigned)cp0r[CP0_WIRED_REG], (unsigned)cp0r[CP0_RANDOM_REG],
-            (unsigned)cp0r[CP0_ERROREPC_REG],
-            (unsigned)gpr[29], (unsigned)gpr[31], (unsigned)gpr[4], (unsigned)gpr[2]);
-    }
-
-    /* RMG-DIAG (temporary): value of the watched guest word 0x80143fc8 (and the
-     * thread object header at 0x80143d60) once per heartbeat, catches any writer. */
-    if (r4300->rdram->dram_size > 0x144000)
-    {
-        const uint32_t* d = r4300->rdram->dram;
-        DebugMessage(M64MSG_VERBOSE,
-            "Reset heartbeat #%u WATCHVAL 80143fc8=%08x 80143fcc=%08x thread80143d60: %08x %08x %08x %08x %08x %08x",
-            lines + 1, (unsigned)d[0x143fc8 / 4], (unsigned)d[0x143fcc / 4],
-            (unsigned)d[0x143d60 / 4], (unsigned)d[0x143d64 / 4], (unsigned)d[0x143d68 / 4],
-            (unsigned)d[0x143d6c / 4], (unsigned)d[0x143d70 / 4], (unsigned)d[0x143d74 / 4]);
-    }
-
-    /* RMG-DIAG (temporary): once per distinct EPC, log the 16 instruction words that
-     * end 0x0c after EPC (read-only, straight from RDRAM) and all GPRs, so the guest
-     * code that faulted can be decoded. Remove with the heartbeat. */
-    {
-        static uint32_t last_epc = 0;
-        const uint32_t epc = cp0r[CP0_EPC_REG];
-        const uint32_t phys = epc & 0x1ffffffc;
-
-        if (epc != last_epc && epc >= 0x80000000u && epc < 0xc0000000u
-            && phys >= 0x30 && (size_t)phys + 0x10 <= r4300->rdram->dram_size)
-        {
-            const uint32_t* w = &r4300->rdram->dram[(phys - 0x30) / 4];
-            const int64_t* g = r4300_regs(r4300);
-            last_epc = epc;
-            DebugMessage(M64MSG_VERBOSE,
-                "Reset heartbeat #%u CODE epc=%08x from=%08x: %08x %08x %08x %08x %08x %08x %08x %08x "
-                "%08x %08x %08x %08x %08x %08x %08x %08x",
-                lines + 1, (unsigned)epc, (unsigned)(epc & ~3u) - 0x30,
-                (unsigned)w[0], (unsigned)w[1], (unsigned)w[2], (unsigned)w[3],
-                (unsigned)w[4], (unsigned)w[5], (unsigned)w[6], (unsigned)w[7],
-                (unsigned)w[8], (unsigned)w[9], (unsigned)w[10], (unsigned)w[11],
-                (unsigned)w[12], (unsigned)w[13], (unsigned)w[14], (unsigned)w[15]);
-            DebugMessage(M64MSG_VERBOSE,
-                "Reset heartbeat #%u GPR1-31: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
-                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x",
-                lines + 1,
-                (unsigned)g[1], (unsigned)g[2], (unsigned)g[3], (unsigned)g[4], (unsigned)g[5], (unsigned)g[6],
-                (unsigned)g[7], (unsigned)g[8], (unsigned)g[9], (unsigned)g[10], (unsigned)g[11], (unsigned)g[12],
-                (unsigned)g[13], (unsigned)g[14], (unsigned)g[15], (unsigned)g[16], (unsigned)g[17], (unsigned)g[18],
-                (unsigned)g[19], (unsigned)g[20], (unsigned)g[21], (unsigned)g[22], (unsigned)g[23], (unsigned)g[24],
-                (unsigned)g[25], (unsigned)g[26], (unsigned)g[27], (unsigned)g[28], (unsigned)g[29], (unsigned)g[30],
-                (unsigned)g[31]);
-        }
-    }
-
-    if (++lines >= 20)
-        g_rmg_diag_active = 0;
-}
-
 void vi_vertical_interrupt_event(void* opaque)
 {
     struct vi_controller* vi = (struct vi_controller*)opaque;
-
-    if (g_rmg_diag_active)
-        rmg_diag_tick(vi);
-
     if (vi->dp->do_on_unfreeze & DELAY_DP_INT)
         vi->dp->do_on_unfreeze |= DELAY_UPDATESCREEN;
     else

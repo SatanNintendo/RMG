@@ -380,13 +380,9 @@ EXPORT void CALL InitiateControllers ( CONTROL_INFO ControlInfo )
         // NOTE: on SDL console front-ends the video window may not exist yet
         // at this point; SetupControllerSubsystem degrades gracefully and
         // RomOpen repeats the device setup once a window is available.
-        bool bSetupOk = SetupControllerSubsystem( hWindow );
+        SetupControllerSubsystem( hWindow );
 
         FillControls( ControlInfo.Controls );
-
-        M64PDebugMessage(M64MSG_INFO, "N-Rage: InitiateControllers window=%p setup=%s devices=%d controller1: plugged=%d pak=%d raw=%d",
-                (void*)hWindow, bSetupOk ? "ok" : "DEFERRED", g_nDevices,
-                (int)g_pcControllers[0].fPlugged, (int)g_pcControllers[0].PakType, (int)g_pcControllers[0].fRawData);
 
         return;
 } // end InitiateControllers
@@ -434,10 +430,6 @@ EXPORT int CALL RomOpen (void)
                                 // The config was (re)loaded: tell the core what is really plugged in.
                                 if (bSetupOk && g_pCoreControls != NULL)
                                         FillControls( g_pCoreControls );
-
-                                M64PDebugMessage(M64MSG_INFO, "N-Rage: RomOpen recovered device setup (%s), window=%p devices=%d controller1: plugged=%d pak=%d raw=%d",
-                                        bSetupOk ? "ok" : "FAILED", (void*)hWindow, g_nDevices,
-                                        (int)g_pcControllers[0].fPlugged, (int)g_pcControllers[0].PakType, (int)g_pcControllers[0].fRawData);
                         }
                         else if (g_bRunning)
                         {
@@ -653,15 +645,7 @@ EXPORT void CALL ReadController( int Control, unsigned char * Command )
                 }
                 else
                 {
-                        static bool s_bPakInitLogged[4] = { false, false, false, false };
-                        bool bPakInitOk = ( !g_bConfiguring && InitControllerPak( Control ) && g_pcControllers[Control].pPakData );
-                        if( !s_bPakInitLogged[Control] )
-                        {
-                                s_bPakInitLogged[Control] = true;
-                                M64PDebugMessage(M64MSG_INFO, "N-Rage: controller %d first status poll, pak type %d initialised: %s",
-                                        Control + 1, (int)g_pcControllers[Control].PakType, bPakInitOk ? "yes" : "NO");
-                        }
-                        if( bPakInitOk )
+                        if( !g_bConfiguring && InitControllerPak( Control ) && g_pcControllers[Control].pPakData )
                         {
                                 g_pcControllers[Control].fPakInitialized = 1;
 
