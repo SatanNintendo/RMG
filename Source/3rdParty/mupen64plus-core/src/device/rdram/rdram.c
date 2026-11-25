@@ -29,6 +29,7 @@
 #include "device/rcp/ri/ri_controller.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #define RDRAM_BCAST_ADDRESS_MASK UINT32_C(0x00080000)
 #define RDRAM_MODE_CE_MASK UINT32_C(0x80000000)
@@ -284,10 +285,54 @@ static void rmg_diag_watch_cpu(struct rdram* rdram, uint32_t address, uint32_t v
         (unsigned)*r4300_pc(rdram->r4300), (unsigned)g[31], (unsigned)g[29], g_rmg_diag_vi);
 }
 
+/* RMG-DIAG session 11: whole RDRAM (plain big-endian bytes) into the working directory,
+ * used to compare the guest state of the cold boot and of the post-reset run right before
+ * they start loading different assets (first PIDMA divergence is #42). */
+static void rmg_diag_dump_rdram_epoch(struct rdram* rdram, unsigned int epoch, unsigned int pidma)
+{
+    static uint8_t buf[65536];
+    char name[96];
+    const uint32_t* dram = rdram->dram;
+    const size_t size = rdram->dram_size;
+    size_t off, i, n;
+    FILE* f;
+
+    sprintf(name, "rmg_rdram_epoch%u_at_pidma%u.bin", epoch, pidma);
+    f = fopen(name, "wb");
+    if (f == NULL)
+    {
+        DebugMessage(M64MSG_VERBOSE, "RDRAM dump: cannot create %s", name);
+        return;
+    }
+    for (off = 0; off < size; off += sizeof(buf))
+    {
+        n = size - off;
+        if (n > sizeof(buf))
+            n = sizeof(buf);
+        for (i = 0; i < n / 4; ++i)
+        {
+            const uint32_t w = dram[off / 4 + i];
+            buf[4 * i] = (uint8_t)(w >> 24);
+            buf[4 * i + 1] = (uint8_t)(w >> 16);
+            buf[4 * i + 2] = (uint8_t)(w >> 8);
+            buf[4 * i + 3] = (uint8_t)w;
+        }
+        if (fwrite(buf, 1, n, f) != n)
+            break;
+    }
+    fclose(f);
+    DebugMessage(M64MSG_VERBOSE, "RDRAM dump: wrote %s (%u bytes)", name, (unsigned)size);
+}
+
 void rmg_diag_pi_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, uint32_t cart_addr)
 {
+    static unsigned int rmg_diag_pi_epoch = 0;
+
     if (g_rmg_diag_vi < rmg_diag_pi_last_vi)
+    {
         rmg_diag_pi_lines = 0;
+        ++rmg_diag_pi_epoch;
+    }
     rmg_diag_pi_last_vi = g_rmg_diag_vi;
     if (rmg_diag_pi_lines >= 450)
         return;
@@ -297,6 +342,32 @@ void rmg_diag_pi_dma(struct rdram* rdram, uint32_t dram_addr, uint32_t length, u
         rmg_diag_pi_lines, (unsigned)cart_addr, (unsigned)dram_addr, (unsigned)length,
         (unsigned)*r4300_pc(rdram->r4300), g_rmg_diag_vi,
         (dram_addr < UINT32_C(0x1440c0) && (uint64_t)dram_addr + length > UINT32_C(0x143fc4)) ? " TOUCHES-WATCH" : "");
+
+    /* session 11: guest call chain of the DMAs #36..#60 (64 words of stack, saved return
+     * addresses inside), and a full RDRAM dump at DMA #41 of the cold boot (epoch 0) and of
+     * the first post-reset run (epoch 1). Read-only, no effect on emulation. */
+    if (rmg_diag_pi_lines >= 36 && rmg_diag_pi_lines <= 60)
+    {
+        const int64_t* g = r4300_regs(rdram->r4300);
+        const uint32_t sp = (uint32_t)g[29];
+        const uint32_t phys = sp & 0x1ffffffcu;
+        unsigned int row, col;
+
+        if (sp >= 0x80000000u && sp < 0xa0000000u && (size_t)phys + 0x100 <= rdram->dram_size)
+        {
+            const uint32_t* k = &rdram->dram[phys / 4];
+            for (row = 0; row < 4; ++row)
+            {
+                char line[16 * 9 + 1];
+                for (col = 0; col < 16; ++col)
+                    sprintf(line + 9 * col, "%08x ", (unsigned)k[row * 16 + col]);
+                DebugMessage(M64MSG_VERBOSE, "PIDMA #%u STACK ra=%08x sp=%08x +%02x: %s",
+                    rmg_diag_pi_lines, (unsigned)g[31], (unsigned)sp, row * 0x40, line);
+            }
+        }
+    }
+    if (rmg_diag_pi_lines == 41 && rmg_diag_pi_epoch <= 1)
+        rmg_diag_dump_rdram_epoch(rdram, rmg_diag_pi_epoch, rmg_diag_pi_lines);
 }
 
 void write_rdram_dram(void* opaque, uint32_t address, uint32_t value, uint32_t mask)
