@@ -23,6 +23,22 @@
 #include "QtKeyToHID.h"
 #include "HIDKeyToName.h"
 
+// The built-in "User" profile is stored in the ini file under this exact name,
+// so only its displayed text is translated. The real profile name is kept in
+// the combo box item data (Qt::UserRole).
+static const QString strBuiltinUserProfile("User");
+
+static QString profileDisplayName(const QString & _profile)
+{
+	return _profile == strBuiltinUserProfile ? ConfigDialog::tr("User") : _profile;
+}
+
+static QString profileKeyAt(const QComboBox * _combo, int _index)
+{
+	const QVariant data = _combo->itemData(_index, Qt::UserRole);
+	return data.isValid() ? data.toString() : _combo->itemText(_index);
+}
+
 static
 struct
 {
@@ -502,7 +518,8 @@ void ConfigDialog::setIniPath(const QString & _strIniPath, const QString & _strS
 	// Profile
 	ui->profilesComboBox->blockSignals(true);
 	const QStringList aProfiles = getProfiles(m_strIniPath);
-	ui->profilesComboBox->addItems(aProfiles);
+	for (const QString & profile : aProfiles)
+		ui->profilesComboBox->addItem(profileDisplayName(profile), profile);
 	ui->profilesComboBox->setCurrentIndex(aProfiles.indexOf(getCurrentProfile(m_strIniPath)));
 	ui->profilesComboBox->insertSeparator(ui->profilesComboBox->count());
 	ui->profilesComboBox->insertItem(ui->profilesComboBox->count(), tr("New..."));
@@ -1084,7 +1101,7 @@ void ConfigDialog::on_profilesComboBox_currentTextChanged(const QString &profile
 				);
 				msgBox.exec();
 			} else {
-				ui->profilesComboBox->insertItem(0, newProfile);
+				ui->profilesComboBox->insertItem(0, profileDisplayName(newProfile), newProfile);
 				addProfile(m_strIniPath, newProfile);
 				if (ui->profilesComboBox->count() > 3) {
 					ui->removeProfilePushButton->setEnabled(true);
@@ -1094,14 +1111,14 @@ void ConfigDialog::on_profilesComboBox_currentTextChanged(const QString &profile
 			ui->profilesComboBox->blockSignals(false);
 		}
 		for (int i = 0; i < ui->profilesComboBox->count(); ++i) {
-			if (ui->profilesComboBox->itemText(i) == switchToProfile) {
+			if (profileKeyAt(ui->profilesComboBox, i) == switchToProfile) {
 				ui->profilesComboBox->setCurrentIndex(i);
 				break;
 			}
 		}
 		return;
 	}
-	changeProfile(m_strIniPath, m_strSharedIniPath, profile);
+	changeProfile(m_strIniPath, m_strSharedIniPath, profileKeyAt(ui->profilesComboBox, ui->profilesComboBox->currentIndex()));
 	_init(true);
 }
 
@@ -1115,11 +1132,11 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 	if (ui->profilesComboBox->count() == 3)
 		return;
 
-	QString profile = ui->profilesComboBox->currentText();
+	QString profile = profileKeyAt(ui->profilesComboBox, ui->profilesComboBox->currentIndex());
 	if (!getProfiles(m_strIniPath).contains(profile))
 		return;
 	QString msg(tr("Are you sure you want to remove the settings profile \""));
-	msg += "" + profile + tr("\"?");
+	msg += "" + profileDisplayName(profile) + tr("\"?");
 	QMessageBox msgBox(QMessageBox::Warning, tr("Remove Profile"),
 		msg, QMessageBox::Yes | QMessageBox::Cancel, this);
 	msgBox.setDefaultButton(QMessageBox::Cancel);
@@ -1129,7 +1146,7 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		removeProfile(m_strIniPath, profile);
 		ui->profilesComboBox->blockSignals(true);
 		ui->profilesComboBox->removeItem(ui->profilesComboBox->currentIndex());
-		changeProfile(m_strIniPath, m_strSharedIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
+		changeProfile(m_strIniPath, m_strSharedIniPath, profileKeyAt(ui->profilesComboBox, ui->profilesComboBox->currentIndex()));
 		ui->profilesComboBox->blockSignals(false);
 		_init(true);
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() == 3);

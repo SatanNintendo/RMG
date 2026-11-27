@@ -90,7 +90,7 @@ def extract_cpp_tr_strings(cpp_path):
     # The first quoted argument is the context, the second is the
     # source string. We override the class-derived context with the
     # explicit one supplied by the caller.
-    qapp_pattern = r'\bQ(?:CoreApplication|Application)::translate\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
+    qapp_pattern = r'(?:\bQ(?:CoreApplication|Application)::translate|\bQT_TRANSLATE_NOOP)\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
     for m in re.finditer(qapp_pattern, text):
         ctx = m.group(1)
         raw = m.group(2)

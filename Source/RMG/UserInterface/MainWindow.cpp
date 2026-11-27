@@ -24,6 +24,7 @@
 #include "Dialog/Netplay/NetplaySessionDialog.hpp"
 #endif // NETPLAY
 #include "UserInterface/EventFilter.hpp"
+#include "Utilities/CoreMessageTranslator.hpp"
 #include "Utilities/QtKeyToSdl3Key.hpp"
 #include "Utilities/QtMessageBox.hpp"
 #include "OnScreenDisplay.hpp"
@@ -2838,7 +2839,7 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         // emulation run, we'll stop displaying it
         if (this->ui_DebugCallbackErrors.count(statusbarMessage.Message) < 50)
         {
-            this->showErrorMessage(tr("Core Error"), statusbarMessage.Message, false);
+            this->showErrorMessage(tr("Core Error"), CoreMessageTranslator::Translate(statusbarMessage.Message), false);
         }
         this->ui_DebugCallbackErrors.append(statusbarMessage.Message);
         return;
@@ -2849,7 +2850,7 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         return;
     }
 
-    this->ui_StatusBar_Label->setText(statusbarMessage.Message);
+    this->ui_StatusBar_Label->setText(CoreMessageTranslator::Translate(statusbarMessage.Message));
 
     // reset label deletion timer
     if (this->ui_ResetStatusBarTimerId != 0)

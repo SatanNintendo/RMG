@@ -50,7 +50,7 @@ TRANSLATIONS = {
     "Start Co&mbo": "Запуск-ко&мбо",
     "S&hutdown": "В&ыключить",
     "&Soft Reset": "&Сброс",
-    "&Hard Reset": "&Жёсткий сброс",
+    "&Hard Reset": "&Жёсткая перезагрузка",
     "&Pause": "&Пауза",
     "Scree&nshot": "С&криншот",
     "&Limit FPS": "&Ограничить FPS",
@@ -78,7 +78,7 @@ TRANSLATIONS = {
     "&Settings": "&Настройки",
     "&Fullscreen": "Во &весь экран",
     "&Github Repository": "Репозиторий &GitHub",
-    "&About RMG": "&О RMG",
+    "&About RMG": "&О программе RMG",
     "&Toolbar": "&Панель инструментов",
     "&Status Bar": "Строка &состояния",
     "&Game List": "Список &игр",
@@ -105,14 +105,14 @@ TRANSLATIONS = {
     "View Session": "Открыть сессию",
     "Search": "Поиск",
     # tr() strings from MainWindow.cpp
-    "Open N64 ROM or 64DD Disk": "Открыть N64 ROM или 64DD диск",
-    "Open N64 ROM": "Открыть N64 ROM",
-    "Open 64DD Disk": "Открыть 64DD диск",
+    "Open N64 ROM or 64DD Disk": "Открыть ROM N64 или диск 64DD",
+    "Open N64 ROM": "Открыть ROM N64",
+    "Open 64DD Disk": "Открыть диск 64DD",
     "Save State": "Сохранить состояние",
     "Save State (*.state);;Project64 Save State (*.pj);;All Files (*)": "Сохранение состояния (*.state);;Project64 (*.pj);;Все файлы (*)",
     "Open Save State": "Открыть сохранение состояния",
     "Save State (*.dat *.state *.st* *.pj*);;All Files (*)": "Сохранения (*.dat *.state *.st* *.pj*);;Все файлы (*)",
-    "Select ROM Directory": "Выбрать каталог ROM",
+    "Select ROM Directory": "Выбрать папку с ROM",
 
     # === SettingsDialog ===
     "Settings": "Настройки",
@@ -121,7 +121,7 @@ TRANSLATIONS = {
     "Hotkeys": "Горячие клавиши",
     "Core": "Ядро",
     "Game": "Игра",
-    "Directories": "Каталоги",
+    "Directories": "Папки",
     "64DD": "64DD",
     "General": "Общие",
     "Emulation": "Эмуляция",
@@ -153,7 +153,7 @@ TRANSLATIONS = {
     "OpenGL type": "Тип OpenGL",
     "OpenGL": "OpenGL",
     "OpenGL ES": "OpenGL ES",
-    "Search sub-directories": "Искать в подкаталогах",
+    "Search sub-directories": "Искать во вложенных папках",
     "ROM search limit": "Максимум ROM при поиске",
     "Show verbose messages": "Показывать подробные сообщения",
     "Enable On-Screen Display": "Включить экранное уведомление (OSD)",
@@ -171,13 +171,13 @@ TRANSLATIONS = {
     "The On-Screen Display will only work with OpenGL video plugins": "Экранные уведомления (OSD) работают только с OpenGL-плагинами видео",
     "Nickname": "Никнейм",
     "Server list URL": "URL списка серверов",
-    "Video Plugin": "Плагин видео",
-    "Audio Plugin": "Плагин звука",
+    "Video Plugin": "Видеоплагин",
+    "Audio Plugin": "Звуковой плагин",
     "Input Plugin": "Плагин ввода",
     "Reality Signal Processor Plugin": "Плагин RSP (Reality Signal Processor)",
-    "Screenshot Directory": "Каталог скриншотов",
-    "Save (State) Directory": "Каталог сохранений (State)",
-    "Save (SRAM) Directory": "Каталог сохранений (SRAM)",
+    "Screenshot Directory": "Папка скриншотов",
+    "Save (State) Directory": "Папка сохранений (состояний)",
+    "Save (SRAM) Directory": "Папка сохранений (SRAM)",
     "Override game specific settings": "Переопределять настройки игры",
     "Override core settings": "Переопределять настройки ядра",
     "Randomize PI/SI interrupt timing": "Случайные интервалы прерываний PI/SI",
@@ -194,7 +194,7 @@ TRANSLATIONS = {
     "Remove duplicate keybindings": "Удалять дубликаты назначений клавиш",
     "Save Type": "Тип сохранения",
     "Transfer Pak": "Transfer Pak",
-    "Controller pak": "Контроллер Pak",
+    "Controller pak": "Controller Pak",
     "None": "Нет",
     "4 KB EEPROM": "4 КБ EEPROM",
     "16 KB EEPROM": "16 КБ EEPROM",
@@ -202,7 +202,7 @@ TRANSLATIONS = {
     "Flash RAM": "Flash RAM",
     "RAM Area Only": "Только область RAM",
     "Full Disk Copy": "Полная копия диска",
-    "Good Name": "Корректное имя",
+    "Good Name": "Название GoodN64",
     "Internal ROM Name": "Внутреннее название ROM",
     "&Use PIF ROM": "&Использовать PIF ROM",
     "NTSC PIF ROM": "PIF ROM (NTSC)",
@@ -220,12 +220,12 @@ TRANSLATIONS = {
     "Audio": "Звук",
     "Start ROM": "Запустить ROM",
     "Start Combo": "Запустить комбо",
-    "Shutdown": "Остановить",
-    "Soft Reset": "Мягкий сброс",
-    "Hard Reset": "Жёсткий сброс",
+    "Shutdown": "Выключить",
+    "Soft Reset": "Сброс",
+    "Hard Reset": "Жёсткая перезагрузка",
     "Pause": "Пауза",
-    "Capture Screenshot": "Сделать снимок экрана",
-    "Full Screen": "Полный экран",
+    "Capture Screenshot": "Сделать скриншот",
+    "Full Screen": "Во весь экран",
     "Limit FPS": "Ограничить FPS",
     "Load State": "Загрузить состояние",
     "Load": "Загрузить",
@@ -265,9 +265,9 @@ TRANSLATIONS = {
     "5": "5",
     "6": "6",
     # tr() strings from SettingsDialog.cpp
-    "Select Screenshot Directory": "Выбрать каталог скриншотов",
-    "Select Save (State) Directory": "Выбрать каталог сохранений (State)",
-    "Select Save (SRAM) Directory": "Выбрать каталог сохранений (SRAM)",
+    "Select Screenshot Directory": "Выбрать папку скриншотов",
+    "Select Save (State) Directory": "Выбрать папку сохранений (состояний)",
+    "Select Save (SRAM) Directory": "Выбрать папку сохранений (SRAM)",
     "Open Japanese Retail 64DD IPL": "Открыть японский розничный 64DD IPL",
     "Open American Retail 64DD IPL": "Открыть американский розничный 64DD IPL",
     "Open Japanese Development 64DD IPL": "Открыть японский разработческий 64DD IPL",
@@ -292,11 +292,11 @@ TRANSLATIONS = {
     "System Region": "Регион системы",
 
     # === RomBrowserEmptyWidget ===
-    "<html><head/><body><p><span style=\" font-weight:700;\">No ROMs in supported formats were found.</span></p><p>Please select a directory with ROMs to begin.</p><p>ROMs in the following formats will be scanned and listed: </p></body></html>": "<html><head/><body><p><span style=\" font-weight:700;\">Не найдено ROM в поддерживаемых форматах.</span></p><p>Выберите каталог с ROM для начала работы.</p><p>Будут просканированы и показаны ROM в следующих форматах: </p></body></html>",
+    "<html><head/><body><p><span style=\" font-weight:700;\">No ROMs in supported formats were found.</span></p><p>Please select a directory with ROMs to begin.</p><p>ROMs in the following formats will be scanned and listed: </p></body></html>": "<html><head/><body><p><span style=\" font-weight:700;\">Не найдено ROM в поддерживаемых форматах.</span></p><p>Выберите папку с ROM для начала работы.</p><p>Будут просканированы и показаны ROM в следующих форматах: </p></body></html>",
     ".n64/.z64/.v64 (N64 Roms)": ".n64/.z64/.v64 (ROM N64)",
     ".ndd/.d64 (64DD Disks)": ".ndd/.d64 (диски 64DD)",
     ".zip/.7z (Archive)": ".zip/.7z (архив)",
-    "Select ROM Directory...": "Выбрать каталог ROM...",
+    "Select ROM Directory...": "Выбрать папку с ROM...",
     "Refresh": "Обновить",
 
     # === RomBrowserWidget (tr() calls) ===
@@ -361,7 +361,7 @@ TRANSLATIONS = {
     "Don't check for updates again": "Больше не проверять обновления",
 
     # === CreateNetplaySessionEmptyWidget ===
-    "<html><head/><body><p><span style=\" font-weight:700;\">No ROMs were found.</span></p><p>You can configure the ROM browser directory or refresh the ROM browser.</p></body></html>": "<html><head/><body><p><span style=\" font-weight:700;\">ROM не найдены.</span></p><p>Вы можете настроить каталог ROM или обновить браузер ROM.</p></body></html>",
+    "<html><head/><body><p><span style=\" font-weight:700;\">No ROMs were found.</span></p><p>You can configure the ROM browser directory or refresh the ROM browser.</p></body></html>": "<html><head/><body><p><span style=\" font-weight:700;\">ROM не найдены.</span></p><p>Вы можете настроить папку с ROM или обновить браузер ROM.</p></body></html>",
 
     # === NetplaySessionBrowserEmptyWidget ===
     "<html><head/><body><p><span style=\" font-weight:700;\">No sessions were found.</span></p><p>You can create your own session or refresh the session list.</p></body></html>": "<html><head/><body><p><span style=\" font-weight:700;\">Сессии не найдены.</span></p><p>Вы можете создать свою сессию или обновить список сессий.</p></body></html>",
@@ -495,10 +495,10 @@ TRANSLATIONS = {
     # RomBrowserWidget.cpp — context menu actions
     "Play Game": "Запустить игру",
     "Play Game with Disk": "Запустить игру с диском",
-    "Play Game with State": "Запустить игру со сохранением",
+    "Play Game with State": "Запустить игру с сохранением",
     "Refresh ROM List": "Обновить список ROM",
-    "Open ROM Directory": "Открыть каталог ROM",
-    "Change ROM Directory...": "Сменить каталог ROM...",
+    "Open ROM Directory": "Открыть папку с ROM",
+    "Change ROM Directory...": "Сменить папку с ROM...",
     "ROM Information": "Информация о ROM",
     "Edit Game Settings": "Изменить настройки игры",
     "Edit Game Input Settings": "Изменить настройки ввода игры",
@@ -522,7 +522,7 @@ TRANSLATIONS = {
     "Search games...": "Поиск игр...",
     "Close": "Закрыть",
     # NetplaySessionBrowserDialog.cpp
-    "Join": "Подключиться",
+    "Join": "Присоединиться",
     "Calculating...": "Вычисление...",
     # NetplaySessionBrowserWidget.cpp — column headers
     "Game": "Игра",
@@ -567,8 +567,8 @@ TRANSLATIONS = {
     "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)": "ROM и диски N64 (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)",
     "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)": "ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)",
     "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)": "Образ диска N64DD (*.ndd *.d64 *.zip *.7z)",
-    "IPL ROMs (*.n64)": "ROM IPL (*.n64)",
-    "PIF ROMs (*.rom)": "ROM PIF (*.rom)",
+    "IPL ROMs (*.n64)": "IPL ROM (*.n64)",
+    "PIF ROMs (*.rom)": "PIF ROM (*.rom)",
     # NetplaySessionBrowserDialog.cpp
     "Open %1": "Открыть %1",
 
@@ -629,7 +629,7 @@ TRANSLATIONS = {
     # --- DownloadUpdateDialog.cpp ---
     "Downloading %1...": "Загрузка %1...",
     "Failed to download update file": "Не удалось загрузить файл обновления",
-    "Failed to create temporary directory": "Не удалось создать временный каталог",
+    "Failed to create temporary directory": "Не удалось создать временную папку",
     "APPIMAGE variable is empty or invalid": "Переменная APPIMAGE пуста или недействительна",
     "std::rename() Failed": "Сбой std::rename()",
 
@@ -770,6 +770,94 @@ TRANSLATIONS = {
     "Unfiltered": "Без фильтрации",
 }
 
+# Messages of the mupen64plus core shown in the status bar, see
+# Source/RMG/Utilities/CoreMessageTranslator.cpp (context "CoreMessage").
+# %1, %2, ... are the printf arguments of the core message in order.
+TRANSLATIONS.update({
+    "Emulation continued.": "Эмуляция продолжена.",
+    "Emulation paused.": "Эмуляция приостановлена.",
+    "Stopping emulation.": "Остановка эмуляции.",
+    "Rom closed.": "ROM закрыт.",
+    "Disk closed.": "Диск закрыт.",
+    "Speed limiter enabled": "Ограничитель скорости включён",
+    "Speed limiter disabled": "Ограничитель скорости выключен",
+    "Playback speed: %d%%": "Скорость воспроизведения: %1%",
+    "Selected state slot: %d": "Выбран слот сохранения: %1",
+    "Saved state to: %s": "Состояние сохранено: %1",
+    "State loaded from: %s": "Состояние загружено: %1",
+    "Captured screenshot for frame %i.": "Сделан скриншот кадра %1.",
+    "No Mupen64Plus/PJ64 state file found for slot %i": "Файл состояния Mupen64Plus/PJ64 для слота %1 не найден",
+    "Could not open state file: %s": "Не удалось открыть файл состояния: %1",
+    "Could not open state file %s": "Не удалось открыть файл состояния %1",
+    "Could not read from state file %s": "Не удалось прочитать файл состояния %1",
+    "Could not read header from state file %s": "Не удалось прочитать заголовок файла состояния %1",
+    "Could not write data to state file: %s": "Не удалось записать данные в файл состояния: %1",
+    "Could not read Mupen64Plus savestate 1.0 data from %s": "Не удалось прочитать данные сохранения Mupen64Plus 1.0 из %1",
+    "Could not read Mupen64Plus savestate 1.1 data from %s": "Не удалось прочитать данные сохранения Mupen64Plus 1.1 из %1",
+    "Could not read Mupen64Plus savestate 1.2+ data from %s": "Не удалось прочитать данные сохранения Mupen64Plus 1.2+ из %1",
+    "Could not create PJ64 state file: %s": "Не удалось создать файл состояния PJ64: %1",
+    "Could not read header from Project64 savestate %s": "Не удалось прочитать заголовок сохранения Project64 %1",
+    "Could not read savestate data from Project64 savestate %s": "Не удалось прочитать данные из сохранения Project64 %1",
+    "Couldn't write data to Project64 state file %s.": "Не удалось записать данные в файл состояния Project64 %1.",
+    "Failed to open savestate file %s": "Не удалось открыть файл сохранения %1",
+    "Unknown state file type %s": "Неизвестный тип файла состояния %1",
+    "Zip error. Could not open state file: %s": "Ошибка ZIP. Не удалось открыть файл состояния: %1",
+    "Zip error. Could not create state file: %s": "Ошибка ZIP. Не удалось создать файл состояния: %1",
+    "Insufficient memory to load state.": "Недостаточно памяти для загрузки состояния.",
+    "Insufficient memory to save state.": "Недостаточно памяти для сохранения состояния.",
+    "Invalid Project64 state RDRAM size.": "Недопустимый размер RDRAM в состоянии Project64.",
+    "Invalid event queue in savestate: %s": "Недопустимая очередь событий в сохранении: %1",
+    "State ROM MD5 does not match current ROM.": "MD5 ROM в состоянии не совпадает с текущим ROM.",
+    "State ROM header does not match current ROM.": "Заголовок ROM в состоянии не совпадает с текущим ROM.",
+    "State file: %s is not a valid Mupen64plus savestate.": "Файл состояния %1 не является допустимым сохранением Mupen64plus.",
+    "State file: %s is not a valid Project64 savestate. Unrecognized file format.": "Файл состояния %1 не является допустимым сохранением Project64. Неизвестный формат файла.",
+    "State version (%08x) isn't compatible. Please update Mupen64Plus.": "Версия состояния (%1) несовместима. Обновите Mupen64Plus.",
+    "Controller %u pak changed to %s": "Аксессуар контроллера %1 изменён на %2",
+    "Removing pak from controller %u": "Извлечение аксессуара из контроллера %1",
+    "Game controller %u (%s) has a %s plugged in": "К игровому контроллеру %1 (%2) подключён аксессуар: %3",
+    "Game controller %u (%s) has nothing plugged in": "К игровому контроллеру %1 (%2) ничего не подключено",
+    "Inserting GB cart %s into transferpak %u": "Установка картриджа GB %1 в Transfer Pak %2",
+    "Removing GB cart from transferpak %u": "Извлечение картриджа GB из Transfer Pak %1",
+    "Providing default RAM content": "Используется содержимое RAM по умолчанию",
+    "Using NTSC PIF ROM": "Используется NTSC PIF ROM",
+    "Using PAL PIF ROM": "Используется PAL PIF ROM",
+    "Using CIC type %s": "Используется тип CIC %1",
+    "Starting R4300 emulator: Pure Interpreter": "Запуск эмулятора R4300: чистый интерпретатор",
+    "Starting R4300 emulator: Cached Interpreter": "Запуск эмулятора R4300: кэширующий интерпретатор",
+    "Starting R4300 emulator: Dynamic Recompiler": "Запуск эмулятора R4300: динамический рекомпилятор",
+    "R4300 emulator finished.": "Эмулятор R4300 завершил работу.",
+    "Initializing %u RDRAM modules for a total of %u MB": "Инициализация модулей RDRAM: %1 шт., всего %2 МБ",
+    "Setting video mode: %ix%i": "Установка видеорежима: %1x%2",
+    "Setting %i-bit video mode: %ix%i": "Установка %1-битного видеорежима: %2x%3",
+    "Video closed": "Видео закрыто",
+    "Video successfully opened: %s": "Видео успешно открыто: %1",
+    "Using video capture backend: %s": "Используется бэкенд видеозахвата: %1",
+    "Loading a saved disk": "Загрузка сохранённого диска",
+    "Failed to load DD Disk save: %s.": "Не удалось загрузить сохранение диска 64DD: %1.",
+    "Failed to load DD Disk RAM area (*.ram): %s.": "Не удалось загрузить область RAM диска 64DD (*.ram): %1.",
+    "Failed to load DD Disk: %s.": "Не удалось загрузить диск 64DD: %1.",
+    "Failed to load DD IPL ROM: %s. Disabling 64DD": "Не удалось загрузить IPL ROM 64DD: %1. 64DD отключён",
+    "Invalid DD IPL ROM: Disabling 64DD.": "Недопустимый IPL ROM 64DD: 64DD отключён.",
+    "Failed to load ROM file: %s": "Не удалось загрузить файл ROM: %1",
+    "Invalid PIF ROM": "Недопустимый PIF ROM",
+    "Wrong disk format": "Неверный формат диска",
+    "open_rom(): not a valid ROM image": "open_rom(): недопустимый образ ROM",
+    "open_disk(): not a valid disk image": "open_disk(): недопустимый образ диска",
+    "Invalid speed setting %i percent": "Недопустимая настройка скорости: %1 %",
+    "No video plugin attached.  There will be no video output.": "Видеоплагин не подключён. Изображения не будет.",
+    "No audio plugin attached.  There will be no sound output.": "Звуковой плагин не подключён. Звука не будет.",
+    "No input plugin attached.  You won't be able to control the game.": "Плагин ввода не подключён. Вы не сможете управлять игрой.",
+    "No RSP plugin attached.  The video output will be corrupted.": "RSP-плагин не подключён. Изображение будет искажено.",
+    "incompatible Video plugin": "несовместимый видеоплагин",
+    "incompatible Audio plugin": "несовместимый звуковой плагин",
+    "incompatible Input plugin": "несовместимый плагин ввода",
+    "incompatible RSP plugin": "несовместимый RSP-плагин",
+    "broken Video plugin; function(s) not found.": "повреждённый видеоплагин: функции не найдены.",
+    "broken Audio plugin; function(s) not found.": "повреждённый звуковой плагин: функции не найдены.",
+    "broken Input plugin; function(s) not found.": "повреждённый плагин ввода: функции не найдены.",
+    "broken RSP plugin; function(s) not found.": "повреждённый RSP-плагин: функции не найдены.",
+})
+
 
 def extract_ui_strings(ui_path):
     """Extract (context, [strings]) from a .ui file."""
@@ -812,9 +900,9 @@ def extract_cpp_tr_strings(cpp_path):
         results.append((class_name, s))
 
     # Match QCoreApplication::translate("Context", "Source") (and
-    # QApplication::translate). The first quoted argument is the
+    # QApplication::translate / QT_TRANSLATE_NOOP). The first quoted argument is the
     # context, the second is the source string.
-    qapp_pattern = r'\bQ(?:CoreApplication|Application)::translate\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
+    qapp_pattern = r'(?:\bQ(?:CoreApplication|Application)::translate|\bQT_TRANSLATE_NOOP)\s*\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"'
     for m in re.finditer(qapp_pattern, text):
         ctx = m.group(1)
         raw = m.group(2)

@@ -187,6 +187,16 @@
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Многопоточная обработка видео может повысить производительность при плохих или старых драйверах OpenGL, но добавляет очень небольшую задержку ввода (обычно менее половины кадра).&lt;/p&gt;&lt;p&gt;[Рекомендуется: &lt;span style=&quot; font-style:italic;&quot;&gt;обычно выключено, включайте при проблемах с производительностью&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
+        <location filename="../../src/GLideNUI/configDialog.ui" line="251"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Asynchronous shaders compilation solves the &quot;stuttering&quot; problem at the cost of visual artifacts, which can be visible within one-two frames.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, unless there are performance issues&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Асинхронная компиляция шейдеров устраняет «подтормаживания» (фризы) ценой визуальных артефактов, которые могут быть заметны в течение одного-двух кадров.&lt;/p&gt;&lt;p&gt;[Рекомендуется: &lt;span style=&quot; font-style:italic;&quot;&gt;обычно выключено, включайте при проблемах с производительностью&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GLideNUI/configDialog.ui" line="254"/>
+        <source>Enable async shaders compile</source>
+        <translation>Включить асинхронную компиляцию шейдеров</translation>
+    </message>
+    <message>
         <location filename="../../src/GLideNUI/configDialog.ui" line="239"/>
         <source>Enable threaded video</source>
         <translation>Включить многопоточную обработку видео</translation>
@@ -1191,6 +1201,16 @@ The font's full name can be found in Settings&gt;Personalization&gt;Fonts</sourc
         <location filename="../../src/GLideNUI/ConfigDialog.cpp" line="79"/>
         <source>Toggle textures dump</source>
         <translation>Вкл/выкл дамп текстур</translation>
+    </message>
+    <message>
+        <location filename="../../src/GLideNUI/ConfigDialog.cpp" line="29"/>
+        <source>User</source>
+        <translation>Пользовательский</translation>
+    </message>
+    <message>
+        <location filename="../../src/GLideNUI/ConfigDialog.cpp" line="84"/>
+        <source>Toggle strong CRC for textures dump</source>
+        <translation>Вкл/выкл строгую проверку CRC при дампе текстур</translation>
     </message>
     <message>
         <location filename="../../src/GLideNUI/ConfigDialog.cpp" line="81"/>

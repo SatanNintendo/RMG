@@ -379,6 +379,337 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
+        <name>CoreMessage</name>
+        <message>
+            <source>Captured screenshot for frame %i.</source>
+            <translation>Сделан скриншот кадра %1.</translation>
+        </message>
+        <message>
+            <source>Controller %u pak changed to %s</source>
+            <translation>Аксессуар контроллера %1 изменён на %2</translation>
+        </message>
+        <message>
+            <source>Could not create PJ64 state file: %s</source>
+            <translation>Не удалось создать файл состояния PJ64: %1</translation>
+        </message>
+        <message>
+            <source>Could not open state file %s</source>
+            <translation>Не удалось открыть файл состояния %1</translation>
+        </message>
+        <message>
+            <source>Could not open state file: %s</source>
+            <translation>Не удалось открыть файл состояния: %1</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.0 data from %s</source>
+            <translation>Не удалось прочитать данные сохранения Mupen64Plus 1.0 из %1</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.1 data from %s</source>
+            <translation>Не удалось прочитать данные сохранения Mupen64Plus 1.1 из %1</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.2+ data from %s</source>
+            <translation>Не удалось прочитать данные сохранения Mupen64Plus 1.2+ из %1</translation>
+        </message>
+        <message>
+            <source>Could not read from state file %s</source>
+            <translation>Не удалось прочитать файл состояния %1</translation>
+        </message>
+        <message>
+            <source>Could not read header from Project64 savestate %s</source>
+            <translation>Не удалось прочитать заголовок сохранения Project64 %1</translation>
+        </message>
+        <message>
+            <source>Could not read header from state file %s</source>
+            <translation>Не удалось прочитать заголовок файла состояния %1</translation>
+        </message>
+        <message>
+            <source>Could not read savestate data from Project64 savestate %s</source>
+            <translation>Не удалось прочитать данные из сохранения Project64 %1</translation>
+        </message>
+        <message>
+            <source>Could not write data to state file: %s</source>
+            <translation>Не удалось записать данные в файл состояния: %1</translation>
+        </message>
+        <message>
+            <source>Couldn't write data to Project64 state file %s.</source>
+            <translation>Не удалось записать данные в файл состояния Project64 %1.</translation>
+        </message>
+        <message>
+            <source>Disk closed.</source>
+            <translation>Диск закрыт.</translation>
+        </message>
+        <message>
+            <source>Emulation continued.</source>
+            <translation>Эмуляция продолжена.</translation>
+        </message>
+        <message>
+            <source>Emulation paused.</source>
+            <translation>Эмуляция приостановлена.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk RAM area (*.ram): %s.</source>
+            <translation>Не удалось загрузить область RAM диска 64DD (*.ram): %1.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk save: %s.</source>
+            <translation>Не удалось загрузить сохранение диска 64DD: %1.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk: %s.</source>
+            <translation>Не удалось загрузить диск 64DD: %1.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD IPL ROM: %s. Disabling 64DD</source>
+            <translation>Не удалось загрузить IPL ROM 64DD: %1. 64DD отключён</translation>
+        </message>
+        <message>
+            <source>Failed to load ROM file: %s</source>
+            <translation>Не удалось загрузить файл ROM: %1</translation>
+        </message>
+        <message>
+            <source>Failed to open savestate file %s</source>
+            <translation>Не удалось открыть файл сохранения %1</translation>
+        </message>
+        <message>
+            <source>Game controller %u (%s) has a %s plugged in</source>
+            <translation>К игровому контроллеру %1 (%2) подключён аксессуар: %3</translation>
+        </message>
+        <message>
+            <source>Game controller %u (%s) has nothing plugged in</source>
+            <translation>К игровому контроллеру %1 (%2) ничего не подключено</translation>
+        </message>
+        <message>
+            <source>Initializing %u RDRAM modules for a total of %u MB</source>
+            <translation>Инициализация модулей RDRAM: %1 шт., всего %2 МБ</translation>
+        </message>
+        <message>
+            <source>Inserting GB cart %s into transferpak %u</source>
+            <translation>Установка картриджа GB %1 в Transfer Pak %2</translation>
+        </message>
+        <message>
+            <source>Insufficient memory to load state.</source>
+            <translation>Недостаточно памяти для загрузки состояния.</translation>
+        </message>
+        <message>
+            <source>Insufficient memory to save state.</source>
+            <translation>Недостаточно памяти для сохранения состояния.</translation>
+        </message>
+        <message>
+            <source>Invalid DD IPL ROM: Disabling 64DD.</source>
+            <translation>Недопустимый IPL ROM 64DD: 64DD отключён.</translation>
+        </message>
+        <message>
+            <source>Invalid PIF ROM</source>
+            <translation>Недопустимый PIF ROM</translation>
+        </message>
+        <message>
+            <source>Invalid Project64 state RDRAM size.</source>
+            <translation>Недопустимый размер RDRAM в состоянии Project64.</translation>
+        </message>
+        <message>
+            <source>Invalid event queue in savestate: %s</source>
+            <translation>Недопустимая очередь событий в сохранении: %1</translation>
+        </message>
+        <message>
+            <source>Invalid speed setting %i percent</source>
+            <translation>Недопустимая настройка скорости: %1 %</translation>
+        </message>
+        <message>
+            <source>Loading a saved disk</source>
+            <translation>Загрузка сохранённого диска</translation>
+        </message>
+        <message>
+            <source>No Mupen64Plus/PJ64 state file found for slot %i</source>
+            <translation>Файл состояния Mupen64Plus/PJ64 для слота %1 не найден</translation>
+        </message>
+        <message>
+            <source>No RSP plugin attached.  The video output will be corrupted.</source>
+            <translation>RSP-плагин не подключён. Изображение будет искажено.</translation>
+        </message>
+        <message>
+            <source>No audio plugin attached.  There will be no sound output.</source>
+            <translation>Звуковой плагин не подключён. Звука не будет.</translation>
+        </message>
+        <message>
+            <source>No input plugin attached.  You won't be able to control the game.</source>
+            <translation>Плагин ввода не подключён. Вы не сможете управлять игрой.</translation>
+        </message>
+        <message>
+            <source>No video plugin attached.  There will be no video output.</source>
+            <translation>Видеоплагин не подключён. Изображения не будет.</translation>
+        </message>
+        <message>
+            <source>Playback speed: %d%%</source>
+            <translation>Скорость воспроизведения: %1%</translation>
+        </message>
+        <message>
+            <source>Providing default RAM content</source>
+            <translation>Используется содержимое RAM по умолчанию</translation>
+        </message>
+        <message>
+            <source>R4300 emulator finished.</source>
+            <translation>Эмулятор R4300 завершил работу.</translation>
+        </message>
+        <message>
+            <source>Removing GB cart from transferpak %u</source>
+            <translation>Извлечение картриджа GB из Transfer Pak %1</translation>
+        </message>
+        <message>
+            <source>Removing pak from controller %u</source>
+            <translation>Извлечение аксессуара из контроллера %1</translation>
+        </message>
+        <message>
+            <source>Rom closed.</source>
+            <translation>ROM закрыт.</translation>
+        </message>
+        <message>
+            <source>Saved state to: %s</source>
+            <translation>Состояние сохранено: %1</translation>
+        </message>
+        <message>
+            <source>Selected state slot: %d</source>
+            <translation>Выбран слот сохранения: %1</translation>
+        </message>
+        <message>
+            <source>Setting %i-bit video mode: %ix%i</source>
+            <translation>Установка %1-битного видеорежима: %2x%3</translation>
+        </message>
+        <message>
+            <source>Setting video mode: %ix%i</source>
+            <translation>Установка видеорежима: %1x%2</translation>
+        </message>
+        <message>
+            <source>Speed limiter disabled</source>
+            <translation>Ограничитель скорости выключен</translation>
+        </message>
+        <message>
+            <source>Speed limiter enabled</source>
+            <translation>Ограничитель скорости включён</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Cached Interpreter</source>
+            <translation>Запуск эмулятора R4300: кэширующий интерпретатор</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Dynamic Recompiler</source>
+            <translation>Запуск эмулятора R4300: динамический рекомпилятор</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Pure Interpreter</source>
+            <translation>Запуск эмулятора R4300: чистый интерпретатор</translation>
+        </message>
+        <message>
+            <source>State ROM MD5 does not match current ROM.</source>
+            <translation>MD5 ROM в состоянии не совпадает с текущим ROM.</translation>
+        </message>
+        <message>
+            <source>State ROM header does not match current ROM.</source>
+            <translation>Заголовок ROM в состоянии не совпадает с текущим ROM.</translation>
+        </message>
+        <message>
+            <source>State file: %s is not a valid Mupen64plus savestate.</source>
+            <translation>Файл состояния %1 не является допустимым сохранением Mupen64plus.</translation>
+        </message>
+        <message>
+            <source>State file: %s is not a valid Project64 savestate. Unrecognized file format.</source>
+            <translation>Файл состояния %1 не является допустимым сохранением Project64. Неизвестный формат файла.</translation>
+        </message>
+        <message>
+            <source>State loaded from: %s</source>
+            <translation>Состояние загружено: %1</translation>
+        </message>
+        <message>
+            <source>State version (%08x) isn't compatible. Please update Mupen64Plus.</source>
+            <translation>Версия состояния (%1) несовместима. Обновите Mupen64Plus.</translation>
+        </message>
+        <message>
+            <source>Stopping emulation.</source>
+            <translation>Остановка эмуляции.</translation>
+        </message>
+        <message>
+            <source>Unknown state file type %s</source>
+            <translation>Неизвестный тип файла состояния %1</translation>
+        </message>
+        <message>
+            <source>Using CIC type %s</source>
+            <translation>Используется тип CIC %1</translation>
+        </message>
+        <message>
+            <source>Using NTSC PIF ROM</source>
+            <translation>Используется NTSC PIF ROM</translation>
+        </message>
+        <message>
+            <source>Using PAL PIF ROM</source>
+            <translation>Используется PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>Using video capture backend: %s</source>
+            <translation>Используется бэкенд видеозахвата: %1</translation>
+        </message>
+        <message>
+            <source>Video closed</source>
+            <translation>Видео закрыто</translation>
+        </message>
+        <message>
+            <source>Video successfully opened: %s</source>
+            <translation>Видео успешно открыто: %1</translation>
+        </message>
+        <message>
+            <source>Wrong disk format</source>
+            <translation>Неверный формат диска</translation>
+        </message>
+        <message>
+            <source>Zip error. Could not create state file: %s</source>
+            <translation>Ошибка ZIP. Не удалось создать файл состояния: %1</translation>
+        </message>
+        <message>
+            <source>Zip error. Could not open state file: %s</source>
+            <translation>Ошибка ZIP. Не удалось открыть файл состояния: %1</translation>
+        </message>
+        <message>
+            <source>broken Audio plugin; function(s) not found.</source>
+            <translation>повреждённый звуковой плагин: функции не найдены.</translation>
+        </message>
+        <message>
+            <source>broken Input plugin; function(s) not found.</source>
+            <translation>повреждённый плагин ввода: функции не найдены.</translation>
+        </message>
+        <message>
+            <source>broken RSP plugin; function(s) not found.</source>
+            <translation>повреждённый RSP-плагин: функции не найдены.</translation>
+        </message>
+        <message>
+            <source>broken Video plugin; function(s) not found.</source>
+            <translation>повреждённый видеоплагин: функции не найдены.</translation>
+        </message>
+        <message>
+            <source>incompatible Audio plugin</source>
+            <translation>несовместимый звуковой плагин</translation>
+        </message>
+        <message>
+            <source>incompatible Input plugin</source>
+            <translation>несовместимый плагин ввода</translation>
+        </message>
+        <message>
+            <source>incompatible RSP plugin</source>
+            <translation>несовместимый RSP-плагин</translation>
+        </message>
+        <message>
+            <source>incompatible Video plugin</source>
+            <translation>несовместимый видеоплагин</translation>
+        </message>
+        <message>
+            <source>open_disk(): not a valid disk image</source>
+            <translation>open_disk(): недопустимый образ диска</translation>
+        </message>
+        <message>
+            <source>open_rom(): not a valid ROM image</source>
+            <translation>open_rom(): недопустимый образ ROM</translation>
+        </message>
+    </context>
+    <context>
         <name>CreateNetplaySessionDialog</name>
         <message>
             <source>Calculating...</source>
@@ -433,7 +764,7 @@ li.checked::marker { content: "\2612"; }
         <name>CreateNetplaySessionEmptyWidget</name>
         <message>
             <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;No ROMs were found.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can configure the ROM browser directory or refresh the ROM browser.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROM не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Вы можете настроить каталог ROM или обновить браузер ROM.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;ROM не найдены.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Вы можете настроить папку с ROM или обновить браузер ROM.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Form</source>
@@ -467,7 +798,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Failed to create temporary directory</source>
-            <translation>Не удалось создать временный каталог</translation>
+            <translation>Не удалось создать временную папку</translation>
         </message>
         <message>
             <source>Failed to download update file</source>
@@ -534,7 +865,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Capture Screenshot</source>
-            <translation>Сделать снимок экрана</translation>
+            <translation>Сделать скриншот</translation>
         </message>
         <message>
             <source>Controller Pak</source>
@@ -554,7 +885,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Full Screen</source>
-            <translation>Полный экран</translation>
+            <translation>Во весь экран</translation>
         </message>
         <message>
             <source>GS Button</source>
@@ -562,7 +893,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Hard Reset</source>
-            <translation>Жёсткий сброс</translation>
+            <translation>Жёсткая перезагрузка</translation>
         </message>
         <message>
             <source>Hotkeys</source>
@@ -594,7 +925,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Shutdown</source>
-            <translation>Остановить</translation>
+            <translation>Выключить</translation>
         </message>
         <message>
             <source>Slot 0</source>
@@ -638,7 +969,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>Speed Factor</source>
@@ -1201,7 +1532,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;About RMG</source>
-            <translation>&amp;О RMG</translation>
+            <translation>&amp;О программе RMG</translation>
         </message>
         <message>
             <source>&amp;Audio</source>
@@ -1249,7 +1580,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&amp;Hard Reset</source>
-            <translation>&amp;Жёсткий сброс</translation>
+            <translation>&amp;Жёсткая перезагрузка</translation>
         </message>
         <message>
             <source>&amp;Input</source>
@@ -1509,15 +1840,15 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Open 64DD Disk</source>
-            <translation>Открыть 64DD диск</translation>
+            <translation>Открыть диск 64DD</translation>
         </message>
         <message>
             <source>Open N64 ROM</source>
-            <translation>Открыть N64 ROM</translation>
+            <translation>Открыть ROM N64</translation>
         </message>
         <message>
             <source>Open N64 ROM or 64DD Disk</source>
-            <translation>Открыть N64 ROM или 64DD диск</translation>
+            <translation>Открыть ROM N64 или диск 64DD</translation>
         </message>
         <message>
             <source>Open Save State</source>
@@ -1589,7 +1920,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select ROM Directory</source>
-            <translation>Выбрать каталог ROM</translation>
+            <translation>Выбрать папку с ROM</translation>
         </message>
         <message>
             <source>Selected save slot: %1</source>
@@ -1693,61 +2024,6 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
-        <name>MainWindow_ORIGINAL</name>
-        <message>
-            <source>Error</source>
-            <translation>Ошибка</translation>
-        </message>
-        <message>
-            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
-            <translation>ROM и диски N64 (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>ROM N64 (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
-            <translation>Образ диска N64DD (*.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>Open 64DD Disk</source>
-            <translation>Открыть 64DD диск</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM</source>
-            <translation>Открыть N64 ROM</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM or 64DD Disk</source>
-            <translation>Открыть N64 ROM или 64DD диск</translation>
-        </message>
-        <message>
-            <source>Open Save State</source>
-            <translation>Открыть сохранение состояния</translation>
-        </message>
-        <message>
-            <source>Save State</source>
-            <translation>Сохранить состояние</translation>
-        </message>
-        <message>
-            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
-            <translation>Сохранения (*.dat *.state *.st* *.pj*);;Все файлы (*)</translation>
-        </message>
-        <message>
-            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
-            <translation>Сохранение состояния (*.state);;Project64 (*.pj);;Все файлы (*)</translation>
-        </message>
-        <message>
-            <source>Select ROM Directory</source>
-            <translation>Выбрать каталог ROM</translation>
-        </message>
-        <message>
-            <source>Slot %1</source>
-            <translation>Слот %1</translation>
-        </message>
-    </context>
-    <context>
         <name>NetplayCommon</name>
         <message>
             <source>Servers have not been configured</source>
@@ -1812,7 +2088,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Join</source>
-            <translation>Подключиться</translation>
+            <translation>Присоединиться</translation>
         </message>
         <message>
             <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
@@ -2100,7 +2376,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;No ROMs in supported formats were found.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Please select a directory with ROMs to begin.&lt;/p&gt;&lt;p&gt;ROMs in the following formats will be scanned and listed: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Не найдено ROM в поддерживаемых форматах.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Выберите каталог с ROM для начала работы.&lt;/p&gt;&lt;p&gt;Будут просканированы и показаны ROM в следующих форматах: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Не найдено ROM в поддерживаемых форматах.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Выберите папку с ROM для начала работы.&lt;/p&gt;&lt;p&gt;Будут просканированы и показаны ROM в следующих форматах: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Form</source>
@@ -2112,7 +2388,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Select ROM Directory...</source>
-            <translation>Выбрать каталог ROM...</translation>
+            <translation>Выбрать папку с ROM...</translation>
         </message>
     </context>
     <context>
@@ -2153,7 +2429,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Change ROM Directory...</source>
-            <translation>Сменить каталог ROM...</translation>
+            <translation>Сменить папку с ROM...</translation>
         </message>
         <message>
             <source>Cover Image (*.png *.jpeg *.jpg)</source>
@@ -2229,7 +2505,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Open ROM Directory</source>
-            <translation>Открыть каталог ROM</translation>
+            <translation>Открыть папку с ROM</translation>
         </message>
         <message>
             <source>Play Game</source>
@@ -2249,7 +2525,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Play Game with State</source>
-            <translation>Запустить игру со сохранением</translation>
+            <translation>Запустить игру с сохранением</translation>
         </message>
         <message>
             <source>ROM Information</source>
@@ -2463,7 +2739,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Audio Plugin</source>
-            <translation>Плагин звука</translation>
+            <translation>Звуковой плагин</translation>
         </message>
         <message>
             <source>Automatic</source>
@@ -2507,7 +2783,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Capture Screenshot</source>
-            <translation>Сделать снимок экрана</translation>
+            <translation>Сделать скриншот</translation>
         </message>
         <message>
             <source>Change</source>
@@ -2531,7 +2807,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Controller pak</source>
-            <translation>Контроллер Pak</translation>
+            <translation>Controller Pak</translation>
         </message>
         <message>
             <source>Core</source>
@@ -2559,7 +2835,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Directories</source>
-            <translation>Каталоги</translation>
+            <translation>Папки</translation>
         </message>
         <message>
             <source>Disk save type</source>
@@ -2603,7 +2879,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Full Screen</source>
-            <translation>Полный экран</translation>
+            <translation>Во весь экран</translation>
         </message>
         <message>
             <source>Fusion</source>
@@ -2627,7 +2903,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Good Name</source>
-            <translation>Корректное имя</translation>
+            <translation>Название GoodN64</translation>
         </message>
         <message>
             <source>Graphics</source>
@@ -2635,7 +2911,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Hard Reset</source>
-            <translation>Жёсткий сброс</translation>
+            <translation>Жёсткая перезагрузка</translation>
         </message>
         <message>
             <source>Hide cursor during emulation</source>
@@ -2655,7 +2931,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>IPL ROMs (*.n64)</source>
-            <translation>ROM IPL (*.n64)</translation>
+            <translation>IPL ROM (*.n64)</translation>
         </message>
         <message>
             <source>Icon theme</source>
@@ -2803,7 +3079,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>PIF ROMs (*.rom)</source>
-            <translation>ROM PIF (*.rom)</translation>
+            <translation>PIF ROM (*.rom)</translation>
         </message>
         <message>
             <source>Pause</source>
@@ -2883,11 +3159,11 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Save (SRAM) Directory</source>
-            <translation>Каталог сохранений (SRAM)</translation>
+            <translation>Папка сохранений (SRAM)</translation>
         </message>
         <message>
             <source>Save (State) Directory</source>
-            <translation>Каталог сохранений (State)</translation>
+            <translation>Папка сохранений (состояний)</translation>
         </message>
         <message>
             <source>Save As</source>
@@ -2907,7 +3183,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Screenshot Directory</source>
-            <translation>Каталог скриншотов</translation>
+            <translation>Папка скриншотов</translation>
         </message>
         <message>
             <source>Search</source>
@@ -2915,19 +3191,19 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Search sub-directories</source>
-            <translation>Искать в подкаталогах</translation>
+            <translation>Искать во вложенных папках</translation>
         </message>
         <message>
             <source>Select Save (SRAM) Directory</source>
-            <translation>Выбрать каталог сохранений (SRAM)</translation>
+            <translation>Выбрать папку сохранений (SRAM)</translation>
         </message>
         <message>
             <source>Select Save (State) Directory</source>
-            <translation>Выбрать каталог сохранений (State)</translation>
+            <translation>Выбрать папку сохранений (состояний)</translation>
         </message>
         <message>
             <source>Select Screenshot Directory</source>
-            <translation>Выбрать каталог скриншотов</translation>
+            <translation>Выбрать папку скриншотов</translation>
         </message>
         <message>
             <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
@@ -2947,7 +3223,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Shutdown</source>
-            <translation>Остановить</translation>
+            <translation>Выключить</translation>
         </message>
         <message>
             <source>Slot 0</source>
@@ -2991,7 +3267,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Soft Reset</source>
-            <translation>Мягкий сброс</translation>
+            <translation>Сброс</translation>
         </message>
         <message>
             <source>SoftRDP-Mupen64Plus</source>
@@ -3055,7 +3331,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Video Plugin</source>
-            <translation>Плагин видео</translation>
+            <translation>Видеоплагин</translation>
         </message>
         <message>
             <source>Video capture backend</source>

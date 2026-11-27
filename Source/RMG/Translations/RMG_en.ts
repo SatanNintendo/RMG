@@ -394,6 +394,337 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
+        <name>CoreMessage</name>
+        <message>
+            <source>Captured screenshot for frame %i.</source>
+            <translation>Captured screenshot for frame %i.</translation>
+        </message>
+        <message>
+            <source>Controller %u pak changed to %s</source>
+            <translation>Controller %u pak changed to %s</translation>
+        </message>
+        <message>
+            <source>Could not create PJ64 state file: %s</source>
+            <translation>Could not create PJ64 state file: %s</translation>
+        </message>
+        <message>
+            <source>Could not open state file %s</source>
+            <translation>Could not open state file %s</translation>
+        </message>
+        <message>
+            <source>Could not open state file: %s</source>
+            <translation>Could not open state file: %s</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.0 data from %s</source>
+            <translation>Could not read Mupen64Plus savestate 1.0 data from %s</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.1 data from %s</source>
+            <translation>Could not read Mupen64Plus savestate 1.1 data from %s</translation>
+        </message>
+        <message>
+            <source>Could not read Mupen64Plus savestate 1.2+ data from %s</source>
+            <translation>Could not read Mupen64Plus savestate 1.2+ data from %s</translation>
+        </message>
+        <message>
+            <source>Could not read from state file %s</source>
+            <translation>Could not read from state file %s</translation>
+        </message>
+        <message>
+            <source>Could not read header from Project64 savestate %s</source>
+            <translation>Could not read header from Project64 savestate %s</translation>
+        </message>
+        <message>
+            <source>Could not read header from state file %s</source>
+            <translation>Could not read header from state file %s</translation>
+        </message>
+        <message>
+            <source>Could not read savestate data from Project64 savestate %s</source>
+            <translation>Could not read savestate data from Project64 savestate %s</translation>
+        </message>
+        <message>
+            <source>Could not write data to state file: %s</source>
+            <translation>Could not write data to state file: %s</translation>
+        </message>
+        <message>
+            <source>Couldn't write data to Project64 state file %s.</source>
+            <translation>Couldn't write data to Project64 state file %s.</translation>
+        </message>
+        <message>
+            <source>Disk closed.</source>
+            <translation>Disk closed.</translation>
+        </message>
+        <message>
+            <source>Emulation continued.</source>
+            <translation>Emulation continued.</translation>
+        </message>
+        <message>
+            <source>Emulation paused.</source>
+            <translation>Emulation paused.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk RAM area (*.ram): %s.</source>
+            <translation>Failed to load DD Disk RAM area (*.ram): %s.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk save: %s.</source>
+            <translation>Failed to load DD Disk save: %s.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD Disk: %s.</source>
+            <translation>Failed to load DD Disk: %s.</translation>
+        </message>
+        <message>
+            <source>Failed to load DD IPL ROM: %s. Disabling 64DD</source>
+            <translation>Failed to load DD IPL ROM: %s. Disabling 64DD</translation>
+        </message>
+        <message>
+            <source>Failed to load ROM file: %s</source>
+            <translation>Failed to load ROM file: %s</translation>
+        </message>
+        <message>
+            <source>Failed to open savestate file %s</source>
+            <translation>Failed to open savestate file %s</translation>
+        </message>
+        <message>
+            <source>Game controller %u (%s) has a %s plugged in</source>
+            <translation>Game controller %u (%s) has a %s plugged in</translation>
+        </message>
+        <message>
+            <source>Game controller %u (%s) has nothing plugged in</source>
+            <translation>Game controller %u (%s) has nothing plugged in</translation>
+        </message>
+        <message>
+            <source>Initializing %u RDRAM modules for a total of %u MB</source>
+            <translation>Initializing %u RDRAM modules for a total of %u MB</translation>
+        </message>
+        <message>
+            <source>Inserting GB cart %s into transferpak %u</source>
+            <translation>Inserting GB cart %s into transferpak %u</translation>
+        </message>
+        <message>
+            <source>Insufficient memory to load state.</source>
+            <translation>Insufficient memory to load state.</translation>
+        </message>
+        <message>
+            <source>Insufficient memory to save state.</source>
+            <translation>Insufficient memory to save state.</translation>
+        </message>
+        <message>
+            <source>Invalid DD IPL ROM: Disabling 64DD.</source>
+            <translation>Invalid DD IPL ROM: Disabling 64DD.</translation>
+        </message>
+        <message>
+            <source>Invalid PIF ROM</source>
+            <translation>Invalid PIF ROM</translation>
+        </message>
+        <message>
+            <source>Invalid Project64 state RDRAM size.</source>
+            <translation>Invalid Project64 state RDRAM size.</translation>
+        </message>
+        <message>
+            <source>Invalid event queue in savestate: %s</source>
+            <translation>Invalid event queue in savestate: %s</translation>
+        </message>
+        <message>
+            <source>Invalid speed setting %i percent</source>
+            <translation>Invalid speed setting %i percent</translation>
+        </message>
+        <message>
+            <source>Loading a saved disk</source>
+            <translation>Loading a saved disk</translation>
+        </message>
+        <message>
+            <source>No Mupen64Plus/PJ64 state file found for slot %i</source>
+            <translation>No Mupen64Plus/PJ64 state file found for slot %i</translation>
+        </message>
+        <message>
+            <source>No RSP plugin attached.  The video output will be corrupted.</source>
+            <translation>No RSP plugin attached.  The video output will be corrupted.</translation>
+        </message>
+        <message>
+            <source>No audio plugin attached.  There will be no sound output.</source>
+            <translation>No audio plugin attached.  There will be no sound output.</translation>
+        </message>
+        <message>
+            <source>No input plugin attached.  You won't be able to control the game.</source>
+            <translation>No input plugin attached.  You won't be able to control the game.</translation>
+        </message>
+        <message>
+            <source>No video plugin attached.  There will be no video output.</source>
+            <translation>No video plugin attached.  There will be no video output.</translation>
+        </message>
+        <message>
+            <source>Playback speed: %d%%</source>
+            <translation>Playback speed: %d%%</translation>
+        </message>
+        <message>
+            <source>Providing default RAM content</source>
+            <translation>Providing default RAM content</translation>
+        </message>
+        <message>
+            <source>R4300 emulator finished.</source>
+            <translation>R4300 emulator finished.</translation>
+        </message>
+        <message>
+            <source>Removing GB cart from transferpak %u</source>
+            <translation>Removing GB cart from transferpak %u</translation>
+        </message>
+        <message>
+            <source>Removing pak from controller %u</source>
+            <translation>Removing pak from controller %u</translation>
+        </message>
+        <message>
+            <source>Rom closed.</source>
+            <translation>Rom closed.</translation>
+        </message>
+        <message>
+            <source>Saved state to: %s</source>
+            <translation>Saved state to: %s</translation>
+        </message>
+        <message>
+            <source>Selected state slot: %d</source>
+            <translation>Selected state slot: %d</translation>
+        </message>
+        <message>
+            <source>Setting %i-bit video mode: %ix%i</source>
+            <translation>Setting %i-bit video mode: %ix%i</translation>
+        </message>
+        <message>
+            <source>Setting video mode: %ix%i</source>
+            <translation>Setting video mode: %ix%i</translation>
+        </message>
+        <message>
+            <source>Speed limiter disabled</source>
+            <translation>Speed limiter disabled</translation>
+        </message>
+        <message>
+            <source>Speed limiter enabled</source>
+            <translation>Speed limiter enabled</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Cached Interpreter</source>
+            <translation>Starting R4300 emulator: Cached Interpreter</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Dynamic Recompiler</source>
+            <translation>Starting R4300 emulator: Dynamic Recompiler</translation>
+        </message>
+        <message>
+            <source>Starting R4300 emulator: Pure Interpreter</source>
+            <translation>Starting R4300 emulator: Pure Interpreter</translation>
+        </message>
+        <message>
+            <source>State ROM MD5 does not match current ROM.</source>
+            <translation>State ROM MD5 does not match current ROM.</translation>
+        </message>
+        <message>
+            <source>State ROM header does not match current ROM.</source>
+            <translation>State ROM header does not match current ROM.</translation>
+        </message>
+        <message>
+            <source>State file: %s is not a valid Mupen64plus savestate.</source>
+            <translation>State file: %s is not a valid Mupen64plus savestate.</translation>
+        </message>
+        <message>
+            <source>State file: %s is not a valid Project64 savestate. Unrecognized file format.</source>
+            <translation>State file: %s is not a valid Project64 savestate. Unrecognized file format.</translation>
+        </message>
+        <message>
+            <source>State loaded from: %s</source>
+            <translation>State loaded from: %s</translation>
+        </message>
+        <message>
+            <source>State version (%08x) isn't compatible. Please update Mupen64Plus.</source>
+            <translation>State version (%08x) isn't compatible. Please update Mupen64Plus.</translation>
+        </message>
+        <message>
+            <source>Stopping emulation.</source>
+            <translation>Stopping emulation.</translation>
+        </message>
+        <message>
+            <source>Unknown state file type %s</source>
+            <translation>Unknown state file type %s</translation>
+        </message>
+        <message>
+            <source>Using CIC type %s</source>
+            <translation>Using CIC type %s</translation>
+        </message>
+        <message>
+            <source>Using NTSC PIF ROM</source>
+            <translation>Using NTSC PIF ROM</translation>
+        </message>
+        <message>
+            <source>Using PAL PIF ROM</source>
+            <translation>Using PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>Using video capture backend: %s</source>
+            <translation>Using video capture backend: %s</translation>
+        </message>
+        <message>
+            <source>Video closed</source>
+            <translation>Video closed</translation>
+        </message>
+        <message>
+            <source>Video successfully opened: %s</source>
+            <translation>Video successfully opened: %s</translation>
+        </message>
+        <message>
+            <source>Wrong disk format</source>
+            <translation>Wrong disk format</translation>
+        </message>
+        <message>
+            <source>Zip error. Could not create state file: %s</source>
+            <translation>Zip error. Could not create state file: %s</translation>
+        </message>
+        <message>
+            <source>Zip error. Could not open state file: %s</source>
+            <translation>Zip error. Could not open state file: %s</translation>
+        </message>
+        <message>
+            <source>broken Audio plugin; function(s) not found.</source>
+            <translation>broken Audio plugin; function(s) not found.</translation>
+        </message>
+        <message>
+            <source>broken Input plugin; function(s) not found.</source>
+            <translation>broken Input plugin; function(s) not found.</translation>
+        </message>
+        <message>
+            <source>broken RSP plugin; function(s) not found.</source>
+            <translation>broken RSP plugin; function(s) not found.</translation>
+        </message>
+        <message>
+            <source>broken Video plugin; function(s) not found.</source>
+            <translation>broken Video plugin; function(s) not found.</translation>
+        </message>
+        <message>
+            <source>incompatible Audio plugin</source>
+            <translation>incompatible Audio plugin</translation>
+        </message>
+        <message>
+            <source>incompatible Input plugin</source>
+            <translation>incompatible Input plugin</translation>
+        </message>
+        <message>
+            <source>incompatible RSP plugin</source>
+            <translation>incompatible RSP plugin</translation>
+        </message>
+        <message>
+            <source>incompatible Video plugin</source>
+            <translation>incompatible Video plugin</translation>
+        </message>
+        <message>
+            <source>open_disk(): not a valid disk image</source>
+            <translation>open_disk(): not a valid disk image</translation>
+        </message>
+        <message>
+            <source>open_rom(): not a valid ROM image</source>
+            <translation>open_rom(): not a valid ROM image</translation>
+        </message>
+    </context>
+    <context>
         <name>CreateNetplaySessionDialog</name>
         <message>
             <source>Calculating...</source>
@@ -1708,58 +2039,14 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
-        <name>MainWindow_ORIGINAL</name>
+        <name>NetplayCommon</name>
         <message>
-            <source>Error</source>
-            <translation>Error</translation>
+            <source>Servers have not been configured</source>
+            <translation>Servers have not been configured</translation>
         </message>
         <message>
-            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
-            <translation>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
-            <translation>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>Open 64DD Disk</source>
-            <translation>Open 64DD Disk</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM</source>
-            <translation>Open N64 ROM</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM or 64DD Disk</source>
-            <translation>Open N64 ROM or 64DD Disk</translation>
-        </message>
-        <message>
-            <source>Open Save State</source>
-            <translation>Open Save State</translation>
-        </message>
-        <message>
-            <source>Save State</source>
-            <translation>Save State</translation>
-        </message>
-        <message>
-            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
-            <translation>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</translation>
-        </message>
-        <message>
-            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
-            <translation>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</translation>
-        </message>
-        <message>
-            <source>Select ROM Directory</source>
-            <translation>Select ROM Directory</translation>
-        </message>
-        <message>
-            <source>Slot %1</source>
-            <translation>Slot %1</translation>
+            <source>You can configure the server list in the netplay tab of the settings dialog</source>
+            <translation>You can configure the server list in the netplay tab of the settings dialog</translation>
         </message>
     </context>
     <context>

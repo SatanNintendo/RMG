@@ -29,6 +29,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.9.1.2" date="2026-11-27" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Complete Russian translation, including GLideN64 and the status bar messages of the core</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.9.1.1" date="2026-11-04" type="stable">
       <description>
         <p>Changes:</p>
