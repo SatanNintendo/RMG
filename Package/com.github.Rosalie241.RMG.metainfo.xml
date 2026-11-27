@@ -5,6 +5,7 @@
   <id>com.github.Rosalie241.RMG</id>
   <name>Rosalie's Mupen GUI</name>
   <summary>Play Nintendo 64 games easily</summary>
+  <summary xml:lang="ru">Играйте в игры Nintendo 64 без лишних сложностей</summary>
   <developer id="com.github.rosalie241">
     <name>Rosalie</name>
   </developer>
@@ -13,6 +14,7 @@
   <update_contact>rosalie@mailbox.org</update_contact>
   <description>
     <p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play Nintendo 64 games.</p>
+    <p xml:lang="ru">Rosalie's Mupen GUI — простой в использовании и гибко настраиваемый интерфейс для mupen64plus, позволяющий легко играть в игры Nintendo 64.</p>
   </description>
   <screenshots>
     <screenshot type="default">
