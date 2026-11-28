@@ -774,9 +774,9 @@ TRANSLATIONS = {
 # Source/RMG/Utilities/CoreMessageTranslator.cpp (context "CoreMessage").
 # %1, %2, ... are the printf arguments of the core message in order.
 TRANSLATIONS.update({
-    "Emulation continued.": "Эмуляция продолжена.",
+    "Emulation continued.": "Эмуляция возобновлена.",
     "Emulation paused.": "Эмуляция приостановлена.",
-    "Stopping emulation.": "Остановка эмуляции.",
+    "Stopping emulation.": "Эмуляция остановлена.",
     "Rom closed.": "ROM закрыт.",
     "Disk closed.": "Диск закрыт.",
     "Speed limiter enabled": "Ограничитель скорости включён",
@@ -830,6 +830,22 @@ TRANSLATIONS.update({
     "Setting video mode: %ix%i": "Установка видеорежима: %1x%2",
     "Setting %i-bit video mode: %ix%i": "Установка %1-битного видеорежима: %2x%3",
     "Video closed": "Видео закрыто",
+    "Init new dynarec": "Инициализация нового динамического рекомпилятора",
+    "Using compressed mem base": "Используется сжатая база памяти",
+    "Using full mem base": "Используется полная база памяти",
+    "Goodname: %s": "Название GoodN64: %1",
+    "Name: %s": "Название: %1",
+    "MD5: %s": "MD5: %1",
+    "CRC: %08X %08X": "CRC: %1 %2",
+    "Imagetype: %s": "Формат образа: %1",
+    "Rom size: %d bytes (or %d Mb or %d Megabits)": "Размер ROM: %1 байт (%2 МБ или %3 Мбит)",
+    "Version: %X": "Версия: %1",
+    "Manufacturer: Nintendo": "Производитель: Nintendo",
+    "Manufacturer: %X": "Производитель: %1",
+    "Country: %s": "Страна: %1",
+    "Could not open state file %s": "Не удалось открыть файл состояния %1",
+    "Could not read from state file %s": "Не удалось прочитать файл состояния %1",
+    "Unknown state file type %s": "Неизвестный тип файла состояния %1",
     "Video successfully opened: %s": "Видео успешно открыто: %1",
     "Using video capture backend: %s": "Используется бэкенд видеозахвата: %1",
     "Loading a saved disk": "Загрузка сохранённого диска",
@@ -875,11 +891,68 @@ def extract_ui_strings(ui_path):
         # Use itertext to get ALL text content including child elements
         # (for rich text HTML). Then join and strip.
         parts = list(string_elem.itertext())
-        text = "".join(parts).strip()
+        raw = "".join(parts)
+        text = raw.strip()
         if text:
+            # uic emits the string exactly as written, so plain one-line
+            # strings with padding (e.g. "Start: ", " px") must keep it,
+            # otherwise the runtime lookup never matches.
+            if raw != text and "\n" not in raw and not text.startswith("<"):
+                text = raw
             strings.append(text)
 
     return context, strings
+
+
+def qualify_class_name(cpp_path, class_name):
+    """Return the context Qt really uses for tr() in this class.
+
+    QObject::tr() uses staticMetaObject.className(), which moc emits WITH the
+    enclosing namespaces (e.g. "UserInterface::Widget::RomBrowserLoadingWidget"),
+    so a bare class name never matches at runtime.  .ui files are different:
+    uic emits the bare <class> name, which is why they are not qualified here.
+    """
+    cpp = Path(cpp_path)
+    candidates = [cpp.with_suffix(".hpp"), cpp.with_suffix(".h"), cpp]
+    decl = re.compile(r'^\s*(?:class|struct)\s+' + re.escape(class_name) + r'\b[^;]*$')
+    for cand in candidates:
+        if not cand.exists():
+            continue
+        stack = []          # (namespace name, brace depth at which it opened)
+        depth = 0
+        pending = None
+        in_block_comment = False
+        for line in cand.read_text(encoding="utf-8", errors="replace").splitlines():
+            code = line
+            if in_block_comment:
+                if "*/" not in code:
+                    continue
+                code = code.split("*/", 1)[1]
+                in_block_comment = False
+            code = re.sub(r'/\*.*?\*/', '', code)
+            if "/*" in code:
+                code = code.split("/*", 1)[0]
+                in_block_comment = True
+            code = code.split("//", 1)[0]
+            m = re.match(r'^\s*(?:inline\s+)?namespace\s+(\w+)\s*(\{)?', code)
+            if m:
+                pending = m.group(1)
+                if m.group(2):
+                    stack.append((pending, depth))
+                    depth += 1
+                    pending = None
+                continue
+            if pending and code.strip().startswith("{"):
+                stack.append((pending, depth))
+                pending = None
+                depth += 1
+                continue
+            if decl.match(code) and cand.suffix in (".hpp", ".h"):
+                return "::".join([n for n, _ in stack] + [class_name])
+            depth += code.count("{") - code.count("}")
+            while stack and depth <= stack[-1][1]:
+                stack.pop()
+    return class_name
 
 
 def extract_cpp_tr_strings(cpp_path):
@@ -890,6 +963,8 @@ def extract_cpp_tr_strings(cpp_path):
     m = re.search(r'^class\s+(\w+)\s*:', text, re.MULTILINE)
     if m:
         class_name = m.group(1)
+
+    class_name = qualify_class_name(cpp_path, class_name)
 
     results = []
     pattern = r'\btr\s*\(\s*"((?:[^"\\]|\\.)*)"\s*[,)]'
@@ -931,6 +1006,14 @@ def translate_source(context, source):
     """Return a translation or None when the source still needs review."""
     if source in TRANSLATIONS:
         return TRANSLATIONS[source]
+
+    # Padded plain strings (" px", "Start: "): reuse the stripped entry and
+    # keep the original leading/trailing whitespace.
+    stripped = source.strip()
+    if stripped != source and stripped in TRANSLATIONS:
+        lead = source[:len(source) - len(source.lstrip())]
+        trail = source[len(source.rstrip()):]
+        return lead + TRANSLATIONS[stripped] + trail
 
     # AboutDialog stores several paragraphs as a single rich-text string.
     # Translate only the human-readable copy and preserve its HTML, links,

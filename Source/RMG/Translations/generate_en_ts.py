@@ -54,11 +54,68 @@ def extract_ui_strings(ui_path):
         # Use itertext to capture all text content (including HTML child
         # elements). Join, then strip whitespace.
         parts = list(string_elem.itertext())
-        text = "".join(parts).strip()
+        raw = "".join(parts)
+        text = raw.strip()
         if text:
+            # uic emits the string exactly as written, so plain one-line
+            # strings with padding (e.g. "Start: ", " px") must keep it,
+            # otherwise the runtime lookup never matches.
+            if raw != text and "\n" not in raw and not text.startswith("<"):
+                text = raw
             strings.append(text)
 
     return context, strings
+
+
+def qualify_class_name(cpp_path, class_name):
+    """Return the context Qt really uses for tr() in this class.
+
+    QObject::tr() uses staticMetaObject.className(), which moc emits WITH the
+    enclosing namespaces (e.g. "UserInterface::Widget::RomBrowserLoadingWidget"),
+    so a bare class name never matches at runtime.  .ui files are different:
+    uic emits the bare <class> name, which is why they are not qualified here.
+    """
+    cpp = Path(cpp_path)
+    candidates = [cpp.with_suffix(".hpp"), cpp.with_suffix(".h"), cpp]
+    decl = re.compile(r'^\s*(?:class|struct)\s+' + re.escape(class_name) + r'\b[^;]*$')
+    for cand in candidates:
+        if not cand.exists():
+            continue
+        stack = []          # (namespace name, brace depth at which it opened)
+        depth = 0
+        pending = None
+        in_block_comment = False
+        for line in cand.read_text(encoding="utf-8", errors="replace").splitlines():
+            code = line
+            if in_block_comment:
+                if "*/" not in code:
+                    continue
+                code = code.split("*/", 1)[1]
+                in_block_comment = False
+            code = re.sub(r'/\*.*?\*/', '', code)
+            if "/*" in code:
+                code = code.split("/*", 1)[0]
+                in_block_comment = True
+            code = code.split("//", 1)[0]
+            m = re.match(r'^\s*(?:inline\s+)?namespace\s+(\w+)\s*(\{)?', code)
+            if m:
+                pending = m.group(1)
+                if m.group(2):
+                    stack.append((pending, depth))
+                    depth += 1
+                    pending = None
+                continue
+            if pending and code.strip().startswith("{"):
+                stack.append((pending, depth))
+                pending = None
+                depth += 1
+                continue
+            if decl.match(code) and cand.suffix in (".hpp", ".h"):
+                return "::".join([n for n, _ in stack] + [class_name])
+            depth += code.count("{") - code.count("}")
+            while stack and depth <= stack[-1][1]:
+                stack.pop()
+    return class_name
 
 
 def extract_cpp_tr_strings(cpp_path):
@@ -72,6 +129,7 @@ def extract_cpp_tr_strings(cpp_path):
     m = re.search(r'^class\s+(\w+)\s*:', text, re.MULTILINE)
     if m:
         class_name = m.group(1)
+    class_name = qualify_class_name(cpp_path, class_name)
 
     results = []
     # Match tr("...") or tr("...", "...") — only captures the first

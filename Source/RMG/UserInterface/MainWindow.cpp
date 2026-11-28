@@ -2822,7 +2822,10 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
     {
         if (messages[i].Context.startsWith("[CORE]") &&
             messages[i].Type != CoreDebugMessageType::Verbose &&
-            !messages[i].Message.startsWith("IS64:"))
+            !messages[i].Message.startsWith("IS64:") &&
+            // the core logs "Video closed" right after "Stopping emulation.",
+            // it would replace the more useful message in the status bar
+            messages[i].Message != "Video closed")
         {
             statusbarMessage = messages[i];
             break;

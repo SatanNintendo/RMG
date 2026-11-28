@@ -168,22 +168,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Code:</translation>
         </message>
         <message>
-            <source>CoreAddCheat() Failed</source>
-            <translation>CoreAddCheat() Failed</translation>
-        </message>
-        <message>
-            <source>CoreParseCheat() Failed</source>
-            <translation>CoreParseCheat() Failed</translation>
-        </message>
-        <message>
-            <source>CoreUpdateCheat() Failed</source>
-            <translation>CoreUpdateCheat() Failed</translation>
-        </message>
-        <message>
-            <source>Edit Cheat</source>
-            <translation>Edit Cheat</translation>
-        </message>
-        <message>
             <source>Name</source>
             <translation>Name</translation>
         </message>
@@ -195,10 +179,6 @@ li.checked::marker { content: "\2612"; }
             <source>Options:</source>
             <translation>Options:</translation>
         </message>
-        <message>
-            <source>Validating Cheat Failed</source>
-            <translation>Validating Cheat Failed</translation>
-        </message>
     </context>
     <context>
         <name>CheatsDialog</name>
@@ -209,18 +189,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Cheats</source>
             <translation>Cheats</translation>
-        </message>
-        <message>
-            <source>CoreApplyCheats() Failed</source>
-            <translation>CoreApplyCheats() Failed</translation>
-        </message>
-        <message>
-            <source>CoreGetCurrentCheats() Failed</source>
-            <translation>CoreGetCurrentCheats() Failed</translation>
-        </message>
-        <message>
-            <source>CoreRemoveCheat() Failed</source>
-            <translation>CoreRemoveCheat() Failed</translation>
         </message>
         <message>
             <source>Edit</source>
@@ -249,10 +217,6 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>ControllerWidget</name>
         <message>
-            <source> (not found)</source>
-            <translation> (not found)</translation>
-        </message>
-        <message>
             <source>+</source>
             <translation>+</translation>
         </message>
@@ -273,16 +237,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Analog Stick</translation>
         </message>
         <message>
-            <source>Analog Stick Sensitivity: </source>
-            <translation>Analog Stick Sensitivity: </translation>
-        </message>
-        <message>
             <source>Analog Stick Sensitivity: 100%</source>
             <translation>Analog Stick Sensitivity: 100%</translation>
-        </message>
-        <message>
-            <source>Are you sure you want to clear the main profile?</source>
-            <translation>Are you sure you want to clear the main profile?</translation>
         </message>
         <message>
             <source>Auto-Configure</source>
@@ -301,14 +257,6 @@ li.checked::marker { content: "\2612"; }
             <translation>ControllerWidget</translation>
         </message>
         <message>
-            <source>Create New Profile</source>
-            <translation>Create New Profile</translation>
-        </message>
-        <message>
-            <source>Deadzone: %1%</source>
-            <translation>Deadzone: %1%</translation>
-        </message>
-        <message>
             <source>Deadzone: 25%</source>
             <translation>Deadzone: 25%</translation>
         </message>
@@ -321,10 +269,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Down:</translation>
         </message>
         <message>
-            <source>Error</source>
-            <translation>Error</translation>
-        </message>
-        <message>
             <source>Hotkeys</source>
             <translation>Hotkeys</translation>
         </message>
@@ -333,16 +277,12 @@ li.checked::marker { content: "\2612"; }
             <translation>Input Device</translation>
         </message>
         <message>
-            <source>L-Shoulder:</source>
-            <translation>L-Shoulder:</translation>
+            <source>L-Shoulder: </source>
+            <translation>L-Shoulder: </translation>
         </message>
         <message>
             <source>Left:</source>
             <translation>Left:</translation>
-        </message>
-        <message>
-            <source>New profile name:</source>
-            <translation>New profile name:</translation>
         </message>
         <message>
             <source>Options</source>
@@ -353,16 +293,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Profile</translation>
         </message>
         <message>
-            <source>Profile name cannot contain ';', '[' or ']'!</source>
-            <translation>Profile name cannot contain ';', '[' or ']'!</translation>
-        </message>
-        <message>
-            <source>Profile with the same name already exists!</source>
-            <translation>Profile with the same name already exists!</translation>
-        </message>
-        <message>
-            <source>R-Shoulder:</source>
-            <translation>R-Shoulder:</translation>
+            <source>R-Shoulder: </source>
+            <translation>R-Shoulder: </translation>
         </message>
         <message>
             <source>Refresh</source>
@@ -381,20 +313,24 @@ li.checked::marker { content: "\2612"; }
             <translation>Right:</translation>
         </message>
         <message>
-            <source>Start:</source>
-            <translation>Start:</translation>
+            <source>Start: </source>
+            <translation>Start: </translation>
         </message>
         <message>
             <source>Up:</source>
             <translation>Up:</translation>
         </message>
         <message>
-            <source>Z-Trigger:</source>
-            <translation>Z-Trigger:</translation>
+            <source>Z-Trigger: </source>
+            <translation>Z-Trigger: </translation>
         </message>
     </context>
     <context>
         <name>CoreMessage</name>
+        <message>
+            <source>CRC: %08X %08X</source>
+            <translation>CRC: %08X %08X</translation>
+        </message>
         <message>
             <source>Captured screenshot for frame %i.</source>
             <translation>Captured screenshot for frame %i.</translation>
@@ -452,6 +388,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Couldn't write data to Project64 state file %s.</translation>
         </message>
         <message>
+            <source>Country: %s</source>
+            <translation>Country: %s</translation>
+        </message>
+        <message>
             <source>Disk closed.</source>
             <translation>Disk closed.</translation>
         </message>
@@ -496,6 +436,18 @@ li.checked::marker { content: "\2612"; }
             <translation>Game controller %u (%s) has nothing plugged in</translation>
         </message>
         <message>
+            <source>Goodname: %s</source>
+            <translation>Goodname: %s</translation>
+        </message>
+        <message>
+            <source>Imagetype: %s</source>
+            <translation>Imagetype: %s</translation>
+        </message>
+        <message>
+            <source>Init new dynarec</source>
+            <translation>Init new dynarec</translation>
+        </message>
+        <message>
             <source>Initializing %u RDRAM modules for a total of %u MB</source>
             <translation>Initializing %u RDRAM modules for a total of %u MB</translation>
         </message>
@@ -534,6 +486,22 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Loading a saved disk</source>
             <translation>Loading a saved disk</translation>
+        </message>
+        <message>
+            <source>MD5: %s</source>
+            <translation>MD5: %s</translation>
+        </message>
+        <message>
+            <source>Manufacturer: %X</source>
+            <translation>Manufacturer: %X</translation>
+        </message>
+        <message>
+            <source>Manufacturer: Nintendo</source>
+            <translation>Manufacturer: Nintendo</translation>
+        </message>
+        <message>
+            <source>Name: %s</source>
+            <translation>Name: %s</translation>
         </message>
         <message>
             <source>No Mupen64Plus/PJ64 state file found for slot %i</source>
@@ -578,6 +546,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Rom closed.</source>
             <translation>Rom closed.</translation>
+        </message>
+        <message>
+            <source>Rom size: %d bytes (or %d Mb or %d Megabits)</source>
+            <translation>Rom size: %d bytes (or %d Mb or %d Megabits)</translation>
         </message>
         <message>
             <source>Saved state to: %s</source>
@@ -660,8 +632,20 @@ li.checked::marker { content: "\2612"; }
             <translation>Using PAL PIF ROM</translation>
         </message>
         <message>
+            <source>Using compressed mem base</source>
+            <translation>Using compressed mem base</translation>
+        </message>
+        <message>
+            <source>Using full mem base</source>
+            <translation>Using full mem base</translation>
+        </message>
+        <message>
             <source>Using video capture backend: %s</source>
             <translation>Using video capture backend: %s</translation>
+        </message>
+        <message>
+            <source>Version: %X</source>
+            <translation>Version: %X</translation>
         </message>
         <message>
             <source>Video closed</source>
@@ -727,28 +711,8 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>CreateNetplaySessionDialog</name>
         <message>
-            <source>Calculating...</source>
-            <translation>Calculating...</translation>
-        </message>
-        <message>
-            <source>Connection Failed</source>
-            <translation>Connection Failed</translation>
-        </message>
-        <message>
-            <source>Create</source>
-            <translation>Create</translation>
-        </message>
-        <message>
             <source>Create Netplay Session</source>
             <translation>Create Netplay Session</translation>
-        </message>
-        <message>
-            <source>Failed to open server list json: %1</source>
-            <translation>Failed to open server list json: %1</translation>
-        </message>
-        <message>
-            <source>Failed to retrieve server list json: %1</source>
-            <translation>Failed to retrieve server list json: %1</translation>
         </message>
         <message>
             <source>Nickname</source>
@@ -761,10 +725,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Server</source>
             <translation>Server</translation>
-        </message>
-        <message>
-            <source>Server Error</source>
-            <translation>Server Error</translation>
         </message>
         <message>
             <source>Server ping</source>
@@ -787,22 +747,7 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
-        <name>CreateNetplaySessionWidget</name>
-        <message>
-            <source>Creating server</source>
-            <translation>Creating server</translation>
-        </message>
-    </context>
-    <context>
         <name>DownloadUpdateDialog</name>
-        <message>
-            <source>APPIMAGE variable is empty or invalid</source>
-            <translation>APPIMAGE variable is empty or invalid</translation>
-        </message>
-        <message>
-            <source>Downloading %1...</source>
-            <translation>Downloading %1...</translation>
-        </message>
         <message>
             <source>Downloading ...</source>
             <translation>Downloading ...</translation>
@@ -810,22 +755,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Downloading Update</source>
             <translation>Downloading Update</translation>
-        </message>
-        <message>
-            <source>Failed to create temporary directory</source>
-            <translation>Failed to create temporary directory</translation>
-        </message>
-        <message>
-            <source>Failed to download update file</source>
-            <translation>Failed to download update file</translation>
-        </message>
-        <message>
-            <source>QFile::open() Failed</source>
-            <translation>QFile::open() Failed</translation>
-        </message>
-        <message>
-            <source>std::rename() Failed</source>
-            <translation>std::rename() Failed</translation>
         </message>
     </context>
     <context>
@@ -1014,43 +943,12 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>InstallUpdateDialog</name>
         <message>
-            <source>CoreUnzip() Failed</source>
-            <translation>CoreUnzip() Failed</translation>
-        </message>
-        <message>
-            <source>Executing %1...</source>
-            <translation>Executing %1...</translation>
-        </message>
-        <message>
-            <source>Executing update script...</source>
-            <translation>Executing update script...</translation>
-        </message>
-        <message>
-            <source>Extracting %1...</source>
-            <translation>Extracting %1...</translation>
-        </message>
-        <message>
             <source>Installing Update</source>
             <translation>Installing Update</translation>
         </message>
         <message>
             <source>Installing...</source>
             <translation>Installing...</translation>
-        </message>
-        <message>
-            <source>QDir::mkdir() Failed</source>
-            <translation>QDir::mkdir() Failed</translation>
-        </message>
-        <message>
-            <source>QFile::open() Failed</source>
-            <translation>QFile::open() Failed</translation>
-        </message>
-    </context>
-    <context>
-        <name>KeybindButton</name>
-        <message>
-            <source>Press key... [%1]</source>
-            <translation>Press key... [%1]</translation>
         </message>
     </context>
     <context>
@@ -1062,6 +960,10 @@ li.checked::marker { content: "\2612"; }
     </context>
     <context>
         <name>MainDialog</name>
+        <message>
+            <source> px</source>
+            <translation> px</translation>
+        </message>
         <message>
             <source>1/2</source>
             <translation>1/2</translation>
@@ -1171,10 +1073,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Buttons</translation>
         </message>
         <message>
-            <source>C button treshold: %1%</source>
-            <translation>C button treshold: %1%</translation>
-        </message>
-        <message>
             <source>C button treshold: 100%</source>
             <translation>C button treshold: 100%</translation>
         </message>
@@ -1189,10 +1087,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Coverage</source>
             <translation>Coverage</translation>
-        </message>
-        <message>
-            <source>Deadzone: %1%</source>
-            <translation>Deadzone: %1%</translation>
         </message>
         <message>
             <source>Deadzone: 100%</source>
@@ -1355,10 +1249,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Screen size</translation>
         </message>
         <message>
-            <source>Sensitivity: %1%</source>
-            <translation>Sensitivity: %1%</translation>
-        </message>
-        <message>
             <source>Sensitivity: 100%</source>
             <translation>Sensitivity: 100%</translation>
         </message>
@@ -1389,10 +1279,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Threads (0 = auto)</source>
             <translation>Threads (0 = auto)</translation>
-        </message>
-        <message>
-            <source>Trigger treshold: %1%</source>
-            <translation>Trigger treshold: %1%</translation>
         </message>
         <message>
             <source>Trigger treshold: 100%</source>
@@ -1445,10 +1331,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>paraLLEl-RDP</source>
             <translation>paraLLEl-RDP</translation>
-        </message>
-        <message>
-            <source>px</source>
-            <translation>px</translation>
         </message>
         <message>
             <source>speex-fixed-0</source>
@@ -1521,10 +1403,6 @@ li.checked::marker { content: "\2612"; }
     </context>
     <context>
         <name>MainWindow</name>
-        <message>
-            <source> [N/A]</source>
-            <translation> [N/A]</translation>
-        </message>
         <message>
             <source>&amp;100%</source>
             <translation>&amp;100%</translation>
@@ -1682,140 +1560,12 @@ li.checked::marker { content: "\2612"; }
             <translation>275%</translation>
         </message>
         <message>
-            <source>Are you sure you want to exit RMG?</source>
-            <translation>Are you sure you want to exit RMG?</translation>
-        </message>
-        <message>
-            <source>Are you sure you want to launch the drag &amp; dropped ROM?</source>
-            <translation>Are you sure you want to launch the drag &amp; dropped ROM?</translation>
-        </message>
-        <message>
             <source>Browse Sessions</source>
             <translation>Browse Sessions</translation>
         </message>
         <message>
-            <source>Cannot start emulation when emulation is already running or being started</source>
-            <translation>Cannot start emulation when emulation is already running or being started</translation>
-        </message>
-        <message>
-            <source>Cannot start emulation when netplay session is active</source>
-            <translation>Cannot start emulation when netplay session is active</translation>
-        </message>
-        <message>
-            <source>Captured screenshot.</source>
-            <translation>Captured screenshot.</translation>
-        </message>
-        <message>
             <source>Cheats...</source>
             <translation>Cheats...</translation>
-        </message>
-        <message>
-            <source>Core Error</source>
-            <translation>Core Error</translation>
-        </message>
-        <message>
-            <source>CoreApplyPluginSettings() Failed</source>
-            <translation>CoreApplyPluginSettings() Failed</translation>
-        </message>
-        <message>
-            <source>CoreArePluginsReady() Failed</source>
-            <translation>CoreArePluginsReady() Failed</translation>
-        </message>
-        <message>
-            <source>CoreCallbacks::Init() Failed</source>
-            <translation>CoreCallbacks::Init() Failed</translation>
-        </message>
-        <message>
-            <source>CoreClearRomHeaderAndSettingsCache() Failed</source>
-            <translation>CoreClearRomHeaderAndSettingsCache() Failed</translation>
-        </message>
-        <message>
-            <source>CoreGetCachedRomHeaderAndSettings() Failed</source>
-            <translation>CoreGetCachedRomHeaderAndSettings() Failed</translation>
-        </message>
-        <message>
-            <source>CoreInit() Failed</source>
-            <translation>CoreInit() Failed</translation>
-        </message>
-        <message>
-            <source>CoreLoadSaveState() Failed</source>
-            <translation>CoreLoadSaveState() Failed</translation>
-        </message>
-        <message>
-            <source>CorePluginsOpenROMConfig() Failed</source>
-            <translation>CorePluginsOpenROMConfig() Failed</translation>
-        </message>
-        <message>
-            <source>CorePressGamesharkButton() Failed</source>
-            <translation>CorePressGamesharkButton() Failed</translation>
-        </message>
-        <message>
-            <source>CoreResetEmulation() Failed</source>
-            <translation>CoreResetEmulation() Failed</translation>
-        </message>
-        <message>
-            <source>CoreSaveState() Failed</source>
-            <translation>CoreSaveState() Failed</translation>
-        </message>
-        <message>
-            <source>CoreSetSaveStateSlot() Failed</source>
-            <translation>CoreSetSaveStateSlot() Failed</translation>
-        </message>
-        <message>
-            <source>CoreSetSpeedFactor() Failed</source>
-            <translation>CoreSetSpeedFactor() Failed</translation>
-        </message>
-        <message>
-            <source>CoreSetSpeedLimiterState() Failed</source>
-            <translation>CoreSetSpeedLimiterState() Failed</translation>
-        </message>
-        <message>
-            <source>CoreStopEmulation() Failed</source>
-            <translation>CoreStopEmulation() Failed</translation>
-        </message>
-        <message>
-            <source>CoreTakeScreenshot() Failed</source>
-            <translation>CoreTakeScreenshot() Failed</translation>
-        </message>
-        <message>
-            <source>CoreToggleFullscreen() Failed</source>
-            <translation>CoreToggleFullscreen() Failed</translation>
-        </message>
-        <message>
-            <source>CoreToggleMuteVolume() Failed</source>
-            <translation>CoreToggleMuteVolume() Failed</translation>
-        </message>
-        <message>
-            <source>Don't ask for confirmation again</source>
-            <translation>Don't ask for confirmation again</translation>
-        </message>
-        <message>
-            <source>EmulationThread::run Failed</source>
-            <translation>EmulationThread::run Failed</translation>
-        </message>
-        <message>
-            <source>Error</source>
-            <translation>Error</translation>
-        </message>
-        <message>
-            <source>Failed to capture screenshot.</source>
-            <translation>Failed to capture screenshot.</translation>
-        </message>
-        <message>
-            <source>Failed to check for updates</source>
-            <translation>Failed to check for updates</translation>
-        </message>
-        <message>
-            <source>Failed to load save state</source>
-            <translation>Failed to load save state</translation>
-        </message>
-        <message>
-            <source>Failed to load save state.</source>
-            <translation>Failed to load save state.</translation>
-        </message>
-        <message>
-            <source>Failed to save state.</source>
-            <translation>Failed to save state.</translation>
         </message>
         <message>
             <source>Ga&amp;me Grid</source>
@@ -1834,52 +1584,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Loa&amp;d...</translation>
         </message>
         <message>
-            <source>Loaded save state.</source>
-            <translation>Loaded save state.</translation>
-        </message>
-        <message>
-            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
-            <translation>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
-        </message>
-        <message>
-            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
-            <translation>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</translation>
-        </message>
-        <message>
             <source>Netplay</source>
             <translation>Netplay</translation>
-        </message>
-        <message>
-            <source>Open 64DD Disk</source>
-            <translation>Open 64DD Disk</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM</source>
-            <translation>Open N64 ROM</translation>
-        </message>
-        <message>
-            <source>Open N64 ROM or 64DD Disk</source>
-            <translation>Open N64 ROM or 64DD Disk</translation>
-        </message>
-        <message>
-            <source>Open Save State</source>
-            <translation>Open Save State</translation>
-        </message>
-        <message>
-            <source>OpenGL</source>
-            <translation>OpenGL</translation>
-        </message>
-        <message>
-            <source>OpenGL ES</source>
-            <translation>OpenGL ES</translation>
-        </message>
-        <message>
-            <source>Playback speed: %1%</source>
-            <translation>Playback speed: %1%</translation>
         </message>
         <message>
             <source>Rosalie's Mupen GUI (VERSION)</source>
@@ -1902,30 +1608,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Save As...</translation>
         </message>
         <message>
-            <source>Save State</source>
-            <translation>Save State</translation>
-        </message>
-        <message>
-            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
-            <translation>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</translation>
-        </message>
-        <message>
-            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
-            <translation>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</translation>
-        </message>
-        <message>
-            <source>Saved state to slot: %1</source>
-            <translation>Saved state to slot: %1</translation>
-        </message>
-        <message>
-            <source>Saved state to: %1</source>
-            <translation>Saved state to: %1</translation>
-        </message>
-        <message>
-            <source>Saved state.</source>
-            <translation>Saved state.</translation>
-        </message>
-        <message>
             <source>Scree&amp;nshot</source>
             <translation>Scree&amp;nshot</translation>
         </message>
@@ -1934,24 +1616,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Search</translation>
         </message>
         <message>
-            <source>Select ROM Directory</source>
-            <translation>Select ROM Directory</translation>
-        </message>
-        <message>
-            <source>Selected save slot: %1</source>
-            <translation>Selected save slot: %1</translation>
-        </message>
-        <message>
             <source>Setti&amp;ngs</source>
             <translation>Setti&amp;ngs</translation>
-        </message>
-        <message>
-            <source>SetupVidExt() Failed</source>
-            <translation>SetupVidExt() Failed</translation>
-        </message>
-        <message>
-            <source>Slot %1</source>
-            <translation>Slot %1</translation>
         </message>
         <message>
             <source>Slot &amp;1</source>
@@ -1998,40 +1664,12 @@ li.checked::marker { content: "\2612"; }
             <translation>Start Co&amp;mbo</translation>
         </message>
         <message>
-            <source>State loaded from slot: %1</source>
-            <translation>State loaded from slot: %1</translation>
-        </message>
-        <message>
-            <source>State loaded from: %1</source>
-            <translation>State loaded from: %1</translation>
-        </message>
-        <message>
             <source>View</source>
             <translation>View</translation>
         </message>
         <message>
             <source>View Session</source>
             <translation>View Session</translation>
-        </message>
-        <message>
-            <source>Volume muted</source>
-            <translation>Volume muted</translation>
-        </message>
-        <message>
-            <source>Volume unmuted</source>
-            <translation>Volume unmuted</translation>
-        </message>
-        <message>
-            <source>Volume: %1%</source>
-            <translation>Volume: %1%</translation>
-        </message>
-        <message>
-            <source>Vulkan</source>
-            <translation>Vulkan</translation>
-        </message>
-        <message>
-            <source>You're already on the latest version</source>
-            <translation>You're already on the latest version</translation>
         </message>
         <message>
             <source>toolBar</source>
@@ -2052,64 +1690,6 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>NetplaySessionBrowserDialog</name>
         <message>
-            <source>Calculating...</source>
-            <translation>Calculating...</translation>
-        </message>
-        <message>
-            <source>Connection Failed</source>
-            <translation>Connection Failed</translation>
-        </message>
-        <message>
-            <source>Current  GFX Plugin: %1</source>
-            <translation>Current  GFX Plugin: %1</translation>
-        </message>
-        <message>
-            <source>Current  RSP Plugin: %1</source>
-            <translation>Current  RSP Plugin: %1</translation>
-        </message>
-        <message>
-            <source>Expected GFX Plugin: %1
-</source>
-            <translation>Expected GFX Plugin: %1
-</translation>
-        </message>
-        <message>
-            <source>Expected MD5: %1
-</source>
-            <translation>Expected MD5: %1
-</translation>
-        </message>
-        <message>
-            <source>Expected RSP Plugin: %1
-</source>
-            <translation>Expected RSP Plugin: %1
-</translation>
-        </message>
-        <message>
-            <source>Failed to open server list json: %1</source>
-            <translation>Failed to open server list json: %1</translation>
-        </message>
-        <message>
-            <source>Failed to retrieve server list json: %1</source>
-            <translation>Failed to retrieve server list json: %1</translation>
-        </message>
-        <message>
-            <source>GFX Plugin Mismatch</source>
-            <translation>GFX Plugin Mismatch</translation>
-        </message>
-        <message>
-            <source>Incorrect ROM Selected</source>
-            <translation>Incorrect ROM Selected</translation>
-        </message>
-        <message>
-            <source>Join</source>
-            <translation>Join</translation>
-        </message>
-        <message>
-            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
-            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
-        </message>
-        <message>
             <source>Netplay Session Browser</source>
             <translation>Netplay Session Browser</translation>
         </message>
@@ -2118,28 +1698,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Nickname</translation>
         </message>
         <message>
-            <source>Open %1</source>
-            <translation>Open %1</translation>
-        </message>
-        <message>
-            <source>RSP Plugin Mismatch</source>
-            <translation>RSP Plugin Mismatch</translation>
-        </message>
-        <message>
-            <source>Received MD5: %1</source>
-            <translation>Received MD5: %1</translation>
-        </message>
-        <message>
-            <source>Refresh</source>
-            <translation>Refresh</translation>
-        </message>
-        <message>
             <source>Server</source>
             <translation>Server</translation>
-        </message>
-        <message>
-            <source>Server Error</source>
-            <translation>Server Error</translation>
         </message>
         <message>
             <source>Server ping</source>
@@ -2158,40 +1718,6 @@ li.checked::marker { content: "\2612"; }
         </message>
     </context>
     <context>
-        <name>NetplaySessionBrowserLoadingWidget</name>
-        <message>
-            <source>Loading</source>
-            <translation>Loading</translation>
-        </message>
-    </context>
-    <context>
-        <name>NetplaySessionBrowserWidget</name>
-        <message>
-            <source>Game</source>
-            <translation>Game</translation>
-        </message>
-        <message>
-            <source>Game MD5</source>
-            <translation>Game MD5</translation>
-        </message>
-        <message>
-            <source>Name</source>
-            <translation>Name</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>No</translation>
-        </message>
-        <message>
-            <source>Password?</source>
-            <translation>Password?</translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Yes</translation>
-        </message>
-    </context>
-    <context>
         <name>NetplaySessionDialog</name>
         <message>
             <source>1</source>
@@ -2204,18 +1730,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Cheats</source>
             <translation>Cheats</translation>
-        </message>
-        <message>
-            <source>CheatsCommon::ParseCheatJson() Failed</source>
-            <translation>CheatsCommon::ParseCheatJson() Failed</translation>
-        </message>
-        <message>
-            <source>CoreSetNetplayCheats() Failed</source>
-            <translation>CoreSetNetplayCheats() Failed</translation>
-        </message>
-        <message>
-            <source>Failed to parse cheats json: %1</source>
-            <translation>Failed to parse cheats json: %1</translation>
         </message>
         <message>
             <source>Game name</source>
@@ -2234,16 +1748,8 @@ li.checked::marker { content: "\2612"; }
             <translation>Send</translation>
         </message>
         <message>
-            <source>Server Error</source>
-            <translation>Server Error</translation>
-        </message>
-        <message>
             <source>Session name</source>
             <translation>Session name</translation>
-        </message>
-        <message>
-            <source>Start</source>
-            <translation>Start</translation>
         </message>
     </context>
     <context>
@@ -2284,14 +1790,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Controller Pak</translation>
         </message>
         <message>
-            <source>Controller doesn't support rumble</source>
-            <translation>Controller doesn't support rumble</translation>
-        </message>
-        <message>
-            <source>Error</source>
-            <translation>Error</translation>
-        </message>
-        <message>
             <source>Filter events based on joystick type for axis</source>
             <translation>Filter events based on joystick type for axis</translation>
         </message>
@@ -2322,14 +1820,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>None</source>
             <translation>None</translation>
-        </message>
-        <message>
-            <source>Open Gameboy ROM</source>
-            <translation>Open Gameboy ROM</translation>
-        </message>
-        <message>
-            <source>Open Gameboy Save</source>
-            <translation>Open Gameboy Save</translation>
         </message>
         <message>
             <source>Options</source>
@@ -2404,24 +1894,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Select ROM Directory...</source>
             <translation>Select ROM Directory...</translation>
-        </message>
-    </context>
-    <context>
-        <name>RomBrowserLoadingWidget</name>
-        <message>
-            <source>Loading</source>
-            <translation>Loading</translation>
-        </message>
-    </context>
-    <context>
-        <name>RomBrowserSearchWidget</name>
-        <message>
-            <source>Close</source>
-            <translation>Close</translation>
-        </message>
-        <message>
-            <source>Search games...</source>
-            <translation>Search games...</translation>
         </message>
     </context>
     <context>
@@ -2586,14 +2058,6 @@ li.checked::marker { content: "\2612"; }
             <translation>CRC2</translation>
         </message>
         <message>
-            <source>Cartridge</source>
-            <translation>Cartridge</translation>
-        </message>
-        <message>
-            <source>Disk</source>
-            <translation>Disk</translation>
-        </message>
-        <message>
             <source>File Name</source>
             <translation>File Name</translation>
         </message>
@@ -2633,16 +2097,16 @@ li.checked::marker { content: "\2612"; }
     <context>
         <name>SettingsDialog</name>
         <message>
-            <source> (not found)</source>
-            <translation> (not found)</translation>
+            <source> px</source>
+            <translation> px</translation>
+        </message>
+        <message>
+            <source> seconds</source>
+            <translation> seconds</translation>
         </message>
         <message>
             <source>&amp;Use PIF ROM</source>
             <translation>&amp;Use PIF ROM</translation>
-        </message>
-        <message>
-            <source>**Use Core Plugin Settings**</source>
-            <translation>**Use Core Plugin Settings**</translation>
         </message>
         <message>
             <source>1</source>
@@ -2829,10 +2293,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Core</translation>
         </message>
         <message>
-            <source>CoreApplyPluginSettings() Failed</source>
-            <translation>CoreApplyPluginSettings() Failed</translation>
-        </message>
-        <message>
             <source>Counter Factor</source>
             <translation>Counter Factor</translation>
         </message>
@@ -2875,14 +2335,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Exit</source>
             <translation>Exit</translation>
-        </message>
-        <message>
-            <source>Expected file with MD5: "%1"</source>
-            <translation>Expected file with MD5: "%1"</translation>
-        </message>
-        <message>
-            <source>Failed to open file</source>
-            <translation>Failed to open file</translation>
         </message>
         <message>
             <source>Flash RAM</source>
@@ -2945,10 +2397,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Hotkeys</translation>
         </message>
         <message>
-            <source>IPL ROMs (*.n64)</source>
-            <translation>IPL ROMs (*.n64)</translation>
-        </message>
-        <message>
             <source>Icon theme</source>
             <translation>Icon theme</translation>
         </message>
@@ -3001,14 +2449,6 @@ li.checked::marker { content: "\2612"; }
             <translation>Log</translation>
         </message>
         <message>
-            <source>MD5 hashing failed</source>
-            <translation>MD5 hashing failed</translation>
-        </message>
-        <message>
-            <source>MD5 mismatch</source>
-            <translation>MD5 mismatch</translation>
-        </message>
-        <message>
             <source>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</source>
             <translation>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</translation>
         </message>
@@ -3045,26 +2485,6 @@ li.checked::marker { content: "\2612"; }
             <translation>OSD</translation>
         </message>
         <message>
-            <source>Open American Retail 64DD IPL</source>
-            <translation>Open American Retail 64DD IPL</translation>
-        </message>
-        <message>
-            <source>Open Japanese Development 64DD IPL</source>
-            <translation>Open Japanese Development 64DD IPL</translation>
-        </message>
-        <message>
-            <source>Open Japanese Retail 64DD IPL</source>
-            <translation>Open Japanese Retail 64DD IPL</translation>
-        </message>
-        <message>
-            <source>Open NTSC PIF ROM</source>
-            <translation>Open NTSC PIF ROM</translation>
-        </message>
-        <message>
-            <source>Open PAL PIF ROM</source>
-            <translation>Open PAL PIF ROM</translation>
-        </message>
-        <message>
             <source>OpenGL</source>
             <translation>OpenGL</translation>
         </message>
@@ -3093,10 +2513,6 @@ li.checked::marker { content: "\2612"; }
             <translation>PAL PIF ROM</translation>
         </message>
         <message>
-            <source>PIF ROMs (*.rom)</source>
-            <translation>PIF ROMs (*.rom)</translation>
-        </message>
-        <message>
             <source>Pause</source>
             <translation>Pause</translation>
         </message>
@@ -3111,14 +2527,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Pure Interpreter</source>
             <translation>Pure Interpreter</translation>
-        </message>
-        <message>
-            <source>QCryptographicHash::addData() Failed</source>
-            <translation>QCryptographicHash::addData() Failed</translation>
-        </message>
-        <message>
-            <source>QFile::open() Failed</source>
-            <translation>QFile::open() Failed</translation>
         </message>
         <message>
             <source>RAM Area Only</source>
@@ -3207,18 +2615,6 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Search sub-directories</source>
             <translation>Search sub-directories</translation>
-        </message>
-        <message>
-            <source>Select Save (SRAM) Directory</source>
-            <translation>Select Save (SRAM) Directory</translation>
-        </message>
-        <message>
-            <source>Select Save (State) Directory</source>
-            <translation>Select Save (State) Directory</translation>
-        </message>
-        <message>
-            <source>Select Screenshot Directory</source>
-            <translation>Select Screenshot Directory</translation>
         </message>
         <message>
             <source>Select the interface language. Choose "System Default" to use the operating system locale. Changes will be applied on next application run.</source>
@@ -3364,21 +2760,9 @@ li.checked::marker { content: "\2612"; }
             <source>Yes</source>
             <translation>Yes</translation>
         </message>
-        <message>
-            <source>px</source>
-            <translation>px</translation>
-        </message>
-        <message>
-            <source>seconds</source>
-            <translation>seconds</translation>
-        </message>
     </context>
     <context>
         <name>UpdateDialog</name>
-        <message>
-            <source>%1 Available</source>
-            <translation>%1 Available</translation>
-        </message>
         <message>
             <source>A new version is available</source>
             <translation>A new version is available</translation>
@@ -3388,6 +2772,334 @@ li.checked::marker { content: "\2612"; }
             <translation>Don't check for updates again</translation>
         </message>
         <message>
+            <source>v0.2.2 Available</source>
+            <translation>v0.2.2 Available</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::AddCheatDialog</name>
+        <message>
+            <source>CoreAddCheat() Failed</source>
+            <translation>CoreAddCheat() Failed</translation>
+        </message>
+        <message>
+            <source>CoreParseCheat() Failed</source>
+            <translation>CoreParseCheat() Failed</translation>
+        </message>
+        <message>
+            <source>CoreUpdateCheat() Failed</source>
+            <translation>CoreUpdateCheat() Failed</translation>
+        </message>
+        <message>
+            <source>Edit Cheat</source>
+            <translation>Edit Cheat</translation>
+        </message>
+        <message>
+            <source>Validating Cheat Failed</source>
+            <translation>Validating Cheat Failed</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::CheatsDialog</name>
+        <message>
+            <source>CoreApplyCheats() Failed</source>
+            <translation>CoreApplyCheats() Failed</translation>
+        </message>
+        <message>
+            <source>CoreGetCurrentCheats() Failed</source>
+            <translation>CoreGetCurrentCheats() Failed</translation>
+        </message>
+        <message>
+            <source>CoreRemoveCheat() Failed</source>
+            <translation>CoreRemoveCheat() Failed</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::CreateNetplaySessionDialog</name>
+        <message>
+            <source>Calculating...</source>
+            <translation>Calculating...</translation>
+        </message>
+        <message>
+            <source>Connection Failed</source>
+            <translation>Connection Failed</translation>
+        </message>
+        <message>
+            <source>Create</source>
+            <translation>Create</translation>
+        </message>
+        <message>
+            <source>Failed to open server list json: %1</source>
+            <translation>Failed to open server list json: %1</translation>
+        </message>
+        <message>
+            <source>Failed to retrieve server list json: %1</source>
+            <translation>Failed to retrieve server list json: %1</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Server Error</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::DownloadUpdateDialog</name>
+        <message>
+            <source>APPIMAGE variable is empty or invalid</source>
+            <translation>APPIMAGE variable is empty or invalid</translation>
+        </message>
+        <message>
+            <source>Downloading %1...</source>
+            <translation>Downloading %1...</translation>
+        </message>
+        <message>
+            <source>Failed to create temporary directory</source>
+            <translation>Failed to create temporary directory</translation>
+        </message>
+        <message>
+            <source>Failed to download update file</source>
+            <translation>Failed to download update file</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>QFile::open() Failed</translation>
+        </message>
+        <message>
+            <source>std::rename() Failed</source>
+            <translation>std::rename() Failed</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::InstallUpdateDialog</name>
+        <message>
+            <source>CoreUnzip() Failed</source>
+            <translation>CoreUnzip() Failed</translation>
+        </message>
+        <message>
+            <source>Executing %1...</source>
+            <translation>Executing %1...</translation>
+        </message>
+        <message>
+            <source>Executing update script...</source>
+            <translation>Executing update script...</translation>
+        </message>
+        <message>
+            <source>Extracting %1...</source>
+            <translation>Extracting %1...</translation>
+        </message>
+        <message>
+            <source>QDir::mkdir() Failed</source>
+            <translation>QDir::mkdir() Failed</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>QFile::open() Failed</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::NetplaySessionBrowserDialog</name>
+        <message>
+            <source>Calculating...</source>
+            <translation>Calculating...</translation>
+        </message>
+        <message>
+            <source>Connection Failed</source>
+            <translation>Connection Failed</translation>
+        </message>
+        <message>
+            <source>Current  GFX Plugin: %1</source>
+            <translation>Current  GFX Plugin: %1</translation>
+        </message>
+        <message>
+            <source>Current  RSP Plugin: %1</source>
+            <translation>Current  RSP Plugin: %1</translation>
+        </message>
+        <message>
+            <source>Expected GFX Plugin: %1
+</source>
+            <translation>Expected GFX Plugin: %1
+</translation>
+        </message>
+        <message>
+            <source>Expected MD5: %1
+</source>
+            <translation>Expected MD5: %1
+</translation>
+        </message>
+        <message>
+            <source>Expected RSP Plugin: %1
+</source>
+            <translation>Expected RSP Plugin: %1
+</translation>
+        </message>
+        <message>
+            <source>Failed to open server list json: %1</source>
+            <translation>Failed to open server list json: %1</translation>
+        </message>
+        <message>
+            <source>Failed to retrieve server list json: %1</source>
+            <translation>Failed to retrieve server list json: %1</translation>
+        </message>
+        <message>
+            <source>GFX Plugin Mismatch</source>
+            <translation>GFX Plugin Mismatch</translation>
+        </message>
+        <message>
+            <source>Incorrect ROM Selected</source>
+            <translation>Incorrect ROM Selected</translation>
+        </message>
+        <message>
+            <source>Join</source>
+            <translation>Join</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Open %1</source>
+            <translation>Open %1</translation>
+        </message>
+        <message>
+            <source>RSP Plugin Mismatch</source>
+            <translation>RSP Plugin Mismatch</translation>
+        </message>
+        <message>
+            <source>Received MD5: %1</source>
+            <translation>Received MD5: %1</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Refresh</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Server Error</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::NetplaySessionDialog</name>
+        <message>
+            <source>Cheats</source>
+            <translation>Cheats</translation>
+        </message>
+        <message>
+            <source>CheatsCommon::ParseCheatJson() Failed</source>
+            <translation>CheatsCommon::ParseCheatJson() Failed</translation>
+        </message>
+        <message>
+            <source>CoreSetNetplayCheats() Failed</source>
+            <translation>CoreSetNetplayCheats() Failed</translation>
+        </message>
+        <message>
+            <source>Failed to parse cheats json: %1</source>
+            <translation>Failed to parse cheats json: %1</translation>
+        </message>
+        <message>
+            <source>Server Error</source>
+            <translation>Server Error</translation>
+        </message>
+        <message>
+            <source>Start</source>
+            <translation>Start</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::RomInfoDialog</name>
+        <message>
+            <source>Cartridge</source>
+            <translation>Cartridge</translation>
+        </message>
+        <message>
+            <source>Disk</source>
+            <translation>Disk</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::SettingsDialog</name>
+        <message>
+            <source> (not found)</source>
+            <translation> (not found)</translation>
+        </message>
+        <message>
+            <source>**Use Core Plugin Settings**</source>
+            <translation>**Use Core Plugin Settings**</translation>
+        </message>
+        <message>
+            <source>CoreApplyPluginSettings() Failed</source>
+            <translation>CoreApplyPluginSettings() Failed</translation>
+        </message>
+        <message>
+            <source>Expected file with MD5: "%1"</source>
+            <translation>Expected file with MD5: "%1"</translation>
+        </message>
+        <message>
+            <source>Failed to open file</source>
+            <translation>Failed to open file</translation>
+        </message>
+        <message>
+            <source>IPL ROMs (*.n64)</source>
+            <translation>IPL ROMs (*.n64)</translation>
+        </message>
+        <message>
+            <source>MD5 hashing failed</source>
+            <translation>MD5 hashing failed</translation>
+        </message>
+        <message>
+            <source>MD5 mismatch</source>
+            <translation>MD5 mismatch</translation>
+        </message>
+        <message>
+            <source>Open American Retail 64DD IPL</source>
+            <translation>Open American Retail 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Development 64DD IPL</source>
+            <translation>Open Japanese Development 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open Japanese Retail 64DD IPL</source>
+            <translation>Open Japanese Retail 64DD IPL</translation>
+        </message>
+        <message>
+            <source>Open NTSC PIF ROM</source>
+            <translation>Open NTSC PIF ROM</translation>
+        </message>
+        <message>
+            <source>Open PAL PIF ROM</source>
+            <translation>Open PAL PIF ROM</translation>
+        </message>
+        <message>
+            <source>PIF ROMs (*.rom)</source>
+            <translation>PIF ROMs (*.rom)</translation>
+        </message>
+        <message>
+            <source>QCryptographicHash::addData() Failed</source>
+            <translation>QCryptographicHash::addData() Failed</translation>
+        </message>
+        <message>
+            <source>QFile::open() Failed</source>
+            <translation>QFile::open() Failed</translation>
+        </message>
+        <message>
+            <source>Select Save (SRAM) Directory</source>
+            <translation>Select Save (SRAM) Directory</translation>
+        </message>
+        <message>
+            <source>Select Save (State) Directory</source>
+            <translation>Select Save (State) Directory</translation>
+        </message>
+        <message>
+            <source>Select Screenshot Directory</source>
+            <translation>Select Screenshot Directory</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Dialog::UpdateDialog</name>
+        <message>
+            <source>%1 Available</source>
+            <translation>%1 Available</translation>
+        </message>
+        <message>
             <source>Failed to find update file</source>
             <translation>Failed to find update file</translation>
         </message>
@@ -3395,9 +3107,395 @@ li.checked::marker { content: "\2612"; }
             <source>Update</source>
             <translation>Update</translation>
         </message>
+    </context>
+    <context>
+        <name>UserInterface::MainDialog</name>
         <message>
-            <source>v0.2.2 Available</source>
-            <translation>v0.2.2 Available</translation>
+            <source>C button treshold: %1%</source>
+            <translation>C button treshold: %1%</translation>
+        </message>
+        <message>
+            <source>Deadzone: %1%</source>
+            <translation>Deadzone: %1%</translation>
+        </message>
+        <message>
+            <source>Sensitivity: %1%</source>
+            <translation>Sensitivity: %1%</translation>
+        </message>
+        <message>
+            <source>Trigger treshold: %1%</source>
+            <translation>Trigger treshold: %1%</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::MainWindow</name>
+        <message>
+            <source> [N/A]</source>
+            <translation> [N/A]</translation>
+        </message>
+        <message>
+            <source>Are you sure you want to exit RMG?</source>
+            <translation>Are you sure you want to exit RMG?</translation>
+        </message>
+        <message>
+            <source>Are you sure you want to launch the drag &amp; dropped ROM?</source>
+            <translation>Are you sure you want to launch the drag &amp; dropped ROM?</translation>
+        </message>
+        <message>
+            <source>Cannot start emulation when emulation is already running or being started</source>
+            <translation>Cannot start emulation when emulation is already running or being started</translation>
+        </message>
+        <message>
+            <source>Cannot start emulation when netplay session is active</source>
+            <translation>Cannot start emulation when netplay session is active</translation>
+        </message>
+        <message>
+            <source>Captured screenshot.</source>
+            <translation>Captured screenshot.</translation>
+        </message>
+        <message>
+            <source>Core Error</source>
+            <translation>Core Error</translation>
+        </message>
+        <message>
+            <source>CoreApplyPluginSettings() Failed</source>
+            <translation>CoreApplyPluginSettings() Failed</translation>
+        </message>
+        <message>
+            <source>CoreArePluginsReady() Failed</source>
+            <translation>CoreArePluginsReady() Failed</translation>
+        </message>
+        <message>
+            <source>CoreCallbacks::Init() Failed</source>
+            <translation>CoreCallbacks::Init() Failed</translation>
+        </message>
+        <message>
+            <source>CoreClearRomHeaderAndSettingsCache() Failed</source>
+            <translation>CoreClearRomHeaderAndSettingsCache() Failed</translation>
+        </message>
+        <message>
+            <source>CoreGetCachedRomHeaderAndSettings() Failed</source>
+            <translation>CoreGetCachedRomHeaderAndSettings() Failed</translation>
+        </message>
+        <message>
+            <source>CoreInit() Failed</source>
+            <translation>CoreInit() Failed</translation>
+        </message>
+        <message>
+            <source>CoreLoadSaveState() Failed</source>
+            <translation>CoreLoadSaveState() Failed</translation>
+        </message>
+        <message>
+            <source>CorePluginsOpenROMConfig() Failed</source>
+            <translation>CorePluginsOpenROMConfig() Failed</translation>
+        </message>
+        <message>
+            <source>CorePressGamesharkButton() Failed</source>
+            <translation>CorePressGamesharkButton() Failed</translation>
+        </message>
+        <message>
+            <source>CoreResetEmulation() Failed</source>
+            <translation>CoreResetEmulation() Failed</translation>
+        </message>
+        <message>
+            <source>CoreSaveState() Failed</source>
+            <translation>CoreSaveState() Failed</translation>
+        </message>
+        <message>
+            <source>CoreSetSaveStateSlot() Failed</source>
+            <translation>CoreSetSaveStateSlot() Failed</translation>
+        </message>
+        <message>
+            <source>CoreSetSpeedFactor() Failed</source>
+            <translation>CoreSetSpeedFactor() Failed</translation>
+        </message>
+        <message>
+            <source>CoreSetSpeedLimiterState() Failed</source>
+            <translation>CoreSetSpeedLimiterState() Failed</translation>
+        </message>
+        <message>
+            <source>CoreStopEmulation() Failed</source>
+            <translation>CoreStopEmulation() Failed</translation>
+        </message>
+        <message>
+            <source>CoreTakeScreenshot() Failed</source>
+            <translation>CoreTakeScreenshot() Failed</translation>
+        </message>
+        <message>
+            <source>CoreToggleFullscreen() Failed</source>
+            <translation>CoreToggleFullscreen() Failed</translation>
+        </message>
+        <message>
+            <source>CoreToggleMuteVolume() Failed</source>
+            <translation>CoreToggleMuteVolume() Failed</translation>
+        </message>
+        <message>
+            <source>Don't ask for confirmation again</source>
+            <translation>Don't ask for confirmation again</translation>
+        </message>
+        <message>
+            <source>EmulationThread::run Failed</source>
+            <translation>EmulationThread::run Failed</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>Failed to capture screenshot.</source>
+            <translation>Failed to capture screenshot.</translation>
+        </message>
+        <message>
+            <source>Failed to check for updates</source>
+            <translation>Failed to check for updates</translation>
+        </message>
+        <message>
+            <source>Failed to load save state</source>
+            <translation>Failed to load save state</translation>
+        </message>
+        <message>
+            <source>Failed to load save state.</source>
+            <translation>Failed to load save state.</translation>
+        </message>
+        <message>
+            <source>Failed to save state.</source>
+            <translation>Failed to save state.</translation>
+        </message>
+        <message>
+            <source>Loaded save state.</source>
+            <translation>Loaded save state.</translation>
+        </message>
+        <message>
+            <source>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64 ROMs &amp; Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</source>
+            <translation>N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</source>
+            <translation>N64DD Disk Image (*.ndd *.d64 *.zip *.7z)</translation>
+        </message>
+        <message>
+            <source>Open 64DD Disk</source>
+            <translation>Open 64DD Disk</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM</source>
+            <translation>Open N64 ROM</translation>
+        </message>
+        <message>
+            <source>Open N64 ROM or 64DD Disk</source>
+            <translation>Open N64 ROM or 64DD Disk</translation>
+        </message>
+        <message>
+            <source>Open Save State</source>
+            <translation>Open Save State</translation>
+        </message>
+        <message>
+            <source>OpenGL</source>
+            <translation>OpenGL</translation>
+        </message>
+        <message>
+            <source>OpenGL ES</source>
+            <translation>OpenGL ES</translation>
+        </message>
+        <message>
+            <source>Playback speed: %1%</source>
+            <translation>Playback speed: %1%</translation>
+        </message>
+        <message>
+            <source>Save State</source>
+            <translation>Save State</translation>
+        </message>
+        <message>
+            <source>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</source>
+            <translation>Save State (*.dat *.state *.st* *.pj*);;All Files (*)</translation>
+        </message>
+        <message>
+            <source>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</source>
+            <translation>Save State (*.state);;Project64 Save State (*.pj);;All Files (*)</translation>
+        </message>
+        <message>
+            <source>Saved state to slot: %1</source>
+            <translation>Saved state to slot: %1</translation>
+        </message>
+        <message>
+            <source>Saved state to: %1</source>
+            <translation>Saved state to: %1</translation>
+        </message>
+        <message>
+            <source>Saved state.</source>
+            <translation>Saved state.</translation>
+        </message>
+        <message>
+            <source>Select ROM Directory</source>
+            <translation>Select ROM Directory</translation>
+        </message>
+        <message>
+            <source>Selected save slot: %1</source>
+            <translation>Selected save slot: %1</translation>
+        </message>
+        <message>
+            <source>SetupVidExt() Failed</source>
+            <translation>SetupVidExt() Failed</translation>
+        </message>
+        <message>
+            <source>Slot %1</source>
+            <translation>Slot %1</translation>
+        </message>
+        <message>
+            <source>State loaded from slot: %1</source>
+            <translation>State loaded from slot: %1</translation>
+        </message>
+        <message>
+            <source>State loaded from: %1</source>
+            <translation>State loaded from: %1</translation>
+        </message>
+        <message>
+            <source>Volume muted</source>
+            <translation>Volume muted</translation>
+        </message>
+        <message>
+            <source>Volume unmuted</source>
+            <translation>Volume unmuted</translation>
+        </message>
+        <message>
+            <source>Volume: %1%</source>
+            <translation>Volume: %1%</translation>
+        </message>
+        <message>
+            <source>Vulkan</source>
+            <translation>Vulkan</translation>
+        </message>
+        <message>
+            <source>You're already on the latest version</source>
+            <translation>You're already on the latest version</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::OptionsDialog</name>
+        <message>
+            <source>Controller doesn't support rumble</source>
+            <translation>Controller doesn't support rumble</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>Open Gameboy ROM</source>
+            <translation>Open Gameboy ROM</translation>
+        </message>
+        <message>
+            <source>Open Gameboy Save</source>
+            <translation>Open Gameboy Save</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::ControllerWidget</name>
+        <message>
+            <source> (not found)</source>
+            <translation> (not found)</translation>
+        </message>
+        <message>
+            <source>Analog Stick Sensitivity: </source>
+            <translation>Analog Stick Sensitivity: </translation>
+        </message>
+        <message>
+            <source>Are you sure you want to clear the main profile?</source>
+            <translation>Are you sure you want to clear the main profile?</translation>
+        </message>
+        <message>
+            <source>Create New Profile</source>
+            <translation>Create New Profile</translation>
+        </message>
+        <message>
+            <source>Deadzone: %1%</source>
+            <translation>Deadzone: %1%</translation>
+        </message>
+        <message>
+            <source>Error</source>
+            <translation>Error</translation>
+        </message>
+        <message>
+            <source>New profile name:</source>
+            <translation>New profile name:</translation>
+        </message>
+        <message>
+            <source>Profile name cannot contain ';', '[' or ']'!</source>
+            <translation>Profile name cannot contain ';', '[' or ']'!</translation>
+        </message>
+        <message>
+            <source>Profile with the same name already exists!</source>
+            <translation>Profile with the same name already exists!</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::CreateNetplaySessionWidget</name>
+        <message>
+            <source>Creating server</source>
+            <translation>Creating server</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::KeybindButton</name>
+        <message>
+            <source>Press key... [%1]</source>
+            <translation>Press key... [%1]</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::NetplaySessionBrowserWidget</name>
+        <message>
+            <source>Game</source>
+            <translation>Game</translation>
+        </message>
+        <message>
+            <source>Game MD5</source>
+            <translation>Game MD5</translation>
+        </message>
+        <message>
+            <source>Name</source>
+            <translation>Name</translation>
+        </message>
+        <message>
+            <source>No</source>
+            <translation>No</translation>
+        </message>
+        <message>
+            <source>Password?</source>
+            <translation>Password?</translation>
+        </message>
+        <message>
+            <source>Yes</source>
+            <translation>Yes</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::RomBrowserLoadingWidget</name>
+        <message>
+            <source>Loading</source>
+            <translation>Loading</translation>
+        </message>
+    </context>
+    <context>
+        <name>UserInterface::Widget::RomBrowserSearchWidget</name>
+        <message>
+            <source>Close</source>
+            <translation>Close</translation>
+        </message>
+        <message>
+            <source>Search games...</source>
+            <translation>Search games...</translation>
         </message>
     </context>
 </TS>

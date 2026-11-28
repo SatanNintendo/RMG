@@ -50,7 +50,10 @@ fi
 
 cp "$bin_dir/usr/share/applications/com.github.Rosalie241.RMG.desktop" "$bin_dir"
 cp "$bin_dir/usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg" "$bin_dir"
-ln -s com.github.Rosalie241.RMG.svg "$bin_dir"/.DirIcon
+# appimagetool requires .DirIcon to be a PNG (an SVG symlink is rejected and
+# will become a hard error in a future release); with a PNG named like the
+# desktop file's Icon= entry in the top-level directory it creates .DirIcon itself.
+cp "$script_dir/com.github.Rosalie241.RMG.png" "$bin_dir"
 mv "$bin_dir/usr/share" "$bin_dir/share"
 mv "$bin_dir/usr" "$bin_dir/shared"
 

@@ -11,7 +11,7 @@ the RMG executable as a Qt resource under `:/i18n/RMG_<locale>.qm`.
 | File              | Locale code | Status                                                       |
 |-------------------|-------------|--------------------------------------------------------------|
 | `RMG_en.ts`       | `en`        | **English reference** — source of truth for translators. Every translatable string in RMG appears here, with `<translation>` = `<source>`. |
-| `RMG_ru.ts`       | `ru`        | **Russian** — fully translated (722 of 722 extracted strings; 0 unfinished entries across 32 contexts). |
+| `RMG_ru.ts`       | `ru`        | **Russian** — fully translated (805 of 805 extracted strings; 0 unfinished entries across 46 contexts). |
 
 ## How the language selector discovers these files
 
@@ -109,6 +109,27 @@ whole application.
 The extraction scripts (`generate_en_ts.py`, `generate_ru_ts.py`)
 scan `Source/RMG/`, `Source/RMG-Input/`, and `Source/RMG-Audio/` to
 capture every translatable string in one pass.
+
+## Important: context names of `tr()` strings
+
+`tr()` called from C++ code uses `staticMetaObject.className()` as the
+context, and moc emits it **with the enclosing namespaces**, e.g.
+`UserInterface::Widget::RomBrowserLoadingWidget`. Strings from `.ui`
+files are different: `uic` uses the bare `<class>` name (`MainWindow`).
+The generators therefore write code strings under the qualified name
+(see `qualify_class_name()`) and `.ui` strings under the bare name.
+A translation stored under the wrong context is silently never shown.
+
+To verify the generated files against the real extractor:
+
+```
+lupdate Source/RMG Source/RMG-Input Source/RMG-Input-GCA Source/RMG-Audio \
+        -extensions cpp,hpp,ui -no-obsolete -ts /tmp/real.ts
+```
+
+Every `(context, source)` pair in `/tmp/real.ts` must also exist in
+`RMG_ru.ts` (the reverse is allowed: the file also holds `CoreMessage`
+and explicit `QCoreApplication::translate()` contexts).
 
 ## Translating C++ strings (not just .ui strings)
 
