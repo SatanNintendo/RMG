@@ -629,7 +629,9 @@ static void RmgPluginThemePaintDarkCheckbox(HWND hwnd, HDC dc, const RECT *clien
         if (indicatorSize < 5)
             indicatorSize = 5;
 
-        indicatorRect.left = leftText ? client->right - indicatorSize - 2 : client->left + 2;
+        /* Same metrics as the native check box (box flush with the edge, ~3 px gap)
+           so that wider (e.g. Cyrillic) captions fit in dialogs laid out for it. */
+        indicatorRect.left = leftText ? client->right - indicatorSize : client->left;
         indicatorRect.top = client->top + ((client->bottom - client->top - indicatorSize) / 2);
         indicatorRect.right = indicatorRect.left + indicatorSize;
         indicatorRect.bottom = indicatorRect.top + indicatorSize;
@@ -690,9 +692,27 @@ static void RmgPluginThemePaintDarkCheckbox(HWND hwnd, HDC dc, const RECT *clien
 
         textRect = *client;
         if (leftText)
-            textRect.right = indicatorRect.left - 5;
+            textRect.right = indicatorRect.left - 3;
         else
-            textRect.left = indicatorRect.right + 6;
+            textRect.left = indicatorRect.right + 3;
+        /* When the caption is still too wide, trade the gap (down to 1 px)
+           for space before an ellipsis cuts the text. */
+        {
+            SIZE captionSize = { 0, 0 };
+            int missing;
+            if (caption[0] != L'\0')
+                GetTextExtentPoint32W(dc, caption, (int)wcslen(caption), &captionSize);
+            missing = captionSize.cx - (textRect.right - textRect.left);
+            if (missing > 0)
+            {
+                if (missing > 2)
+                    missing = 2;
+                if (leftText)
+                    textRect.right += missing;
+                else
+                    textRect.left -= missing;
+            }
+        }
         SetTextColor(dc, RMG_GRAY(enabled ? 240 : 128));
         DrawTextW(dc, caption, -1, &textRect,
             DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
