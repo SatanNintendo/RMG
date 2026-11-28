@@ -181,5 +181,5 @@ matches the behavior of the existing Theme setting.
 |--------|---------|
 | `generate_en_ts.py` | Regenerate `RMG_en.ts` from source code (the English reference). Run after adding/changing source strings. |
 | `generate_ru_ts.py` | Regenerate `RMG_ru.ts` from source code, using a built-in Russian translation dictionary. Run after adding new source strings to keep the Russian file in sync. |
-| `extract_strings.py` | Dump all (context, string) pairs to stdout — useful for debugging which strings the extractor sees. |
+| `extract_strings.py` | Dump all (context, string) pairs to stdout — useful for debugging which strings the extractor sees. Note: it prints the bare C++ class name as context, while Qt looks up the namespace-qualified name at runtime (see "Important: context names of tr() strings"); verify real coverage with `lupdate`, not with this script. |
 | `generate_skeleton_ts.py <code> [<lang>]` | Create a new skeleton `.ts` file for a new language, pre-filled with English source as `type="unfinished"`. |
