@@ -369,12 +369,20 @@ li.checked::marker { content: "\2612"; }
             <translation>Не удалось записать данные в файл состояния: %1</translation>
         </message>
         <message>
+            <source>Couldn't open configuration file '%s'.  Using defaults.</source>
+            <translation>Не удалось открыть файл конфигурации «%1». Используются значения по умолчанию.</translation>
+        </message>
+        <message>
             <source>Couldn't write data to Project64 state file %s.</source>
             <translation>Не удалось записать данные в файл состояния Project64 %1.</translation>
         </message>
         <message>
             <source>Country: %s</source>
             <translation>Страна: %1</translation>
+        </message>
+        <message>
+            <source>DD IPL ROM: %s</source>
+            <translation>IPL ROM 64DD: %1</translation>
         </message>
         <message>
             <source>Disk closed.</source>
@@ -617,6 +625,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Используется PAL PIF ROM</translation>
         </message>
         <message>
+            <source>Using a %d bytes GB RAM</source>
+            <translation>Используется ОЗУ GB размером %1 байт</translation>
+        </message>
+        <message>
             <source>Using compressed mem base</source>
             <translation>Используется сжатая база памяти</translation>
         </message>
@@ -639,6 +651,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Video successfully opened: %s</source>
             <translation>Видео успешно открыто: %1</translation>
+        </message>
+        <message>
+            <source>Waiting until user has approved video access</source>
+            <translation>Ожидание разрешения пользователя на доступ к видеоустройству</translation>
         </message>
         <message>
             <source>Wrong disk format</source>
@@ -685,12 +701,20 @@ li.checked::marker { content: "\2612"; }
             <translation>несовместимый видеоплагин</translation>
         </message>
         <message>
+            <source>input plugin did not specify a render callback; there will be no on screen display by the input plugin.</source>
+            <translation>Плагин ввода не задал обратный вызов отрисовки; экранное меню плагина ввода отображаться не будет.</translation>
+        </message>
+        <message>
             <source>open_disk(): not a valid disk image</source>
             <translation>open_disk(): недопустимый образ диска</translation>
         </message>
         <message>
             <source>open_rom(): not a valid ROM image</source>
             <translation>open_rom(): недопустимый образ ROM</translation>
+        </message>
+        <message>
+            <source>two events of type 0x%x in interrupt queue</source>
+            <translation>Два события типа 0x%1 в очереди прерываний</translation>
         </message>
     </context>
     <context>

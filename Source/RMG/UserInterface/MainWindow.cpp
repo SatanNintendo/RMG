@@ -2339,6 +2339,15 @@ void MainWindow::on_Emulation_Finished(bool ret, QString error)
     // always refresh UI
     this->updateUI(false, false);
 
+    // the core's "Stopping emulation." message can get lost when the emulation
+    // thread has already finished before the callback messages are delivered
+    // (the debug callback ignores messages when emulation isn't running),
+    // so always show it here when emulation ended without an error
+    if (ret)
+    {
+        this->showStatusBarMessage(CoreMessageTranslator::Translate("Stopping emulation."));
+    }
+
     // show error message to the user
     // after switching back to the ROM browser
     if (!ret)
@@ -2823,9 +2832,11 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         if (messages[i].Context.startsWith("[CORE]") &&
             messages[i].Type != CoreDebugMessageType::Verbose &&
             !messages[i].Message.startsWith("IS64:") &&
-            // the core logs "Video closed" right after "Stopping emulation.",
-            // it would replace the more useful message in the status bar
-            messages[i].Message != "Video closed")
+            // the core logs "Video closed" and "R4300 emulator finished."
+            // right after "Stopping emulation.", they would replace the
+            // more useful message in the status bar
+            messages[i].Message != "Video closed" &&
+            messages[i].Message != "R4300 emulator finished.")
         {
             statusbarMessage = messages[i];
             break;
@@ -2853,7 +2864,17 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         return;
     }
 
-    this->ui_StatusBar_Label->setText(CoreMessageTranslator::Translate(statusbarMessage.Message));
+    this->showStatusBarMessage(CoreMessageTranslator::Translate(statusbarMessage.Message));
+}
+
+void MainWindow::showStatusBarMessage(const QString& message)
+{
+    if (!this->ui_ShowStatusbar)
+    {
+        return;
+    }
+
+    this->ui_StatusBar_Label->setText(message);
 
     // reset label deletion timer
     if (this->ui_ResetStatusBarTimerId != 0)

@@ -98,6 +98,11 @@ static const char* const l_CoreMessages[] =
 	QT_TRANSLATE_NOOP("CoreMessage", "Video closed"),
 	QT_TRANSLATE_NOOP("CoreMessage", "Video successfully opened: %s"),
 	QT_TRANSLATE_NOOP("CoreMessage", "Using video capture backend: %s"),
+	QT_TRANSLATE_NOOP("CoreMessage", "Couldn't open configuration file '%s'.  Using defaults."),
+	QT_TRANSLATE_NOOP("CoreMessage", "Waiting until user has approved video access"),
+	QT_TRANSLATE_NOOP("CoreMessage", "Using a %d bytes GB RAM"),
+	QT_TRANSLATE_NOOP("CoreMessage", "DD IPL ROM: %s"),
+	QT_TRANSLATE_NOOP("CoreMessage", "input plugin did not specify a render callback; there will be no on screen display by the input plugin."),
 
 	// warnings and errors
 	QT_TRANSLATE_NOOP("CoreMessage", "Loading a saved disk"),
@@ -108,6 +113,7 @@ static const char* const l_CoreMessages[] =
 	QT_TRANSLATE_NOOP("CoreMessage", "Invalid DD IPL ROM: Disabling 64DD."),
 	QT_TRANSLATE_NOOP("CoreMessage", "Failed to load ROM file: %s"),
 	QT_TRANSLATE_NOOP("CoreMessage", "Invalid PIF ROM"),
+	QT_TRANSLATE_NOOP("CoreMessage", "two events of type 0x%x in interrupt queue"),
 	QT_TRANSLATE_NOOP("CoreMessage", "Wrong disk format"),
 	QT_TRANSLATE_NOOP("CoreMessage", "open_rom(): not a valid ROM image"),
 	QT_TRANSLATE_NOOP("CoreMessage", "open_disk(): not a valid disk image"),

@@ -150,6 +150,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool loadTranslator(void);
 
     void showErrorMessage(QString text, QString details = "", bool force = true);
+    void showStatusBarMessage(const QString& message);
 
     void updateUI(bool inEmulation, bool isPaused);
 

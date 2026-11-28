@@ -384,12 +384,20 @@ li.checked::marker { content: "\2612"; }
             <translation>Could not write data to state file: %s</translation>
         </message>
         <message>
+            <source>Couldn't open configuration file '%s'.  Using defaults.</source>
+            <translation>Couldn't open configuration file '%s'.  Using defaults.</translation>
+        </message>
+        <message>
             <source>Couldn't write data to Project64 state file %s.</source>
             <translation>Couldn't write data to Project64 state file %s.</translation>
         </message>
         <message>
             <source>Country: %s</source>
             <translation>Country: %s</translation>
+        </message>
+        <message>
+            <source>DD IPL ROM: %s</source>
+            <translation>DD IPL ROM: %s</translation>
         </message>
         <message>
             <source>Disk closed.</source>
@@ -632,6 +640,10 @@ li.checked::marker { content: "\2612"; }
             <translation>Using PAL PIF ROM</translation>
         </message>
         <message>
+            <source>Using a %d bytes GB RAM</source>
+            <translation>Using a %d bytes GB RAM</translation>
+        </message>
+        <message>
             <source>Using compressed mem base</source>
             <translation>Using compressed mem base</translation>
         </message>
@@ -654,6 +666,10 @@ li.checked::marker { content: "\2612"; }
         <message>
             <source>Video successfully opened: %s</source>
             <translation>Video successfully opened: %s</translation>
+        </message>
+        <message>
+            <source>Waiting until user has approved video access</source>
+            <translation>Waiting until user has approved video access</translation>
         </message>
         <message>
             <source>Wrong disk format</source>
@@ -700,12 +716,20 @@ li.checked::marker { content: "\2612"; }
             <translation>incompatible Video plugin</translation>
         </message>
         <message>
+            <source>input plugin did not specify a render callback; there will be no on screen display by the input plugin.</source>
+            <translation>input plugin did not specify a render callback; there will be no on screen display by the input plugin.</translation>
+        </message>
+        <message>
             <source>open_disk(): not a valid disk image</source>
             <translation>open_disk(): not a valid disk image</translation>
         </message>
         <message>
             <source>open_rom(): not a valid ROM image</source>
             <translation>open_rom(): not a valid ROM image</translation>
+        </message>
+        <message>
+            <source>two events of type 0x%x in interrupt queue</source>
+            <translation>two events of type 0x%x in interrupt queue</translation>
         </message>
     </context>
     <context>
