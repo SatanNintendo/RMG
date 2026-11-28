@@ -14,6 +14,12 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <imgui.h>
 #include <chrono>
+#include <filesystem>
+#include <vector>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 //
 // Local Variables
@@ -39,6 +45,59 @@ static float       l_TextAlpha       = 1.0f;
 static int         l_MessageDuration = 3;
 
 //
+// Local Functions
+//
+
+// ImGui's built-in font only contains Latin glyphs, so translated
+// (e.g. Cyrillic) messages would be drawn as '?'. To avoid that, try to load
+// a common system font that has Cyrillic glyphs. When none is found,
+// ImGui's built-in font stays in use, which is the previous behavior.
+static void load_system_font(void)
+{
+    static const float fontSize = 15.0f;
+
+    std::vector<std::filesystem::path> fontPaths;
+#ifdef _WIN32
+    wchar_t windowsDirectory[MAX_PATH];
+    UINT length = GetWindowsDirectoryW(windowsDirectory, MAX_PATH);
+    if (length == 0 || length >= MAX_PATH)
+    {
+        return;
+    }
+    const std::filesystem::path fontsDirectory = std::filesystem::path(windowsDirectory) / "Fonts";
+    fontPaths.push_back(fontsDirectory / "segoeui.ttf");
+    fontPaths.push_back(fontsDirectory / "tahoma.ttf");
+    fontPaths.push_back(fontsDirectory / "arial.ttf");
+#else
+    fontPaths.push_back("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+    fontPaths.push_back("/usr/share/fonts/dejavu/DejaVuSans.ttf");
+    fontPaths.push_back("/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf");
+    fontPaths.push_back("/usr/share/fonts/TTF/DejaVuSans.ttf");
+    fontPaths.push_back("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    fontPaths.push_back("/usr/share/fonts/liberation-sans/LiberationSans-Regular.ttf");
+    fontPaths.push_back("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
+    fontPaths.push_back("/usr/share/fonts/noto/NotoSans-Regular.ttf");
+#endif
+
+    ImGuiIO& io = ImGui::GetIO();
+    for (const std::filesystem::path& fontPath : fontPaths)
+    {
+        std::error_code errorCode;
+        // ImGui asserts when the font file can't be loaded,
+        // so only pass it files that are known to exist
+        if (!std::filesystem::is_regular_file(fontPath, errorCode))
+        {
+            continue;
+        }
+
+        if (io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), fontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic()) != nullptr)
+        {
+            return;
+        }
+    }
+}
+
+//
 // Exported Functions
 //
 
@@ -52,6 +111,7 @@ bool OnScreenDisplayInit(void)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    load_system_font();
 
     if (!ImGui_ImplOpenGL3_Init())
     {

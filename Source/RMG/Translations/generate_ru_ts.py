@@ -406,7 +406,7 @@ TRANSLATIONS = {
     # === RMG-Input: OptionsDialog ===
     "Options": "Опции",
     "Controller": "Контроллер",
-    "Controller Pak": "Контроллер Pak",
+    "Controller Pak": "Controller Pak",
     "Memory": "Память",
     "Rumble": "Вибрация",
     "Transfer": "Переносной",

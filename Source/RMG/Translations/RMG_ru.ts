@@ -822,7 +822,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Controller Pak</source>
-            <translation>Контроллер Pak</translation>
+            <translation>Controller Pak</translation>
         </message>
         <message>
             <source>Current Save State</source>
@@ -1796,7 +1796,7 @@ li.checked::marker { content: "\2612"; }
         </message>
         <message>
             <source>Controller Pak</source>
-            <translation>Контроллер Pak</translation>
+            <translation>Controller Pak</translation>
         </message>
         <message>
             <source>Filter events based on joystick type for axis</source>
